@@ -1,0 +1,30 @@
+{
+    "development": {
+        "username": "vnnpdgvnozcvuk",
+        "password": "349bb1721867b3ed45439b0f9782b4c59a3d7b09e4c1d51183d2facfce89e757",
+        "database": "depqobucrqegkf",
+        "host": "ec2-34-200-15-192.compute-1.amazonaws.com",
+        "dialect": "postgres",
+        "dialectOptions": {
+            "ssl": false
+        }
+    },
+    "test": {
+        "username": "postgres",
+        "password": "hoanghiep021",
+        "database": "ebankingdb",
+        "host": "localhost",
+        "dialect": "postgres",
+        "operatorsAliases": false
+    },
+    "production": {
+        "username": "vnnpdgvnozcvuk",
+        "password": "349bb1721867b3ed45439b0f9782b4c59a3d7b09e4c1d51183d2facfce89e757",
+        "database": "depqobucrqegkf",
+        "host": "ec2-34-200-15-192.compute-1.amazonaws.com",
+        "dialect": "postgres",
+        "dialectOptions": {
+            "ssl": false
+        }
+    }
+}
