@@ -3,19 +3,45 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-
-
+const bodyParser = require('body-parser');
 const app = express();
 
 const indexRouter = require('./routes/index');
+const nguoidungRoute = require('./routes/nguoidungRoute');
+const buucucRoute = require('./routes/buucucRoute');
+const chuoigiaohangRoute = require('./routes/chuoigiaohangRoute');
+const diachiRoute = require('./routes/diachiRoute');
+const diachixacnhanRoute = require('./routes/diachixacnhanRoute');
+const donhangRoute = require('./routes/donhangRoute');
+const dssanphamRoute = require('./routes/dssanphamRoute');
+const loaisanphamRoute = require('./routes/loaisanphamRoute');
+const sanphamRoute = require('./routes/sanphamRoute');
+const shipperRoute = require('./routes/shipperRoute');
 
 app.get('/sync', (req, res) => {
-    let models = require('./models');
+    let models = require('./models') 
     models.sequelize.sync()
         .then((
             res.send('database sync completed')
         ));
 });
+
+app.use(bodyParser.json()) // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: true }))
+
+
+app.use('/nguoidung', nguoidungRoute);
+app.use('/buucuc', buucucRoute);
+app.use('/chuoigiaohang', chuoigiaohangRoute);
+app.use('/diachi', diachiRoute);
+app.use('/diachixacnhan', diachixacnhanRoute);
+app.use('/donhang', donhangRoute);
+app.use('/dssanpham', dssanphamRoute);
+app.use('/loaisanpham', loaisanphamRoute);
+app.use('/sanpham', sanphamRoute);
+app.use('/shipper', shipperRoute);
+
+
 
 // Add headers
 app.use(function(req, res, next) {
