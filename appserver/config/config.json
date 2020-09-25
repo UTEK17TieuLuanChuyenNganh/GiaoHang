@@ -1,0 +1,30 @@
+{
+    "development": {
+        "username": "postgres",
+        "password": 123,
+        "database": "shopeedb",
+        "host": "localhost",
+        "dialect": "postgres",
+        "dialectOptions": {
+            "ssl": false
+        }
+    },
+    "test": {
+        "username": "postgres",
+        "password": 123,
+        "database": "shopeedb",
+        "host": "localhost",
+        "dialect": "postgres",
+        "operatorsAliases": false
+    },
+    "production": {
+        "username": "postgres",
+        "password": 123,
+        "database": "shopeedb",
+        "host": "localhost",
+        "dialect": "postgres",
+        "dialectOptions": {
+            "ssl": false
+        }
+    }
+}
