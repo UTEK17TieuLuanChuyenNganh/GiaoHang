@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {StyleSheet, View, Text, StatusBar, ScrollView} from 'react-native';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import HomeSectionComponent from '../components/HomeSectionComponents';
+import Loaisanpham from '../components/Loaisanpham';
 
-const HomeScreen = () => {
-  return (
-    <View style={styles.screenContainer}>
+class HomeScreen extends Component {
+  render() {
+    return (
+      <View style={styles.screenContainer}>
       <StatusBar barStyle="light-content" />
       {/*  */}
       <View style={styles.headerContainer}>
@@ -26,8 +28,9 @@ const HomeScreen = () => {
         </ScrollView>
       </View>
     </View>
-  );
-};
+    );
+  }
+}
 
 const styles = StyleSheet.create({
   screenContainer: {

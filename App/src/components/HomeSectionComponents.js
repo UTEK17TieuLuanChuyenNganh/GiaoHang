@@ -5,7 +5,7 @@ import {
   View,
   Text,
   Dimensions,
-  ScrollView,
+  ScrollView, TouchableOpacity
 } from 'react-native';
 
 const {width} = Dimensions.get('window');
@@ -16,6 +16,9 @@ const item_image_2 = require('../assets/item_image_2.png');
 const item_image_3 = require('../assets/item_image_3.png');
 const item_image_4 = require('../assets/item_image_4.png');
 
+import Loaisanpham from './Loaisanpham'
+import Sanpham from './Sanpham'
+
 const ProductItem = ({image, name, price}) => (
   <View style={styles.itemContainer}>
     <Image source={image} style={styles.itemImage} />
@@ -25,7 +28,9 @@ const ProductItem = ({image, name, price}) => (
     <Text style={styles.itemPrice}>{price}</Text>
   </View>
 );
-
+const clickme = () => {
+  console.log("clicked")
+}
 const HomeSectionComponent = () => {
   return (
     <View style={styles.sectionContainer}>
@@ -34,67 +39,14 @@ const HomeSectionComponent = () => {
       {/*  */}
       <Image source={section_banner} style={styles.sectionImage} />
       {/*  */}
-      <ScrollView horizontal={true}>
-        <View style={styles.filterContainer}>
-          {[
-            'Tất cả',
-            'Điện thoại SmartPhone',
-            'Máy tính bảng',
-            'Điện thoại',
-          ].map((e, index) => (
-            <View
-              key={index.toString()}
-              style={
-                index === 0
-                  ? styles.filterActiveButtonContainer
-                  : styles.filterInactiveButtonContainer
-              }>
-              <Text
-                style={
-                  index === 0
-                    ? styles.filterActiveText
-                    : styles.filterInactiveText
-                }>
-                {e}
-              </Text>
-            </View>
-          ))}
-        </View>
-      </ScrollView>
-      {/*  */}
-      <ScrollView horizontal={true}>
-        <View style={styles.listItemContainer}>
-          {[
-            {image1: item_image_1, image2: item_image_2},
-            {image1: item_image_2, image2: item_image_3},
-            {image1: item_image_4, image2: item_image_1},
-            {image1: item_image_1, image2: item_image_2},
-          ].map((e, index) => (
-            <View key={index.toString()}>
-              <ProductItem
-                name="Điện thoại Vsmart Bee (Smart Bee)"
-                image={e.image1}
-                price="699.000đ"
-              />
-              <ProductItem
-                name="Điện thoại Vsmart Joy 2 Vsmart Joy 2"
-                image={e.image2}
-                price="699.000đ"
-              />
-            </View>
-          ))}
-        </View>
-      </ScrollView>
-      {/*  */}
-      <View style={styles.seeMoreContainer}>
+      <Loaisanpham/>
+      <Sanpham/>  
+      <TouchableOpacity onPress={()=>{clickme()}} style={styles.seeMoreContainer}>
         <Text style={styles.seeMoreText}>XEM THÊM 636 SẢN PHẨM</Text>
-      </View>
+      </TouchableOpacity>
     </View>
   );
 };
-
-export default HomeSectionComponent;
-
 const styles = StyleSheet.create({
   sectionContainer: {
     backgroundColor: '#fff',
@@ -173,3 +125,6 @@ const styles = StyleSheet.create({
     color: '#0e45b4',
   },
 });
+
+export default HomeSectionComponent;
+
