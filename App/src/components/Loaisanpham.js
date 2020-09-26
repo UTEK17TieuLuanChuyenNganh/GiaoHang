@@ -1,19 +1,24 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import Sanpham from './Sanpham'
 class Loaisanpham extends Component {
+    _isMounted = false;
     constructor(props) {
         super(props);
         this.state = {
-            count: 0,
+            isLoading: true,
+            check: 1,
             dataSource: [],
         }
     }
     componentDidMount() {
-        return fetch('http://192.168.1.9:3000/loaisanpham', { method: 'GET' })
+        this._isMounted = true;
+        return fetch('https://servertlcn.herokuapp.com/loaisanpham', { method: 'GET' })
             .then((response) => response.json())
             .then((responseJson) => {
                 this.setState(
                     {
+                        isLoading: false,
                         dataSource: responseJson.data
                     })
             })
@@ -21,37 +26,42 @@ class Loaisanpham extends Component {
                 console.log(error);
             });
     }
-    clickme() {
-        console.log("clicked");
+    componentWillUnmount(){
+        this._isMounted = false;
+    }
+    clickme(id) {
         this.setState({
-            count: this.state.count += 100
+            check: this.state.check = id
         });
     }
     render() {
         return (
-            <ScrollView horizontal={true}>
-                <View style={styles.filterContainer}>
-                    {this.state.dataSource.map((e, id) => (
-                        <View
-                            key={id.toString()}
-                            style={
-                                id === 0
-                                    ? styles.filterActiveButtonContainer
-                                    : styles.filterInactiveButtonContainer
-                            }>
-                            <TouchableOpacity>
-                                <Text style={
-                                    id === 0
-                                        ? styles.filterActiveText
-                                        : styles.filterInactiveText
+            <View>
+                <ScrollView horizontal={true}>
+                    <View style={styles.filterContainer}>
+                        {this.state.dataSource.map((e, id) => (
+                            <View
+                                key={id.toString()}
+                                style={
+                                    this.state.check == e.id
+                                        ? styles.filterActiveButtonContainer
+                                        : styles.filterInactiveButtonContainer
                                 }>
-                                    {e.TenLoai}
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    ))}
-                </View>
-            </ScrollView>
+                                <TouchableOpacity onPress={() => { this.clickme(e.id) }}>
+                                    <Text style={
+                                        this.state.check == e.id
+                                            ? styles.filterActiveText
+                                            : styles.filterInactiveText
+                                    }>
+                                        {e.TenLoai}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        ))}
+                    </View>
+                </ScrollView>
+                <Sanpham/>
+            </View>
         );
     }
 }
