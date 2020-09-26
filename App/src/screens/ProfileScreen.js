@@ -5,7 +5,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import Header from '../components/HeaderComponent';
+import HeaderComponent from '../components/HeaderComponent';
 
 const ProfileItem = ({icon, name}) => (
   <View style={styles.itemContainer}>
@@ -20,7 +20,7 @@ const ProfileScreen = () => {
     <View style={styles.screenContainer}>
       <StatusBar barStyle="light-content" />
       {/*  */}
-      <Header title="Cá nhân" />
+      <HeaderComponent title="Cá nhân" />
       {/*  */}
       <View style={styles.bodyContainer}>
         <View style={styles.userContainer}>

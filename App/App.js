@@ -20,12 +20,19 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-import HomeScreen from './src/screens/HomeScreen';
+
 import ProfileScreen from './src/screens/ProfileScreen';
 import NotificationScreen from './src/screens/NotificationScreen';
+import HomeScreen from './src/screens/HomeScreen';
+
 const Tab = createBottomTabNavigator();
 
+
 class App extends Component {
+  
+  createStack() {
+      
+  }
   render() {
     return (
       <NavigationContainer>
@@ -64,6 +71,16 @@ class App extends Component {
               ),
             }}
           />
+          {/* <Tab.Screen
+            name="Cart"
+            component={Cart}
+            options={{
+              tabBarLabel: 'Giỏ Hàng',
+              tabBarIcon: ({ color }) => (
+                <MaterialIcons name="shopping-cart" size={26} color={color} />
+              ),
+            }}
+          /> */}
         </Tab.Navigator>
       </NavigationContainer>
     );

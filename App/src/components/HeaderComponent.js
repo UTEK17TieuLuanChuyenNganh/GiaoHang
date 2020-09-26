@@ -1,44 +1,32 @@
-import React from 'react';
-import {StyleSheet, View, Text} from 'react-native';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import React, { Component } from 'react';
+import { StyleSheet, View, Text } from 'react-native';
 
-const Header = ({title}) => (
-  <View style={styles.headerContainer}>
-    {/*  */}
-    <View style={styles.cartContainer}>
-      <View style={styles.cartIcon} />
-    </View>
-    {/*  */}
-    <Text style={styles.headerText}>{title}</Text>
-    {/*  */}
-    <View style={styles.cartContainer}>
-      <FontAwesome name="shopping-cart" size={HEADER_ICON_SIZE} color="#fff" />
-    </View>
-  </View>
-);
+class HeaderComponent extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      title: props.title
+    }
+  }
+  render() {
+    return (
+      <View style={styles.headerContainer}>
+        <Text style={styles.headerText}>{this.state.title}</Text>
+      </View>
+    );
+  }
+}
 
-export default Header;
 
-const HEADER_ICON_SIZE = 24;
+export default HeaderComponent;
 
 const styles = StyleSheet.create({
-  screenContainer: {
-    flex: 1,
-  },
   headerContainer: {
-    flexDirection: 'row',
     paddingTop: 25,
     backgroundColor: '#1e88e5',
     justifyContent: 'space-between',
-    paddingBottom: 12,
-  },
-  cartContainer: {
-    paddingHorizontal: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cartIcon: {
-    width: HEADER_ICON_SIZE,
+    paddingBottom: 12,  
+    alignItems: "center"  
   },
   headerText: {
     color: '#fff',

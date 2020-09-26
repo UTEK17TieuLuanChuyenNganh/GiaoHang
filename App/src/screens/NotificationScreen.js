@@ -1,124 +1,126 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {StyleSheet, View, StatusBar, FlatList, Text} from 'react-native';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import Header from '../components/HeaderComponent';
+import HeaderComponent from '../components/HeaderComponent';
 
-const NotificationItem = ({item}) => (
-  <View style={styles.itemContainer}>
-    <View style={styles.itemTopContainer}>
-      <View
-        style={[
-          styles.itemTypeContainer,
-          {
-            backgroundColor: item.type === 1 ? '#fc820a' : '#dc3988',
-          },
-        ]}>
-        <MaterialCommunityIcons
-          name={item.type === 1 ? 'sale' : 'backup-restore'}
-          color="#fff"
-          size={22}
-        />
-      </View>
-      <View style={styles.itemTopTextContainer}>
-        <Text style={styles.itemName}>{item.name}</Text>
-        <Text style={styles.itemDate}>{item.date}</Text>
-      </View>
-    </View>
-    <View>
-      <Text style={styles.itemDetail}>{item.detail}</Text>
-    </View>
-  </View>
-);
 
-const NotificationScreen = () => {
-  return (
-    <View style={styles.screenContainer}>
-      <StatusBar barStyle="light-content" />
-      <Header title="Thông báo" />
-      <View style={styles.bodyContainer}>
-        <View>
-          <View style={styles.buttonActiveContainer}>
-            <View style={styles.activeMark} />
-            <MaterialCommunityIcons
-              name="home"
-              color="#949494"
-              size={22}
-              style={styles.activeIcon}
-            />
-          </View>
-          <View style={styles.buttonInactiveContainer}>
-            <MaterialCommunityIcons
-              name="backup-restore"
-              color="#949494"
-              size={22}
-            />
-          </View>
-          <View style={styles.buttonInactiveContainer}>
-            <MaterialCommunityIcons name="sale" color="#949494" size={22} />
-          </View>
-        </View>
-        <View style={styles.listContainer}>
-          <FlatList
-            data={[
-              {
-                id: 1,
-                type: 1,
-                name: 'Anker Giảm Khủng 40% Duy Nhất Hôm Nay 13/11',
-                date: '13/11/2018',
-                detail:
-                  'Anker Giảm Khủng 40% Duy Nhất Hôm Nay 13/11 - Số Lượng Có Hạn',
-              },
-              {
-                id: 2,
-                type: 2,
-                name: 'GỢI Ý QUÀ TẶNG 20.10',
-                date: '02/11/2018',
-                detail:
-                  'NHẬP MÃ UUDAIT11 GIẢM 50K CHO ĐƠN HÀNG 700K. Áp dụng cho sản phẩm ngành Điện Gia Dụng. XEM NGAY!',
-              },
-              {
-                id: 3,
-                type: 1,
-                name: 'Anker Giảm Khủng 40% Duy Nhất Hôm Nay 13/11',
-                date: '13/11/2018',
-                detail:
-                  'Anker Giảm Khủng 40% Duy Nhất Hôm Nay 13/11 - Số Lượng Có Hạn',
-              },
-              {
-                id: 4,
-                type: 2,
-                name: 'GỢI Ý QUÀ TẶNG 20.10',
-                date: '02/11/2018',
-                detail:
-                  'NHẬP MÃ UUDAIT11 GIẢM 50K CHO ĐƠN HÀNG 700K. Áp dụng cho sản phẩm ngành Điện Gia Dụng. XEM NGAY!',
-              },
-              {
-                id: 5,
-                type: 1,
-                name: 'Anker Giảm Khủng 40% Duy Nhất Hôm Nay 13/11',
-                date: '13/11/2018',
-                detail:
-                  'Anker Giảm Khủng 40% Duy Nhất Hôm Nay 13/11 - Số Lượng Có Hạn',
-              },
-              {
-                id: 6,
-                type: 2,
-                name: 'GỢI Ý QUÀ TẶNG 20.10',
-                date: '02/11/2018',
-                detail:
-                  'NHẬP MÃ UUDAIT11 GIẢM 50K CHO ĐƠN HÀNG 700K. Áp dụng cho sản phẩm ngành Điện Gia Dụng. XEM NGAY!',
-              },
-            ]}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({item}) => <NotificationItem item={item} />}
+class NotificationScreen extends Component {
+  NotificationItem = (item) => (
+    <View style={styles.itemContainer}>
+      <View style={styles.itemTopContainer}>
+        <View
+          style={[
+            styles.itemTypeContainer,
+            {
+              backgroundColor: item.type === 1 ? '#fc820a' : '#dc3988',
+            },
+          ]}>
+          <MaterialCommunityIcons
+            name={item.type === 1 ? 'sale' : 'backup-restore'}
+            color="#fff"
+            size={22}
           />
         </View>
+        <View style={styles.itemTopTextContainer}>
+          <Text style={styles.itemName}>{item.name}</Text>
+          <Text style={styles.itemDate}>{item.date}</Text>
+        </View>
+      </View>
+      <View>
+        <Text style={styles.itemDetail}>{item.detail}</Text>
       </View>
     </View>
   );
-};
+  render() {
+    return (
+      <View style={styles.screenContainer}>
+        <StatusBar barStyle="light-content" />
+        <HeaderComponent title="Thông báo" />
+        <View style={styles.bodyContainer}>
+          <View>
+            <View style={styles.buttonActiveContainer}>
+              <View style={styles.activeMark} />
+              <MaterialCommunityIcons
+                name="home"
+                color="#949494"
+                size={22}
+                style={styles.activeIcon}
+              />
+            </View>
+            <View style={styles.buttonInactiveContainer}>
+              <MaterialCommunityIcons
+                name="backup-restore"
+                color="#949494"
+                size={22}
+              />
+            </View>
+            <View style={styles.buttonInactiveContainer}>
+              <MaterialCommunityIcons name="sale" color="#949494" size={22} />
+            </View>
+          </View>
+          <View style={styles.listContainer}>
+            <FlatList
+              data={[
+                {
+                  id: 1,
+                  type: 1,
+                  name: 'Anker Giảm Khủng 40% Duy Nhất Hôm Nay 13/11',
+                  date: '13/11/2018',
+                  detail:
+                    'Anker Giảm Khủng 40% Duy Nhất Hôm Nay 13/11 - Số Lượng Có Hạn',
+                },
+                {
+                  id: 2,
+                  type: 2,
+                  name: 'GỢI Ý QUÀ TẶNG 20.10',
+                  date: '02/11/2018',
+                  detail:
+                    'NHẬP MÃ UUDAIT11 GIẢM 50K CHO ĐƠN HÀNG 700K. Áp dụng cho sản phẩm ngành Điện Gia Dụng. XEM NGAY!',
+                },
+                {
+                  id: 3,
+                  type: 1,
+                  name: 'Anker Giảm Khủng 40% Duy Nhất Hôm Nay 13/11',
+                  date: '13/11/2018',
+                  detail:
+                    'Anker Giảm Khủng 40% Duy Nhất Hôm Nay 13/11 - Số Lượng Có Hạn',
+                },
+                {
+                  id: 4,
+                  type: 2,
+                  name: 'GỢI Ý QUÀ TẶNG 20.10',
+                  date: '02/11/2018',
+                  detail:
+                    'NHẬP MÃ UUDAIT11 GIẢM 50K CHO ĐƠN HÀNG 700K. Áp dụng cho sản phẩm ngành Điện Gia Dụng. XEM NGAY!',
+                },
+                {
+                  id: 5,
+                  type: 1,
+                  name: 'Anker Giảm Khủng 40% Duy Nhất Hôm Nay 13/11',
+                  date: '13/11/2018',
+                  detail:
+                    'Anker Giảm Khủng 40% Duy Nhất Hôm Nay 13/11 - Số Lượng Có Hạn',
+                },
+                {
+                  id: 6,
+                  type: 2,
+                  name: 'GỢI Ý QUÀ TẶNG 20.10',
+                  date: '02/11/2018',
+                  detail:
+                    'NHẬP MÃ UUDAIT11 GIẢM 50K CHO ĐƠN HÀNG 700K. Áp dụng cho sản phẩm ngành Điện Gia Dụng. XEM NGAY!',
+                },
+              ]}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({item}) =>this.NotificationItem(item)}
+            />
+          </View>
+        </View>
+      </View>
+    );
+  }
+}
 
 const styles = StyleSheet.create({
   screenContainer: {

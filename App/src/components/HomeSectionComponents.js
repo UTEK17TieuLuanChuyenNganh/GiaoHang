@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {
   StyleSheet,
   Image,
@@ -7,46 +7,32 @@ import {
   Dimensions,
   ScrollView, TouchableOpacity
 } from 'react-native';
-
-const {width} = Dimensions.get('window');
-
+const { width } = Dimensions.get('window');
 const section_banner = require('../assets/section_banner.png');
-const item_image_1 = require('../assets/item_image_1.png');
-const item_image_2 = require('../assets/item_image_2.png');
-const item_image_3 = require('../assets/item_image_3.png');
-const item_image_4 = require('../assets/item_image_4.png');
-
 import Loaisanpham from './Loaisanpham'
-import Sanpham from './Sanpham'
 
-const ProductItem = ({image, name, price}) => (
-  <View style={styles.itemContainer}>
-    <Image source={image} style={styles.itemImage} />
-    <Text style={styles.itemName} numberOfLines={2}>
-      {name}
-    </Text>
-    <Text style={styles.itemPrice}>{price}</Text>
-  </View>
-);
-const clickme = () => {
-  console.log("clicked")
+class HomeSectionComponents extends Component {
+
+  clickme = () => {
+    console.log("clicked")
+  }
+  render() {
+    return (
+      <View style={styles.sectionContainer}>
+        {/*  */}
+        <Text style={styles.sectionTitle}>Điện thoại - Máy tính bảng</Text>
+        {/*  */}
+        <Image source={section_banner} style={styles.sectionImage} />
+        {/*  */}
+        <Loaisanpham />
+        <TouchableOpacity onPress={() => { clickme() }} style={styles.seeMoreContainer}>
+          <Text style={styles.seeMoreText}>XEM THÊM</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 }
-const HomeSectionComponent = () => {
-  return (
-    <View style={styles.sectionContainer}>
-      {/*  */}
-      <Text style={styles.sectionTitle}>Điện thoại - Máy tính bảng</Text>
-      {/*  */}
-      <Image source={section_banner} style={styles.sectionImage} />
-      {/*  */}
-      <Loaisanpham/>
-      <Sanpham/>  
-      <TouchableOpacity onPress={()=>{clickme()}} style={styles.seeMoreContainer}>
-        <Text style={styles.seeMoreText}>XEM THÊM 636 SẢN PHẨM</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
+
 const styles = StyleSheet.create({
   sectionContainer: {
     backgroundColor: '#fff',
@@ -126,5 +112,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeSectionComponent;
+export default HomeSectionComponents;
 

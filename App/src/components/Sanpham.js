@@ -4,23 +4,27 @@ import {
     Image,
     View,
     Text,
-    Dimensions,
-    ScrollView,
+    TouchableOpacity
 } from 'react-native';
 
 class Sanpham extends Component {
+    _isMounted = false;
     constructor(props) {
         super(props)
         this.state = {
+            isLoading: true,
+            loaisanpham: 1,
             dataSource: []
         }
     }
-    componentDidMount(){
-        return fetch('http://192.168.1.9:3000/sanpham', { method: 'GET' })
+    componentDidMount() {
+        this._isMounted = true;
+        return fetch('https://servertlcn.herokuapp.com/sanpham', { method: 'GET' })
             .then((response) => response.json())
             .then((responseJson) => {
                 this.setState(
                     {
+                        isLoading: false,
                         dataSource: responseJson.data
                     })
             })
@@ -28,32 +32,46 @@ class Sanpham extends Component {
                 console.log(error);
             });
     }
+    componentWillUnmount(){
+        this._isMounted = false;
+    }
+    clickMe(id,tensanpham) {
+        console.log(id,tensanpham)
+    }
     render() {
         return (
-            <ScrollView horizontal={true}>
-                <View style={styles.listItemContainer}>
-                    {this.state.dataSource.map((e,id) => (
-                        <View key={id.toString()}>
+            <View style={styles.listItemContainer}>
+                {this.state.dataSource.map((e, id) => (
+                    <View key={id.toString()}>
+                        <TouchableOpacity onPress={()=>{this.clickMe(e.id,e.TenSanPham)}}>
                             <View style={styles.itemContainer}>
                                 <Image source={{ uri: `data:image/jpg;base64,${e.Hinh}` }} style={styles.itemImage} />
                                 <Text style={styles.itemName} numberOfLines={2}>
                                     {e.TenSanPham}
                                 </Text>
-                                <Text style={styles.itemPrice}>{e.Gia}</Text>
+                                <Text style={styles.itemPrice}>{e.Gia} VND</Text>
                             </View>
-                        </View>
-                    ))}
-                </View>
-            </ScrollView>
+                        </TouchableOpacity>
+                    </View>
+                ))}
+            </View>
         );
     }
 }
 
 const styles = StyleSheet.create({
+    listItemContainer: {
+        flex: 1,
+        flexWrap: 'wrap',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
     itemContainer: {
         width: 100,
-        marginRight: 12,
+        marginRight: 20,
         marginTop: 10,
+        alignItems: 'center'
     },
     itemImage: {
         width: 100,
@@ -80,6 +98,7 @@ const styles = StyleSheet.create({
     seeMoreText: {
         color: '#0e45b4',
     },
+
 });
 
 export default Sanpham;
