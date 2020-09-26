@@ -36,7 +36,7 @@ class MapScreens extends Component {
 }
 const styles = StyleSheet.create({
     ThongTin: {
-        flex: 1 / 2.5,
+        flex: 1 / 2.2,
         justifyContent: 'flex-end',
         marginBottom: 10,
         alignItems: 'center'
@@ -45,9 +45,10 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-end',
         alignItems: 'center',
+    
     },
     logo: {
-        flex: 1 / 6,
+        height:60,
         justifyContent: 'flex-end',
         alignItems: 'center',
         backgroundColor: 'red'
@@ -58,6 +59,7 @@ const styles = StyleSheet.create({
         width: 400,
         justifyContent: 'flex-end',
         alignItems: 'center',
+        
     },
     map: {
         ...StyleSheet.absoluteFillObject,
