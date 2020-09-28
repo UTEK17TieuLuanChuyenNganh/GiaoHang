@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import { NavigationContainer } from '@react-navigation/native';
 
-
-import MapScreens from './MapScreens';
-import LogOut from './LogOut';
+//import MapScreens from './MapScreens';
+import MyTab from './MyTab';
+import Setting from './Setting';
 import Profile from './Profile';
 import Avatar from './Avatar';
 
@@ -11,29 +12,31 @@ const Drawer = createDrawerNavigator();
 class MyDrawer extends Component {
     render() {
         return (
-            <Drawer.Navigator initialRouteName="MapScreens" >
-                 <Drawer.Screen
-                    name="Avatar"
-                    component={Avatar}
-                    options={{ drawerLabel: 'Ảnh' }}
-                />
-                <Drawer.Screen
-                    name="MapScreens"
-                    component={MapScreens}
-                    options={{ drawerLabel: 'Bản Đồ' }}
-                />
-                <Drawer.Screen
-                    name="Profile"
-                    component={Profile}
-                    options={{ drawerLabel: 'Hồ Sơ' }}
-                />
-                <Drawer.Screen
-                    name="LogOut"
-                    component={LogOut}
-                    options={{ drawerLabel: 'Đăng Xuất' }}
-                />
-                
-            </Drawer.Navigator>
+            
+                <Drawer.Navigator initialRouteName="MyTab" >
+                    <Drawer.Screen
+                        name="Avatar"
+                        component={Avatar}
+                        options={{ drawerLabel: 'Ảnh' }}
+                    />
+                    <Drawer.Screen
+                        name="MyTab"
+                        component={MyTab}
+                        options={{ drawerLabel: 'Giao Hàng' }}
+                    />
+                    <Drawer.Screen
+                        name="Profile"
+                        component={Profile}
+                        options={{ drawerLabel: 'Hồ Sơ' }}
+                    />
+                    <Drawer.Screen
+                        name="Setting"
+                        component={Setting}
+                        options={{ drawerLabel: 'Cài Đặt' }}
+                    />
+
+                </Drawer.Navigator>
+            
         );
     }
 }
