@@ -9,6 +9,7 @@ class Loaisanpham extends Component {
             isLoading: true,
             check: 1,
             dataSource: [],
+            navigation: props.navigation,
         }
     }
     componentDidMount() {
@@ -60,7 +61,7 @@ class Loaisanpham extends Component {
                         ))}
                     </View>
                 </ScrollView>
-                <Sanpham/>
+                <Sanpham navigation={this.props.navigation}/>
             </View>
         );
     }

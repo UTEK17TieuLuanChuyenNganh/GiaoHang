@@ -24,7 +24,6 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ProfileScreen from './src/screens/ProfileScreen';
 import NotificationScreen from './src/screens/NotificationScreen';
 import HomeScreen from './src/screens/HomeScreen';
-
 const Tab = createBottomTabNavigator();
 
 

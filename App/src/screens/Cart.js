@@ -17,11 +17,6 @@ class Cart extends Component {
             product, mainRight, productController,
             txtName, txtPrice, productImage, numberOfProduct,
             txtShowDetail, showDetailContainer } = styles;
-        // const arrCart = Global.productsInCart;
-        // const arr = arrCart.map(e => e.product.price * e.quantity); // price * quantity
-        // const total = arr.length !== 0 ? arr.reduce((previouValue, currentValue) => previouValue + currentValue) : 0;
-
-
         return (
             <View style={wrapper}>
                 <HeaderComponent title='Giỏ Hàng'/>
@@ -62,7 +57,7 @@ class Cart extends Component {
                         {/* )) */}
                     {/* } */}
                 </ScrollView>
-                <TouchableOpacity style={checkoutButton} onPress={() => this.onCheckout(arrCart)}>
+                <TouchableOpacity style={checkoutButton} onPress={() =>{}}>
                     <Text style={checkoutTitle}>TOTAL 0$ CHECKOUT NOW</Text>
                 </TouchableOpacity>
             </View>

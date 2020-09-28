@@ -13,6 +13,12 @@ import Loaisanpham from './Loaisanpham'
 
 class HomeSectionComponents extends Component {
 
+  constructor(props){
+    super(props);
+    this.state={
+      navigation: props.navigation,
+    }
+  }
   clickme = () => {
     console.log("clicked")
   }
@@ -24,7 +30,7 @@ class HomeSectionComponents extends Component {
         {/*  */}
         <Image source={section_banner} style={styles.sectionImage} />
         {/*  */}
-        <Loaisanpham />
+        <Loaisanpham navigation={this.props.navigation}/>
         <TouchableOpacity onPress={() => { clickme() }} style={styles.seeMoreContainer}>
           <Text style={styles.seeMoreText}>XEM THÊM</Text>
         </TouchableOpacity>

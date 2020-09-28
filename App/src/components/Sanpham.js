@@ -14,7 +14,8 @@ class Sanpham extends Component {
         this.state = {
             isLoading: true,
             loaisanpham: 1,
-            dataSource: []
+            dataSource: [],
+            navigation: props.navigation,
         }
     }
     componentDidMount() {
@@ -36,7 +37,7 @@ class Sanpham extends Component {
         this._isMounted = false;
     }
     clickMe(id,tensanpham) {
-        console.log(id,tensanpham)
+        this.props.navigation.navigate('ProductDetail',{id:id,tensanpham:tensanpham});
     }
     render() {
         return (
