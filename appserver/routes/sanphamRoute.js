@@ -8,6 +8,7 @@ const { disableSanPham } = require('../controllers/sanpham.controller')
 const { enableSanPham } = require('../controllers/sanpham.controller')
 const { getAllSanPham } = require('../controllers/sanpham.controller')
 const { getSanPhamById } = require('../controllers/sanpham.controller')
+const { getSanPhamByType } = require('../controllers/sanpham.controller')
 
 //Models
 const models = require('../models/index')
@@ -31,6 +32,6 @@ router.get('/', getAllSanPham)
 //Get by Id?
 router.get('/:id', getSanPhamById)
 
-
+router.get('/:typeId/type', getSanPhamByType)
 
 module.exports = router;

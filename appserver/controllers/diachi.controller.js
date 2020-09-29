@@ -1,16 +1,27 @@
 const models = require('../models/index')
 const DiaChi = models.DiaChi
 
-const createDiaChi = async(req, res) => {
+const createDiaChi = async (req, res) => {
     let {
         TenDiaChi,
+        KinhDo,
+        ViDo,
+        ThoiGianUocLuong,
     } = req.body;
     try {
         let newDiaChi = await DiaChi.create({
             TenDiaChi,
-            laMacDinh:false
+            KinhDo,
+            ViDo,
+            ThoiGianUocLuong,
+            laMacDinh: false
         }, {
-            fields: ["TenDiaChi", "laMacDinh"]
+            fields: [
+                "TenDiaChi",
+                "laMacDinh",
+                "KinhDo",
+                "ViDo",
+                "ThoiGianUocLuong",]
         });
         if (newDiaChi) {
             res.json({
@@ -33,10 +44,13 @@ const createDiaChi = async(req, res) => {
     }
 }
 
-const updateDiaChi = async(req, res) => {
+const updateDiaChi = async (req, res) => {
     const { id } = req.params;
     const {
         TenDiaChi,
+        KinhDo,
+        ViDo,
+        ThoiGianUocLuong,
         laMacDinh
     } = req.body;
     try {
@@ -44,6 +58,9 @@ const updateDiaChi = async(req, res) => {
             attributes: [
                 'id',
                 'TenDiaChi',
+                'KinhDo',
+                'ViDo',
+                'ThoiGianUocLuong',
                 'laMacDinh'
             ],
             where: {
@@ -51,9 +68,12 @@ const updateDiaChi = async(req, res) => {
             }
         });
         if (DiaChis.length > 0) {
-            DiaChis.forEach(async(DiaChi) => {
+            DiaChis.forEach(async (DiaChi) => {
                 await DiaChi.update({
                     TenDiaChi: TenDiaChi ? TenDiaChi : DiaChi.TenDiaChi,
+                    KinhDo: KinhDo ? KinhDo : DiaChi.KinhDo,
+                    ViDo: ViDo ? ViDo : DiaChi.ViDo,
+                    ThoiGianUocLuong: ThoiGianUocLuong ? ThoiGianUocLuong : DiaChi.ThoiGianUocLuong,        
                     laMacDinh: laMacDinh ? laMacDinh : DiaChi.laMacDinh,
                 });
             });
@@ -79,12 +99,15 @@ const updateDiaChi = async(req, res) => {
 
 }
 
-const getAllDiaChi = async(req, res) => {
+const getAllDiaChi = async (req, res) => {
     try {
         const DiaChis = await DiaChi.findAll({
             attributes: [
                 'id',
                 'TenDiaChi',
+                'KinhDo',
+                'ViDo',
+                'ThoiGianUocLuong',
                 'laMacDinh'
             ],
         });
@@ -104,13 +127,16 @@ const getAllDiaChi = async(req, res) => {
     }
 }
 
-const getDiaChiById = async(req, res) => {
+const getDiaChiById = async (req, res) => {
     const { id } = req.params;
     try {
         const DiaChis = await DiaChi.findAll({
             attributes: [
                 'id',
                 'TenDiaChi',
+                'KinhDo',
+                'ViDo',
+                'ThoiGianUocLuong',
                 'laMacDinh'
             ],
             where: {
