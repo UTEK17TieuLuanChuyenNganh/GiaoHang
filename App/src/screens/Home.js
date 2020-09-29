@@ -29,7 +29,7 @@ class HomeScreen extends Component {
           {/*  */}
           <View style={styles.bodyContainer}>
             <ScrollView>
-              <HomeSectionComponents />
+              <HomeSectionComponents navigation={this.props.navigation}/>
             </ScrollView>
           </View>
         </View>

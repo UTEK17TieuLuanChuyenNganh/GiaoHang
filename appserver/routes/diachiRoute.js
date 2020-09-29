@@ -2,10 +2,10 @@ const express = require('express')
 const router = express.Router()
 
 //Controllers
-const { createDiaChi } = require('../controllers/DiaChi.controller')
-const { updateDiaChi } = require('../controllers/DiaChi.controller')
-const { getAllDiaChi } = require('../controllers/DiaChi.controller')
-const { getDiaChiById } = require('../controllers/DiaChi.controller')
+const { createDiaChi } = require('../controllers/diachi.controller')
+const { updateDiaChi } = require('../controllers/diachi.controller')
+const { getAllDiaChi } = require('../controllers/diachi.controller')
+const { getDiaChiById } = require('../controllers/diachi.controller')
 
 //Models
 const models = require('../models/index')

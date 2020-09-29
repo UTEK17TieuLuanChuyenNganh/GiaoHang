@@ -1,17 +1,25 @@
 const models = require('../models/index')
 const ChuoiGiaoHang = models.ChuoiGiaoHang
 
-const createChuoiGiaoHang = async(req, res) => {
+const createChuoiGiaoHang = async (req, res) => {
     let {
         Chuoi,
         SoLuong,
+        ShipperId,
+        BuuCucId,
     } = req.body;
     try {
         let newChuoiGiaoHang = await ChuoiGiaoHang.create({
             Chuoi,
             SoLuong,
+            ShipperId,
+            BuuCucId,
         }, {
-            fields: ["Chuoi", "SoLuong"]
+            fields: [
+                "Chuoi",
+                "SoLuong",
+                "ShipperId",
+                "BuuCucId",]
         });
         if (newChuoiGiaoHang) {
             res.json({
@@ -34,7 +42,7 @@ const createChuoiGiaoHang = async(req, res) => {
     }
 }
 
-const updateChuoiGiaoHang = async(req, res) => {
+const updateChuoiGiaoHang = async (req, res) => {
     const { id } = req.params;
     const {
         Chuoi,
@@ -49,14 +57,14 @@ const updateChuoiGiaoHang = async(req, res) => {
                 'Chuoi',
                 'SoLuong',
                 'BuuCucId',
-                'ShipperId',,
+                'ShipperId', ,
             ],
             where: {
                 id,
             }
         });
         if (ChuoiGiaoHangs.length > 0) {
-            ChuoiGiaoHangs.forEach(async(ChuoiGiaoHang) => {
+            ChuoiGiaoHangs.forEach(async (ChuoiGiaoHang) => {
                 await ChuoiGiaoHang.update({
                     Chuoi: Chuoi ? Chuoi : ChuoiGiaoHang.Chuoi,
                     SoLuong: SoLuong ? SoLuong : ChuoiGiaoHang.SoLuong,
@@ -184,7 +192,7 @@ const updateChuoiGiaoHang = async(req, res) => {
 
 // }
 
-const getAllChuoiGiaoHang = async(req, res) => {
+const getAllChuoiGiaoHang = async (req, res) => {
     try {
         const ChuoiGiaoHangs = await ChuoiGiaoHang.findAll({
             attributes: [
@@ -214,7 +222,7 @@ const getAllChuoiGiaoHang = async(req, res) => {
     }
 }
 
-const getChuoiGiaoHangById = async(req, res) => {
+const getChuoiGiaoHangById = async (req, res) => {
     const { id } = req.params;
     try {
         const ChuoiGiaoHangs = await ChuoiGiaoHang.findAll({

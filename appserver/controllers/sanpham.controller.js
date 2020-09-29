@@ -313,6 +313,51 @@ const getSanPhamById = async(req, res) => {
         });
     }
 }
+const getSanPhamByType = async(req, res) => {
+    const { typeId } = req.params;
+    try {
+        const SanPhams = await SanPham.findAll({
+            attributes: [
+                'id',
+                'TenSanPham',
+                'MoTa',
+                'Gia',
+                'Hinh',
+                'SoLuong',
+                'KichCo',
+                'KhoiLuong',
+                'DanhGia',
+                'NgayCapNhat',
+                'KhuyenMai',
+                'LoaiSanPhamId'
+            ],
+            where: {
+                LoaiSanPhamId: typeId,
+                isDisable: false
+            },
+        });
+        if (SanPhams.length > 0) {
+            res.json({
+                result: 'ok',
+                data: SanPhams,
+                message: "List SanPham successfully"
+            });
+        } else {
+            res.json({
+                result: 'failed',
+                data: {},
+                message: `Cannot find list SanPham to show. Error:${error}`
+            });
+        }
+    } catch (error) {
+        res.json({
+            result: 'failed',
+            data: [],
+            length: 0,
+            message: `Cannot list SanPham. Error:${error}`
+        });
+    }
+}
 
 module.exports = {
     createSanPham,
@@ -321,4 +366,5 @@ module.exports = {
     enableSanPham,
     getAllSanPham,
     getSanPhamById,
+    getSanPhamByType,
 }

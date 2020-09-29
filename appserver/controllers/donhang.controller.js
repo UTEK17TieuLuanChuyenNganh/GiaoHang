@@ -1,7 +1,7 @@
 const models = require('../models/index')
 const DonHang = models.DonHang
 
-const createDonHang = async(req, res) => {
+const createDonHang = async (req, res) => {
     let {
         NgayDatHang,
         TienVanChuyen,
@@ -10,6 +10,9 @@ const createDonHang = async(req, res) => {
         DanhGia,
         TinhTrangDon,
         NguoiDungId,
+        BuuCucId,
+        ChuoiDonHangId,
+        DiaChiId
     } = req.body;
     try {
         let newDonHang = await DonHang.create({
@@ -20,9 +23,14 @@ const createDonHang = async(req, res) => {
             DanhGia,
             TinhTrangDon,
             NguoiDungId,
-            daThanhToan:false
+            BuuCucId,
+            ChuoiDonHangId,
+            DiaChiId,
+            daThanhToan: false
         }, {
-            fields: ["NgayDatHang", "TienVanChuyen", "TongTien", "GhiChu", "DanhGia", "TinhTrangDon", "NguoiDungId"]
+            fields: ["NgayDatHang", "TienVanChuyen", "TongTien", "GhiChu",
+                "DanhGia", "TinhTrangDon", "NguoiDungId",
+                "BuuCucId", "ChuoiDonHangId", "DiaChiId"]
         });
         if (newDonHang) {
             res.json({
@@ -45,7 +53,7 @@ const createDonHang = async(req, res) => {
     }
 }
 
-const updateDonHang = async(req, res) => {
+const updateDonHang = async (req, res) => {
     const { id } = req.params;
     const {
         NgayDatHang,
@@ -55,6 +63,9 @@ const updateDonHang = async(req, res) => {
         DanhGia,
         TinhTrangDon,
         NguoiDungId,
+        BuuCucId,
+        ChuoiDonHangId,
+        DiaChiId,
         daThanhToan,
     } = req.body;
     try {
@@ -68,6 +79,9 @@ const updateDonHang = async(req, res) => {
                 'DanhGia',
                 'TinhTrangDon',
                 'NguoiDungId',
+                'BuuCucId',
+                'ChuoiDonHangId',
+                'DiaChiId',
                 'daThanhToan',
             ],
             where: {
@@ -75,7 +89,7 @@ const updateDonHang = async(req, res) => {
             }
         });
         if (DonHangs.length > 0) {
-            DonHangs.forEach(async(DonHang) => {
+            DonHangs.forEach(async (DonHang) => {
                 await DonHang.update({
                     NgayDatHang: NgayDatHang ? NgayDatHang : DonHang.NgayDatHang,
                     TienVanChuyen: TienVanChuyen ? TienVanChuyen : DonHang.TienVanChuyen,
@@ -84,6 +98,9 @@ const updateDonHang = async(req, res) => {
                     DanhGia: DanhGia ? DanhGia : DonHang.DanhGia,
                     TinhTrangDon: TinhTrangDon ? TinhTrangDon : DonHang.TinhTrangDon,
                     NguoiDungId: NguoiDungId ? NguoiDungId : DonHang.NguoiDungId,
+                    BuuCucId: BuuCucId ? BuuCucId : DonHang.BuuCucId,
+                    ChuoiDonHangId: ChuoiDonHangId ? ChuoiDonHangId : DonHang.ChuoiDonHangId,
+                    DiaChiId: DiaChiId ? DiaChiId : DonHang.DiaChiId,
                     daThanhToan: daThanhToan ? daThanhToan : DonHang.daThanhToan,
                 });
             });
@@ -207,7 +224,7 @@ const updateDonHang = async(req, res) => {
 
 // }
 
-const getAllDonHang = async(req, res) => {
+const getAllDonHang = async (req, res) => {
     try {
         const DonHangs = await DonHang.findAll({
             attributes: [
@@ -217,6 +234,9 @@ const getAllDonHang = async(req, res) => {
                 'TongTien',
                 'TinhTrangDon',
                 'NguoiDungId',
+                'BuuCucId',
+                'ChuoiDonHangId',
+                'DiaChiId',
                 'GhiChu',
                 'DanhGia',
                 'daThanhToan',
@@ -238,7 +258,7 @@ const getAllDonHang = async(req, res) => {
     }
 }
 
-const getDonHangById = async(req, res) => {
+const getDonHangById = async (req, res) => {
     const { id } = req.params;
     try {
         const DonHangs = await DonHang.findAll({
@@ -249,6 +269,9 @@ const getDonHangById = async(req, res) => {
                 'TongTien',
                 'TinhTrangDon',
                 'NguoiDungId',
+                'BuuCucId',
+                'ChuoiDonHangId',
+                'DiaChiId',
                 'GhiChu',
                 'DanhGia',
                 'daThanhToan',

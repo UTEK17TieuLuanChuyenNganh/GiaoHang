@@ -11,7 +11,6 @@ const nguoidungRoute = require('./routes/nguoidungRoute');
 const buucucRoute = require('./routes/buucucRoute');
 const chuoigiaohangRoute = require('./routes/chuoigiaohangRoute');
 const diachiRoute = require('./routes/diachiRoute');
-const diachixacnhanRoute = require('./routes/diachixacnhanRoute');
 const donhangRoute = require('./routes/donhangRoute');
 const dssanphamRoute = require('./routes/dssanphamRoute');
 const loaisanphamRoute = require('./routes/loaisanphamRoute');
@@ -26,15 +25,14 @@ app.get('/sync', (req, res) => {
         ));
 });
 
-app.use(bodyParser.json()) // for parsing application/json
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json({limit: '50mb'})) // for parsing application/json
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true }))
 
 
 app.use('/nguoidung', nguoidungRoute);
 app.use('/buucuc', buucucRoute);
 app.use('/chuoigiaohang', chuoigiaohangRoute);
 app.use('/diachi', diachiRoute);
-app.use('/diachixacnhan', diachixacnhanRoute);
 app.use('/donhang', donhangRoute);
 app.use('/dssanpham', dssanphamRoute);
 app.use('/loaisanpham', loaisanphamRoute);
