@@ -4,7 +4,7 @@ import {
     Image,
     View,
     Text,
-    TouchableOpacity
+    TouchableOpacity,
 } from 'react-native';
 
 class Sanpham extends Component {
@@ -13,38 +13,41 @@ class Sanpham extends Component {
         super(props)
         this.state = {
             isLoading: true,
-            loaisanpham: 1,
+            loaisanpham: props.loaisanpham,
             dataSource: [],
             navigation: props.navigation,
         }
     }
     componentDidMount() {
         this._isMounted = true;
-        return fetch('https://servertlcn.herokuapp.com/sanpham', { method: 'GET' })
+        return fetch('https://servertlcn.herokuapp.com/sanpham/' + this.props.loaisanpham + '/type', { method: 'GET' })
             .then((response) => response.json())
             .then((responseJson) => {
-                this.setState(
-                    {
-                        isLoading: false,
-                        dataSource: responseJson.data
-                    })
+                if (this._isMounted) {
+                    this.setState(
+                        {
+                            isLoading: false,
+                            dataSource: responseJson.data
+                        })
+                }
             })
             .catch((error) => {
                 console.log(error);
             });
     }
-    componentWillUnmount(){
+    componentWillUnmount() {
         this._isMounted = false;
     }
-    clickMe(id,tensanpham) {
-        this.props.navigation.navigate('ProductDetail',{id:id,tensanpham:tensanpham});
+    clickMe(id) {
+        this.props.navigation.navigate('ProductDetail', { id });
     }
     render() {
+        this.componentDidMount();
         return (
             <View style={styles.listItemContainer}>
                 {this.state.dataSource.map((e, id) => (
                     <View key={id.toString()}>
-                        <TouchableOpacity onPress={()=>{this.clickMe(e.id,e.TenSanPham)}}>
+                        <TouchableOpacity onPress={() => { this.clickMe(e.id) }}>
                             <View style={styles.itemContainer}>
                                 <Image source={{ uri: `data:image/jpg;base64,${e.Hinh}` }} style={styles.itemImage} />
                                 <Text style={styles.itemName} numberOfLines={2}>
@@ -65,7 +68,7 @@ const styles = StyleSheet.create({
         flex: 1,
         flexWrap: 'wrap',
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        // justifyContent: 'space-between',
         alignItems: 'center'
     },
     itemContainer: {

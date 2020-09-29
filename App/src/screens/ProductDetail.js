@@ -2,54 +2,82 @@ import React, { Component } from 'react';
 import {
     View, Text, StyleSheet, Image, Dimensions, ScrollView, TouchableOpacity
 } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import HeaderComponent from '../components/HeaderComponent';
 class ProductDetail extends Component {
-
-    // addThisProductToCart(product) {
-    //     Global.addProductToCart(product);
-    // }
-
+    _isMounted = false;
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoading: true,
+            dataSource: [],
+            navigation: props.navigation,
+            route: props.route
+        };
+    }
+    componentDidMount() {
+        this._isMounted = true;
+        return fetch('https://servertlcn.herokuapp.com/sanpham/' + this.state.route.params.id, { method: 'GET' })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                if (this._isMounted) {
+                    this.setState({
+                        isLoading: false,
+                        dataSource: responseJson.data
+                    })
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+    addtoCart = async (data) => {
+        try {
+            await AsyncStorage.setItem(
+                'dataCart' + data.id.toString(), JSON.stringify(data)
+            );
+        } catch (error) {
+            console.log(error);
+        }
+    }
     render() {
         const {
             wrapper, cardStyle, header,
-            footer, backStyle,
-            imageContainer, cartStyle, textBlack,
+            footer, imageContainer, textBlack,
             textSmoke, textHighlight, textMain, titleContainer,
-            descContainer, productImageStyle, descStyle, txtMaterial, txtColor
+            descContainer, descStyle, txtMaterial, txtColor
         } = styles;
-        //const product = this.props.navigation.getParam('product', 'null');
         return (
             <View style={wrapper}>
-                <HeaderComponent title="Chi tiết sản phẩm"/>
+                <HeaderComponent title="Chi tiết sản phẩm" />
                 <View style={cardStyle}>
                     <View style={header}>
-                        {/* <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
-                            <Image style={backStyle} source={require('../assets/appIcon/back.png')} />
-                        </TouchableOpacity> */}
                         <TouchableOpacity
-                            onPress={() => this.addThisProductToCart(product)}
-                        >
-                            {/* <Image style={cartStyle} source={require('../assets/appIcon/cart.png')} /> */}
+                            onPress={() => { this.addtoCart(this.state.dataSource) }}>
+                            <FontAwesome name="cart-plus" size={50} color="#274FEA" />
                         </TouchableOpacity>
                     </View>
-                    {/* <View style={imageContainer}>
+                    <View style={imageContainer}>
                         <ScrollView style={{ flexDirection: 'row', padding: 10, height: swiperHeight }} horizontal >
-                            <Image source={{ uri: imageUrl + product.images[0] }} style={productImageStyle} />
-                            <Image source={{ uri: imageUrl + product.images[1] }} style={productImageStyle} />
+                            <Image source={{ uri: `data:image/jpg;base64,${this.state.dataSource.Hinh}` }} style={styles.itemImage} />
                         </ScrollView>
-                    </View> */}
+                    </View>
                     <View style={footer}>
                         <View style={titleContainer}>
                             <Text style={textMain}>
-                                <Text style={textBlack}>Tên Sản Phẩm</Text>
+                                <Text style={textBlack}>{this.state.dataSource.TenSanPham}</Text>
                                 <Text style={textHighlight}> / </Text>
-                                <Text style={textSmoke}>Giá tiền $</Text>
+                                <Text style={textSmoke}>{this.state.dataSource.Gia} VND</Text>
                             </Text>
                         </View>
                         <View style={descContainer}>
-                            <Text style={descStyle}>Mô tả</Text>
+                            <Text style={descStyle}>Mô tả: {this.state.dataSource.MoTa}</Text>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 15 }}>
-                                <Text style={txtMaterial}>Loại sản phẩm</Text>
+                                <Text style={txtMaterial}>Loại sản phẩm: {this.state.dataSource.LoaiSanPhamId}</Text>
                                 <View style={{ flexDirection: 'row' }} >
                                     <Text style={txtColor}>...</Text>
                                     <View style={{ height: 15, width: 15, backgroundColor: "white", borderRadius: 15, marginLeft: 10 }} />
@@ -82,11 +110,11 @@ const styles = StyleSheet.create({
         marginVertical: 10
     },
     header: {
-        flexDirection: 'row',
+        flexDirection: "row-reverse",
         justifyContent: 'space-between',
         flex: 1,
         paddingHorizontal: 15,
-        paddingTop: 20
+        paddingTop: 10,
     },
     cartStyle: {
         width: 25,
@@ -106,8 +134,11 @@ const styles = StyleSheet.create({
     imageContainer: {
         flex: 6,
         alignItems: 'center',
-        flexDirection: 'row',
         marginHorizontal: 10
+    },
+    itemImage: {
+        width: 300,
+        height: 200,
     },
     textMain: {
         paddingLeft: 20,

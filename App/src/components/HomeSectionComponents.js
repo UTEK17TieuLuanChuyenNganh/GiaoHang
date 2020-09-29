@@ -12,7 +12,7 @@ const section_banner = require('../assets/section_banner.png');
 import Loaisanpham from './Loaisanpham'
 
 class HomeSectionComponents extends Component {
-
+  _isMounted = false;
   constructor(props){
     super(props);
     this.state={
@@ -22,6 +22,10 @@ class HomeSectionComponents extends Component {
   clickme = () => {
     console.log("clicked")
   }
+  componentDidMount(){this._isMounted = true;}
+  componentWillUnmount(){
+    this._isMounted = false;
+}
   render() {
     return (
       <View style={styles.sectionContainer}>
@@ -31,7 +35,7 @@ class HomeSectionComponents extends Component {
         <Image source={section_banner} style={styles.sectionImage} />
         {/*  */}
         <Loaisanpham navigation={this.props.navigation}/>
-        <TouchableOpacity onPress={() => { clickme() }} style={styles.seeMoreContainer}>
+        <TouchableOpacity onPress={() => { this.clickme() }} style={styles.seeMoreContainer}>
           <Text style={styles.seeMoreText}>XEM THÊM</Text>
         </TouchableOpacity>
       </View>

@@ -17,23 +17,25 @@ class Loaisanpham extends Component {
         return fetch('https://servertlcn.herokuapp.com/loaisanpham', { method: 'GET' })
             .then((response) => response.json())
             .then((responseJson) => {
-                this.setState(
-                    {
-                        isLoading: false,
-                        dataSource: responseJson.data
-                    })
+                if (this._isMounted) {
+                    this.setState(
+                        {
+                            isLoading: false,
+                            dataSource: responseJson.data
+                        })
+                }
             })
             .catch((error) => {
                 console.log(error);
             });
     }
-    componentWillUnmount(){
+    componentWillUnmount() {
         this._isMounted = false;
     }
     clickme(id) {
         this.setState({
             check: this.state.check = id
-        });
+        });   
     }
     render() {
         return (
@@ -60,8 +62,8 @@ class Loaisanpham extends Component {
                             </View>
                         ))}
                     </View>
-                </ScrollView>
-                <Sanpham navigation={this.props.navigation}/>
+                </ScrollView>  
+                <Sanpham navigation={this.props.navigation} loaisanpham={this.state.check} />              
             </View>
         );
     }
