@@ -1,20 +1,35 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Image, ImageBackground } from 'react-native';
-
+import Icon from 'react-native-vector-icons/Entypo';
 class Profile extends Component {
+    showmenu = () => {
+        this.props.navigation.openDrawer();
+    }
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <ImageBackground source={require('../../Image/Image/anhbia.jpg')} style={{ flexDirection: 'row' }}>
-                    {/* <View style={{ flexDirection: 'row' }}> */}
-                    <Image source={require('../../Image/Image/avaPro.jpg')}
-                        style={styles.circleImageLayout} />
-                    <View style={styles.nameShipper}>
-                        <Text style={{ fontSize: 30, fontWeight: 'bold', fontStyle: 'italic' }}>Trần Cao Quyền</Text>
+
+                <ImageBackground source={require('../../Image/Image/anhbia.jpg')}
+                    style={{}}>
+                    <View style={{ flexDirection: 'row' }}>
+                        <View style={{ width: 50 }}>
+                            <Icon.Button name='menu'
+                                backgroundColor="rgba(0.0, 0.0, 0.0, 0.0)"
+                               
+                                onPress={this.showmenu}
+                                size={30}
+                                style={{padding:5}}
+                                
+                            />
+                        </View>
+                        <Image source={require('../../Image/Image/avaPro.jpg')}
+                            style={styles.circleImageLayout} />
+                        <View style={styles.nameShipper}>
+                            <Text style={{ fontSize: 30, fontWeight: 'bold', fontStyle: 'italic' }}>Trần Cao Quyền</Text>
+                        </View>
                     </View>
-                    {/* </View> */}
                 </ImageBackground>
-                <View style={{ flexDirection: 'row', marginTop: 15,marginLeft:5 }}>
+                <View style={{ flexDirection: 'row', marginTop: 15, marginLeft: 5 }}>
                     <View style={styles.LabelIndfor}>
                         <Text style={styles.detailaccount}>Sinh Nhật:</Text>
                         <Text style={styles.detailaccount}>Giới Tính:</Text>
@@ -55,7 +70,8 @@ const styles = StyleSheet.create({
         height: 150,
         borderRadius: 200 / 2,
         margin: 10,
-        marginLeft:15
+        marginLeft: -30,
+        marginTop:25
     },
     Information: {
         //backgroundColor: 'yellow',

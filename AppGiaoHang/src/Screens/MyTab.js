@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-
+import Icon from'react-native-vector-icons/FontAwesome'
 
 import MapScreens from './MapScreens';
 import Logictics from './Logictics';
-
+import CheckStatus from './CheckStatus';
 const Tab = createBottomTabNavigator();
 class MyDrawer extends Component {
   render() {
@@ -14,6 +14,7 @@ class MyDrawer extends Component {
         initialRouteName="MapScreens"
         tabBarOptions={{
           activeTintColor: '#e91e63',
+          showIcon:true
         }}
       >
         <Tab.Screen
@@ -21,9 +22,7 @@ class MyDrawer extends Component {
           component={MapScreens}
           options={{
             tabBarLabel: 'MapScreens',
-            //   tabBarIcon: ({ color, size }) => (
-            //     <MaterialCommunityIcons name="home" color={color} size={size} />
-            //   ),
+            tabBarIcon: () => <Icon name="map" color="#333" size={24} />,
           }}
         />
         <Tab.Screen
@@ -31,9 +30,15 @@ class MyDrawer extends Component {
           component={Logictics}
           options={{
             tabBarLabel: 'Logictics',
-            //   tabBarIcon: ({ color, size }) => (
-            //     <MaterialCommunityIcons name="bell" color={color} size={size} />
-            //   ),
+            tabBarIcon: () => <Icon name="list" color="#333" size={24} />,
+          }}
+        />
+        <Tab.Screen
+          name="CheckStatus"
+          component={CheckStatus}
+          options={{
+            tabBarLabel: 'CheckStatus',
+            tabBarIcon: () => <Icon name="check-circle" color="#333" size={24} />,
           }}
         />
 
