@@ -5,16 +5,24 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import HeaderComponent from '../components/HeaderComponent';
-
+import DiaChiUocLuong from './DiaChiUocLuong';
+import { NavigationContainer } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 class Cart extends Component {
+
     _isMounted = false;
     constructor(props) {
         super(props);
+
         this.state = {
             isLoading: true,
             refresh: false,
-            dataSource: []
+            dataSource: [],
+            isClick: false
         };
+    }
+    adressclick() {
+        this.props.navigation.navigate('NewAddress');
     }
     componentDidMount() {
         this._isMounted = true;
@@ -43,80 +51,119 @@ class Cart extends Component {
         }
     }
     clearAllData() {
-        AsyncStorage.getAllKeys()
-            .then(keys => AsyncStorage.multiRemove(keys))
+        // AsyncStorage.getAllKeys()
+        //     .then(keys => AsyncStorage.multiRemove(keys))
+    }
+
+    ClickDiaChi() {
+        this.setState({
+            isClick: true
+        })
+
+    }
+    CloseAdress() {
+        this.setState({
+            isClick: false
+        })
     }
     rederELement() {
-        const { main, checkoutButton, checkoutTitle, wrapper,
-            product, mainRight, productController,
-            txtName, txtPrice, productImage, numberOfProduct,
-            txtShowDetail, showDetailContainer } = styles;
         if (this.state.dataSource.length > 0) {
             return (
-                <View>
-                    <ScrollView style={main}>
+                <View style={{ flex: 1 }}>
+                    <ScrollView style={{ flex: 1 }}>
                         {
+
                             this.state.dataSource.map((e, id) => (
-                                <View key={id.toString()} style={product} >
-                                    <Image source={{ uri: `data:image/jpg;base64,${e.Hinh}` }} style={styles.itemImage} />
-                                    <View style={mainRight}>
-                                        <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
-                                            <Text style={txtName}>{e.TenSanPham}</Text>
-                                            <TouchableOpacity onPress={() => { }}>
-                                                <Text style={{ fontFamily: 'Avenir', color: '#969696' }}>X</Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                        <View>
-                                            <Text style={txtPrice}>{e.Gia} VND</Text>
-                                        </View>
-                                        <View style={productController}>
-                                            <View style={numberOfProduct}>
+                                <TouchableOpacity onPress={() => { this.CloseAdress() }}>
+                                    <View key={id.toString()} style={styles.product} >
+                                        <Image source={{ uri: `data:image/jpg;base64,${e.Hinh}` }} style={styles.itemImage} />
+                                        <View style={styles.mainRight}>
+                                            <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
+                                                <Text style={styles.txtName}>{e.TenSanPham}</Text>
                                                 <TouchableOpacity onPress={() => { }}>
-                                                    <Text>+</Text>
-                                                </TouchableOpacity>
-                                                <Text>5</Text>
-                                                <TouchableOpacity onPress={() => { }}>
-                                                    <Text>-</Text>
+                                                    <Text style={{ fontFamily: 'Avenir', color: '#969696' }}>X</Text>
                                                 </TouchableOpacity>
                                             </View>
-                                            <TouchableOpacity
-                                                style={showDetailContainer}
-                                                onPress={() => { }}
-                                            >
-                                                <Text style={txtShowDetail} >SHOW DETAILS</Text>
-                                            </TouchableOpacity>
+                                            <View>
+                                                <Text style={styles.txtPrice}>{e.Gia} VND</Text>
+                                            </View>
+                                            <View style={styles.productController}>
+                                                <View style={styles.numberOfProduct}>
+                                                    <TouchableOpacity onPress={() => { }}>
+                                                        <Text>+</Text>
+                                                    </TouchableOpacity>
+                                                    <Text>5</Text>
+                                                    <TouchableOpacity onPress={() => { }}>
+                                                        <Text>-</Text>
+                                                    </TouchableOpacity>
+                                                </View>
+                                                <TouchableOpacity
+                                                    style={styles.showDetailContainer}
+                                                    onPress={() => { }}
+                                                >
+                                                    <Text style={styles.txtShowDetail} >SHOW DETAILS</Text>
+                                                </TouchableOpacity>
+                                            </View>
                                         </View>
                                     </View>
-                                </View>
-
+                                </TouchableOpacity>
                             ))}
-                    </ScrollView>
-                    <TouchableOpacity style={checkoutButton} onPress={() => { }}>
-                        <Text style={checkoutTitle}>TOTAL 0$ CHECKOUT NOW</Text>
-                    </TouchableOpacity>
+
+
+                    </ScrollView >
+                    <View >
+                        <TouchableOpacity onPress={() => { this.ClickDiaChi() }}
+                            style={{ padding: 5, backgroundColor: '#EAEAEA' ,height:35}}>
+                            <View style={{ flex: 1, flexDirection: "row", justifyContent: 'flex-end' }}>
+                                <Text style={styles.checkoutTitle}>Chọn Địa Chỉ</Text>
+                                <Icon name="chevron-down" size={20} />
+                            </View>
+                        </TouchableOpacity>
+                        <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
+                            <View style={styles.TotalPrice}>
+                                <Text style={styles.checkoutTitle}> Tổng</Text>
+                            </View>
+                            <TouchableOpacity onPress={() => { }} >
+                                <View style={styles.checkoutButton}>
+                                    <Text style={styles.checkoutTitle}>Thanh Toán</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
                 </View>
+
             );
         }
         return null;
     }
-    render() {
-        const { main, checkoutButton, checkoutTitle, wrapper,
-            product, mainRight, productController,
-            txtName, txtPrice, productImage, numberOfProduct,
-            txtShowDetail, showDetailContainer } = styles;
-        return (
-            <View style={wrapper}>
-                <HeaderComponent title='Giỏ Hàng' />
-                { this.rederELement()}
 
+    diachi() {
+        if (this.state.isClick)
+            return (
+                <DiaChiUocLuong clickaddress={() => { this.adressclick() }} />
+            );
+        else
+            return null
+    }
+
+    render() {
+
+        return (
+
+            <View style={styles.wrapper}>
+                <TouchableOpacity onPress={() => { this.CloseAdress() }}>
+                    <HeaderComponent title='Giỏ Hàng' />
+                </TouchableOpacity>
+                {this.rederELement()}
+                {this.diachi()}
             </View>
+
+
         );
     }
 }
 
-const { width } = Dimensions.get('window');
-const imageWidth = width / 4;
-const imageHeight = (imageWidth * 452) / 361;
+
 
 const styles = StyleSheet.create({
     itemImage: {
@@ -127,23 +174,30 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#DFDFDF'
     },
-    checkoutButton: {
+    TotalPrice: {
+        flex: 1,
+        backgroundColor: "#EAEAEA",
+        width: 200,
         height: 50,
-        margin: 10,
-        marginTop: 0,
-        backgroundColor: 'darkviolet',
-        borderRadius: 2,
+        justifyContent: 'center'
+    },
+    checkoutButton: {
+        flex: 1,
+        backgroundColor: "#70F1F8",
+        width: 200,
+        height: 50,
         alignItems: 'center',
         justifyContent: 'center'
     },
     main: {
-        width, backgroundColor: '#DFDFDF'
+        backgroundColor: '#DFDFDF'
     },
     checkoutTitle: {
-        color: '#FFF',
+        color: 'black',
         fontSize: 15,
         fontWeight: 'bold',
-        fontFamily: 'Avenir'
+        fontFamily: 'Avenir',
+        marginRight: 10
     },
     product: {
         flexDirection: 'row',
@@ -155,12 +209,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 3 },
         shadowOpacity: 0.2
     },
-    productImage: {
-        width: imageWidth,
-        height: imageHeight,
-        flex: 1,
-        resizeMode: 'center'
-    },
+
     mainRight: {
         flex: 3,
         justifyContent: 'space-between'

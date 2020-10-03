@@ -44,21 +44,26 @@ class Sanpham extends Component {
     render() {
         this.componentDidMount();
         return (
-            <View style={styles.listItemContainer}>
-                {this.state.dataSource.map((e, id) => (
-                    <View key={id.toString()}>
-                        <TouchableOpacity onPress={() => { this.clickMe(e.id) }}>
-                            <View style={styles.itemContainer}>
-                                <Image source={{ uri: `data:image/jpg;base64,${e.Hinh}` }} style={styles.itemImage} />
-                                <Text style={styles.itemName} numberOfLines={2}>
-                                    {e.TenSanPham}
-                                </Text>
-                                <Text style={styles.itemPrice}>{e.Gia} VND</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                ))}
+            <View>
+                <View style={styles.listItemContainer}>
+                    {this.state.dataSource.map((e, id) => (
+                        <View key={id.toString()}>
+                            <TouchableOpacity onPress={() => { this.clickMe(e.id) }}>
+                                <View style={styles.itemContainer}>
+                                    <Image source={{ uri: `data:image/jpg;base64,${e.Hinh}` }} style={styles.itemImage} />
+                                    <Text style={styles.itemName} numberOfLines={2}>
+                                        {e.TenSanPham}
+                                    </Text>
+                                    <Text style={styles.itemPrice}>{e.Gia} VND</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                    ))}
+                </View>
+
+                
             </View>
+
         );
     }
 }
