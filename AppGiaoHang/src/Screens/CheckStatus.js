@@ -9,7 +9,7 @@ class CheckStatus extends Component {
 
     render() {
         return (
-            <View style={{ flex: 1 }}>
+            <View style={styles.BackgroundScreens}>
                 <View style={styles.logo}>
                     <Icon.Button name='bars'
                         backgroundColor="rgba(0.0, 0.0, 0.0, 0.0)"
@@ -17,41 +17,42 @@ class CheckStatus extends Component {
                         size={25}
                     />
                 </View>
-                <View>
-                    <View style={styles.BoxCheck}>
-                        <Text style={styles.detailaccount}>Tiếp Nhận Chuỗi</Text>
-                        <Icon name="check-circle"
-                            size={30}
-                            color="green"
-                            style={{ margin: 13 }} />
+                <View style={{ flex: 1 }}>
+                    <View style={styles.top}>
+                        <View>
+                            <View style={styles.BoxCheck}>
+                                <Text style={styles.detailaccount}>Tiếp Nhận Chuỗi</Text>
+                                <Icon name="check-circle"
+                                    size={30}
+                                    color="green"
+                                    style={{ margin: 13 }} />
+                            </View>
+                            <View style={styles.BoxCheck}>
+                                <Text style={styles.detailaccount}>Đang Thực Hiện</Text>
+                                <Icon name="check-circle"
+                                    size={30}
+                                    color="green"
+                                    style={{ margin: 13 }} />
+                            </View>
+                            <View style={styles.BoxCheck}>
+                                <Text style={styles.detailaccount}>Hoàn Tất</Text>
+                                <Icon name="times-circle"
+                                    size={30}
+                                    color="red"
+                                    style={{ margin: 13 }} />
+                            </View>
+                        </View>
+                        <TouchableOpacity style={{
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }} >
+                            <View style={styles.Buttonstyle}>
+                                <Text style={{ fontSize: 20, color: 'white' }}>Xác Nhận</Text>
+                                <Icon name="angle-double-right" size={25} color="white" />
+                            </View>
+                        </TouchableOpacity>
                     </View>
-                    <View style={styles.BoxCheck}>
-                        <Text style={styles.detailaccount}>Đang Thực Hiện</Text>
-                        <Icon name="check-circle"
-                            size={30}
-                            color="green"
-                            style={{ margin: 13 }} />
-                    </View>
-                    <View style={styles.BoxCheck}>
-                        <Text style={styles.detailaccount}>Hoàn Tất</Text>
-                        <Icon name="times-circle"
-                            size={30}
-                            color="red"
-                            style={{ margin: 13 }} />
-                    </View>
-
                 </View>
-
-                <TouchableOpacity style={{
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                }} >
-                    <View style={styles.Buttonstyle}>
-                        <Text style={{ fontSize: 20, color: 'white' }}>Xác Nhận</Text>
-                        <Icon name="angle-double-right" size={25} color="white"/>
-                    </View>
-                </TouchableOpacity>
-
             </View>
         );
     }
@@ -79,7 +80,8 @@ const styles = StyleSheet.create({
     },
     BoxCheck: {
         justifyContent: 'space-between',
-        flexDirection: "row"
+        flexDirection: "row",
+        margin:5
     },
     Buttonstyle: {
         width: 200,
@@ -88,9 +90,21 @@ const styles = StyleSheet.create({
         backgroundColor: 'blue',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingLeft:15,
-        paddingRight:15,
-        flexDirection:"row"
-    }
+        paddingLeft: 15,
+        paddingRight: 15,
+        flexDirection: "row"
+    },
+    BackgroundScreens: {
+        flex: 1,
+
+        backgroundColor: 'red'
+    },
+    top: {
+        flex: 1,
+        backgroundColor:"#EEEBEB",
+        borderWidth: 2,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+      }
 })
 export default CheckStatus;
