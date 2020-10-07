@@ -37,6 +37,8 @@ class ProductDetail extends Component {
     }
     addtoCart = async (data) => {
         try {
+            data.Quantity = 1;
+            data.TotalPrice = data.Gia;            
             await AsyncStorage.setItem(
                 'dataCart' + data.id.toString(), JSON.stringify(data)
             );

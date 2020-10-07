@@ -4,13 +4,10 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-class DiaChiUocLuong extends Component {
-    
-    
+class DiaChiUocLuong extends Component {  
     render() {
         return (
-            <View style={{backgroundColor:'', flex:1/0.5}}>
-                
+            <View style={{backgroundColor:'', flex:1/0.5}}>              
                 <ScrollView style={{flex:1,}}>
                         <TouchableOpacity onPress={() => { }}>
                             <View style={styles.Adress}>
