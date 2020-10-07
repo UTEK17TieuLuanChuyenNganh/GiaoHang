@@ -6,6 +6,7 @@ const { createDiaChi } = require('../controllers/diachi.controller')
 const { updateDiaChi } = require('../controllers/diachi.controller')
 const { getAllDiaChi } = require('../controllers/diachi.controller')
 const { getDiaChiById } = require('../controllers/diachi.controller')
+const { getDiaChiByNguoiDungId } = require('../controllers/diachi.controller')
 
 //Models
 const models = require('../models/index')
@@ -22,5 +23,7 @@ router.get('/', getAllDiaChi)
 
 //Get by Id?
 router.get('/:id', getDiaChiById)
+
+router.get('/:id/nguoidung', getDiaChiByNguoiDungId)
 
 module.exports = router;

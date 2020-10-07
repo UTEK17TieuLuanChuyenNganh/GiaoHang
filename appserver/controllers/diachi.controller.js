@@ -7,6 +7,7 @@ const createDiaChi = async (req, res) => {
         KinhDo,
         ViDo,
         ThoiGianUocLuong,
+        NguoiDungId
     } = req.body;
     try {
         let newDiaChi = await DiaChi.create({
@@ -14,6 +15,7 @@ const createDiaChi = async (req, res) => {
             KinhDo,
             ViDo,
             ThoiGianUocLuong,
+            NguoiDungId,
             laMacDinh: false
         }, {
             fields: [
@@ -21,7 +23,8 @@ const createDiaChi = async (req, res) => {
                 "laMacDinh",
                 "KinhDo",
                 "ViDo",
-                "ThoiGianUocLuong",]
+                "ThoiGianUocLuong",
+                "NguoiDungId",]
         });
         if (newDiaChi) {
             res.json({
@@ -51,7 +54,8 @@ const updateDiaChi = async (req, res) => {
         KinhDo,
         ViDo,
         ThoiGianUocLuong,
-        laMacDinh
+        laMacDinh,
+        NguoiDungId
     } = req.body;
     try {
         let DiaChis = await DiaChi.findAll({
@@ -61,7 +65,8 @@ const updateDiaChi = async (req, res) => {
                 'KinhDo',
                 'ViDo',
                 'ThoiGianUocLuong',
-                'laMacDinh'
+                'laMacDinh',
+                'NguoiDungId'
             ],
             where: {
                 id,
@@ -74,7 +79,8 @@ const updateDiaChi = async (req, res) => {
                     KinhDo: KinhDo ? KinhDo : DiaChi.KinhDo,
                     ViDo: ViDo ? ViDo : DiaChi.ViDo,
                     ThoiGianUocLuong: ThoiGianUocLuong ? ThoiGianUocLuong : DiaChi.ThoiGianUocLuong,        
-                    laMacDinh: laMacDinh ? laMacDinh : DiaChi.laMacDinh,
+                    NguoiDungId: NguoiDungId ? NguoiDungId : DiaChi.NguoiDungId,
+                    laMacDinh: laMacDinh ? laMacDinh : DiaChi.laMacDinh,                    
                 });
             });
             res.json({
@@ -165,10 +171,49 @@ const getDiaChiById = async (req, res) => {
         });
     }
 }
-
+const getDiaChiByNguoiDungId = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const DiaChis = await DiaChi.findAll({
+            attributes: [
+                'id',
+                'TenDiaChi',
+                'KinhDo',
+                'ViDo',
+                'ThoiGianUocLuong',
+                'laMacDinh',
+                'NguoiDungId',
+            ],
+            where: {
+                NguoiDungId: id
+            },
+        });
+        if (DiaChis.length > 0) {
+            res.json({
+                result: 'ok',
+                data: DiaChis,
+                message: "List DiaChi successfully"
+            });
+        } else {
+            res.json({
+                result: 'failed',
+                data: {},
+                message: `Cannot find list DiaChi to show. Error:${error}`
+            });
+        }
+    } catch (error) {
+        res.json({
+            result: 'failed',
+            data: [],
+            length: 0,
+            message: `Cannot list DiaChi. Error:${error}`
+        });
+    }
+}
 module.exports = {
     createDiaChi,
     updateDiaChi,
     getAllDiaChi,
-    getDiaChiById
+    getDiaChiById,
+    getDiaChiByNguoiDungId
 }

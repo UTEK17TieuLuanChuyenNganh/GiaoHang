@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const app = express();
+const fetch = require('node-fetch');
 
 const indexRouter = require('./routes/index');
 const nguoidungRoute = require('./routes/nguoidungRoute');
@@ -16,6 +17,7 @@ const dssanphamRoute = require('./routes/dssanphamRoute');
 const loaisanphamRoute = require('./routes/loaisanphamRoute');
 const sanphamRoute = require('./routes/sanphamRoute');
 const shipperRoute = require('./routes/shipperRoute');
+const lapchuoidonhangRoute = require('./routes/lapchuoidonhangRoute');
 
 app.get('/sync', (req, res) => {
     let models = require('./models') 
@@ -38,7 +40,7 @@ app.use('/dssanpham', dssanphamRoute);
 app.use('/loaisanpham', loaisanphamRoute);
 app.use('/sanpham', sanphamRoute);
 app.use('/shipper', shipperRoute);
-
+app.use('/lapchuoidonhang',lapchuoidonhangRoute);
 
 
 // Add headers
@@ -89,5 +91,9 @@ app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('error');
 });
+
+//schedule
+
+
 
 module.exports = app;
