@@ -13,14 +13,17 @@ class Sanpham extends Component {
         super(props)
         this.state = {
             isLoading: true,
-            loaisanpham: props.loaisanpham,
+            loaisanpham: props.params.loaisanpham,
             dataSource: [],
-            navigation: props.navigation,
+            navigation: props.params.navigation,
         }
     }
     componentDidMount() {
         this._isMounted = true;
-        return fetch('https://servertlcn.herokuapp.com/sanpham/' + this.props.loaisanpham + '/type', { method: 'GET' })
+        this.fetchData();
+    }
+    fetchData() {
+        return fetch('https://servertlcn.herokuapp.com/sanpham/' + this.state.loaisanpham + '/type', { method: 'GET' })
             .then((response) => response.json())
             .then((responseJson) => {
                 if (this._isMounted) {
@@ -38,11 +41,22 @@ class Sanpham extends Component {
     componentWillUnmount() {
         this._isMounted = false;
     }
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.params.loaisanpham !== prevState.loaisanpham) {
+            return { loaisanpham: nextProps.params.loaisanpham };
+        }
+        return null;
+    }
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.params.loaisanpham !== this.props.params.loaisanpham) {
+            this.setState({ loaisanpham: prevProps.params.loaisanpham });
+            this.fetchData();
+        }
+    }
     clickMe(id) {
-        this.props.navigation.navigate('ProductDetail', { id });
+        this.state.navigation.navigate('ProductDetail', { id });
     }
     render() {
-        this.componentDidMount();
         return (
             <View>
                 <View style={styles.listItemContainer}>
@@ -60,8 +74,6 @@ class Sanpham extends Component {
                         </View>
                     ))}
                 </View>
-
-                
             </View>
 
         );

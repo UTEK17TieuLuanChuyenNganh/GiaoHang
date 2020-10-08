@@ -8,6 +8,7 @@ import HeaderComponent from '../components/HeaderComponent';
 import DiaChiUocLuong from './DiaChiUocLuong';
 import { NavigationContainer } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+
 class Cart extends Component {
 
     _isMounted = false;

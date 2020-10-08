@@ -32,10 +32,20 @@ class Loaisanpham extends Component {
     componentWillUnmount() {
         this._isMounted = false;
     }
-    clickme(id) {
+
+    clickme(id) {        
         this.setState({
-            check: this.state.check = id
-        });   
+            check: id
+        });        
+    }
+    renderSanpham() {
+        const params = {
+            navigation: this.props.navigation,
+            loaisanpham: this.state.check
+        }       
+        return (
+            <Sanpham ref={ref => (this.child = ref)} params={params} />
+        )
     }
     render() {
         return (
@@ -50,7 +60,7 @@ class Loaisanpham extends Component {
                                         ? styles.filterActiveButtonContainer
                                         : styles.filterInactiveButtonContainer
                                 }>
-                                <TouchableOpacity onPress={() => { this.clickme(e.id) }}>
+                                <TouchableOpacity onPress={() => { this.clickme(e.id)}}>
                                     <Text style={
                                         this.state.check == e.id
                                             ? styles.filterActiveText
@@ -62,8 +72,8 @@ class Loaisanpham extends Component {
                             </View>
                         ))}
                     </View>
-                </ScrollView>  
-                <Sanpham navigation={this.props.navigation} loaisanpham={this.state.check} />              
+                </ScrollView>
+                {this.renderSanpham()}
             </View>
         );
     }

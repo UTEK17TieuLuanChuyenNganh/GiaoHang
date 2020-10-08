@@ -6,7 +6,7 @@ import {
     Text,
     TouchableOpacity,
 } from 'react-native';
-
+import Icon from 'react-native-vector-icons/FontAwesome';
 class DiaChi extends Component {
     _isMounted = false;
     constructor(props) {
@@ -20,7 +20,10 @@ class DiaChi extends Component {
     }
     componentDidMount() {
         this._isMounted = true;
-        return fetch('https://servertlcn.herokuapp.com/diachi/' + this.props.idNguoidung + '/nguoidung', { method: 'GET' })
+        this.fetchData();
+    }
+    fetchData() {
+        return fetch('https://servertlcn.herokuapp.com/diachi/' + this.state.idNguoidung+ '/nguoidung', { method: 'GET' })
             .then((response) => response.json())
             .then((responseJson) => {
                 if (this._isMounted) {
@@ -38,11 +41,16 @@ class DiaChi extends Component {
     componentWillUnmount() {
         this._isMounted = false;
     }
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.idNguoidung !== prevState.idNguoidung) {
+            return { loaisanpham: nextProps.idNguoidung };
+        }
+        return null;
+    }
     clickMe(id) {
         
     }
     render() {
-        this.componentDidMount();
         return (
             <View>
                 {this.state.dataSource.map((e, id) => (
@@ -50,7 +58,7 @@ class DiaChi extends Component {
                         <TouchableOpacity onPress={() => { }}>
                             <View style={styles.Adress}>
                                 <Text style={styles.AdressTitle}>
-                                    Say Hi!
+                                    {e.TenDiaChi}
                                 </Text>
                                 <Icon name="angle-right" size={20}/>
                             </View>
