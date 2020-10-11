@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import {
-    View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, TextInput
+    View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, TextInput,LogBox
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
+LogBox.ignoreAllLogs();
 import Diachi from '../components/DiaChi';
 
 class DiaChiUocLuong extends Component {
@@ -11,8 +11,17 @@ class DiaChiUocLuong extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            addNewAddressClick: true
+            addNewAddressClick: true,
+            selected:false
         }
+    }
+    refresh(){
+        this.setState({
+            selected: true
+        })
+    }
+    adressclick() {
+        this.props.navigation.navigate('NewAddress',{refresh:()=>{this.refresh()}});
     }
     addNewAddress() {
         this.setState({
@@ -20,14 +29,18 @@ class DiaChiUocLuong extends Component {
         })
     }
     renderElement() {
+        const params = {
+            navigation: this.props.navigation,
+            refresh: Math.floor(Math.random() * 100) + 1
+        }  
         return (
-            <Diachi idNguoidung={1} />
+            <Diachi params={params} idNguoidung={1} />
         );
     }
     renderAddNewAddress() {
         return (
             <View>
-                <TouchableOpacity onPress={() => { this.props.clickaddress() }}>
+                <TouchableOpacity onPress={() => { this.adressclick() }}>
                     <View style={styles.Adress}>
                         <Text style={styles.AdressTitle}>
                             Thêm Địa Chỉ Mới

@@ -15,6 +15,7 @@ class DiaChi extends Component {
             isLoading: true,
             idNguoidung: props.idNguoidung,
             dataSource: [],
+            refresh: 0,
             navigation: props.navigation,
         }
     }
@@ -23,14 +24,16 @@ class DiaChi extends Component {
         this.fetchData();
     }
     fetchData() {
-        return fetch('https://servertlcn.herokuapp.com/diachi/' + this.state.idNguoidung+ '/nguoidung', { method: 'GET' })
+        console.log("refresh")
+        return fetch('https://servertlcn.herokuapp.com/diachi/' + this.state.idNguoidung + '/nguoidung', { method: 'GET' })
             .then((response) => response.json())
             .then((responseJson) => {
                 if (this._isMounted) {
                     this.setState(
                         {
                             isLoading: false,
-                            dataSource: responseJson.data
+                            dataSource: responseJson.data,
+                            refresh: false
                         })
                 }
             })
@@ -42,13 +45,19 @@ class DiaChi extends Component {
         this._isMounted = false;
     }
     static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.idNguoidung !== prevState.idNguoidung) {
-            return { loaisanpham: nextProps.idNguoidung };
+        if (nextProps.params.refresh !== prevState.refresh) {
+            return { refresh: nextProps.params.refresh };
         }
         return null;
     }
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.refresh !== this.state.refresh) {
+            this.setState({ refresh: this.props.params.refresh });
+            this.fetchData();
+        }
+    }
     clickMe(id) {
-        
+
     }
     render() {
         return (
@@ -60,7 +69,7 @@ class DiaChi extends Component {
                                 <Text style={styles.AdressTitle}>
                                     {e.TenDiaChi}
                                 </Text>
-                                <Icon name="angle-right" size={20}/>
+                                <Icon name="angle-right" size={20} />
                             </View>
                         </TouchableOpacity>
                     </View>

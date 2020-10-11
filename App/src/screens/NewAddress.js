@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { View, StyleSheet, TextInput, Text, TouchableOpacity } from 'react-native';
 
 import Geocoder from 'react-native-geocoder';
-const apikey = 'AIzaSyCu5I687E_uqhuEhjy7Apmn-ljAvCAh6Ic'
 import HeaderComponent from '../components/HeaderComponent';
 class NewAddress extends Component {
     _isMounted = false;
@@ -31,47 +30,53 @@ class NewAddress extends Component {
         this._isMounted = false;
     }
     //input data
-    async getlatlong() {
+    getlatlong() {
+        this._isMounted = true;
         const address = this.state.hintAddress
         var add = {
             lat: "",
             lng: ""
         };
-        await Geocoder.fallbackToGoogle(apikey);
-
-        await Geocoder.geocodeAddress(address).then(res => {
+        Geocoder.geocodeAddress(address).then(res => {
             // res is an Array of geocoding object (see below)
-
             add.lat = Math.round(res[0].position.lat * 10000000) / 10000000
             add.lng = Math.round(res[0].position.lng * 10000000) / 10000000
-            this.setState({
-                formattedAddress: res[0].formattedAddress,
-                add: add
-            })
-            this.fetchData();
+            if (this._isMounted) {
+                this.setState({
+                    formattedAddress: res[0].formattedAddress,
+                    add: add
+                })
+            }
+                this.fetchData();
+                this.props.route.params.refresh();
+                this.props.navigation.goBack();
+                this._isMounted=false;
         })
             .catch(err => console.log(err))
     }
-    async getHintAddress(address) {
-        await Geocoder.fallbackToGoogle(apikey);
-
-        await Geocoder.geocodeAddress(address).then(res => {
-            this.setState({
-                hintAddress: res[0].formattedAddress
-            })
+    getHintAddress(address) {
+        this._isMounted =true;
+        Geocoder.geocodeAddress(address).then(res => {
+            if (this._isMounted) {
+                this.setState({
+                    hintAddress: res[0].formattedAddress
+                })
+            }
+            this._isMounted =false;
         })
             .catch(err => console.log(err))
     }
 
     //fetch
-    async fetchData() {
+    fetchData() {
+        this._isMounted =true;
         const data = {
             TenDiaChi: this.state.formattedAddress,
             KinhDo: this.state.add.lng,
             ViDo: this.state.add.lat,
             NguoiDungId: 1
         };
-        return await fetch('https://servertlcn.herokuapp.com/diachi',
+        return fetch('https://servertlcn.herokuapp.com/diachi',
             {
                 method: 'POST',
                 body: JSON.stringify(data),
@@ -81,14 +86,14 @@ class NewAddress extends Component {
             .then((response) => response.json())
             .then((responseJson) => {
                 if (this._isMounted) {
-                    console.log(responseJson)
+                    // console.log(responseJson)
                 }
+                this._isMounted =false;
             })
             .catch((error) => {
                 console.log(error);
             });
     }
-
     //Hint
     renderHintAddress() {
         if (this.state.sonha != null && this.state.duong != null &&
@@ -105,7 +110,9 @@ class NewAddress extends Component {
                     </View>
                 )
             }
+            return null;
         }
+        return null;
     }
     renderLatLng() {
         if (this.state.add.lat != "" && this.state.add.lng != "") {

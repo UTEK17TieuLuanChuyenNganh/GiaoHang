@@ -28,21 +28,17 @@ class Cart extends Component {
         this.setState({
             isClick: !this.state.isClick
         })
-
     }
     diachi() {
         if (this.state.isClick)
             return (
-                <DiaChiUocLuong clickaddress={() => { this.adressclick() }} />
+                <DiaChiUocLuong navigation={this.props.navigation} />
             );
         else
             return null
     }
 
     //Come to new Screen
-    adressclick() {
-        this.props.navigation.navigate('NewAddress');
-    }
     showDetailClick(id) {
         this.props.navigation.navigate('ProductDetail', { id });
     }
