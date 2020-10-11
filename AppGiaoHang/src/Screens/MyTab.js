@@ -6,6 +6,7 @@ import Icon from'react-native-vector-icons/FontAwesome'
 import MapScreens from './MapScreens';
 import Logictics from './Logictics';
 import CheckStatus from './CheckStatus';
+import CusInformation from './CusInformation';
 const Tab = createBottomTabNavigator();
 class MyDrawer extends Component {
   render() {
@@ -23,6 +24,14 @@ class MyDrawer extends Component {
           options={{
             tabBarLabel: 'MapScreens',
             tabBarIcon: () => <Icon name="map" color="#333" size={24} />,
+          }}
+        />
+        <Tab.Screen
+          name="CusInformation"
+          component={CusInformation}
+          options={{
+            tabBarLabel: 'CusInformation',
+            tabBarIcon: () => <Icon name="street-view" color="#333" size={24} />,
           }}
         />
         <Tab.Screen

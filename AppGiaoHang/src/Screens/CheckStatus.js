@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Logo from '../Component/Logo';
 class CheckStatus extends Component {
     showmenu = () => {
         this.props.navigation.openDrawer();
@@ -10,13 +11,7 @@ class CheckStatus extends Component {
     render() {
         return (
             <View style={styles.BackgroundScreens}>
-                <View style={styles.logo}>
-                    <Icon.Button name='bars'
-                        backgroundColor="rgba(0.0, 0.0, 0.0, 0.0)"
-                        onPress={this.showmenu}
-                        size={25}
-                    />
-                </View>
+                <Logo openDrawerclick={()=>{this.showmenu()}}/>
                 <View style={{ flex: 1 }}>
                     <View style={styles.top}>
                         <View>
@@ -60,18 +55,6 @@ class CheckStatus extends Component {
 
 
 const styles = StyleSheet.create({
-
-
-    logo: {
-
-        height: 60,
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        backgroundColor: 'red',
-        padding: 10,
-        flexDirection: "row",
-
-    },
     detailaccount: {
         fontSize: 17,
         marginTop: 20,

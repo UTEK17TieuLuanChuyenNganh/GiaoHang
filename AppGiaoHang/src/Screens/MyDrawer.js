@@ -18,6 +18,7 @@ class MyDrawer extends Component {
                     component={MyTab}
                     options={{ drawerLabel: 'Giao Hàng' }}
                 />
+                
                 <Drawer.Screen
                     name="Profile"
                     component={Profile}
