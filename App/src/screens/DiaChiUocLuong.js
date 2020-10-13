@@ -12,16 +12,11 @@ class DiaChiUocLuong extends Component {
         super(props);
         this.state = {
             addNewAddressClick: true,
-            selected:false
         }
     }
-    refresh(){
-        this.setState({
-            selected: true
-        })
-    }
-    adressclick() {
-        this.props.navigation.navigate('NewAddress',{refresh:()=>{this.refresh()}});
+    adressclick() {                        
+        this.props.close();
+        this.props.navigation.navigate('NewAddress');        
     }
     addNewAddress() {
         this.setState({
@@ -31,10 +26,9 @@ class DiaChiUocLuong extends Component {
     renderElement() {
         const params = {
             navigation: this.props.navigation,
-            refresh: Math.floor(Math.random() * 100) + 1
         }  
         return (
-            <Diachi params={params} idNguoidung={1} />
+            <Diachi params={params} idNguoidung={2} />
         );
     }
     renderAddNewAddress() {

@@ -7,7 +7,7 @@ import { NavigationContainer } from '@react-navigation/native';
 class HomeScreen extends Component {
 
   cartclick() {
-    this.props.navigation.navigate('Cart');
+    this.props.navigation.navigate('Cart',{isClick:false});
   }
   render() {
     return (

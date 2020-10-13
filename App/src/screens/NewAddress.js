@@ -20,14 +20,14 @@ class NewAddress extends Component {
                 lat: "",
                 lng: ""
             }
-        }
+        }        
     }
 
     componentDidMount() {
         this._isMounted = true;
     }
     componentWillUnmount() {
-        this._isMounted = false;
+        this._isMounted = false;        
     }
     //input data
     getlatlong() {
@@ -47,34 +47,33 @@ class NewAddress extends Component {
                     add: add
                 })
             }
-                this.fetchData();
-                this.props.route.params.refresh();
-                this.props.navigation.goBack();
-                this._isMounted=false;
+            this.fetchData();
+            this.props.navigation.navigate("Cart");
+            this._isMounted = false;
         })
             .catch(err => console.log(err))
-    }
+    }    
     getHintAddress(address) {
-        this._isMounted =true;
+        this._isMounted = true;
         Geocoder.geocodeAddress(address).then(res => {
             if (this._isMounted) {
                 this.setState({
                     hintAddress: res[0].formattedAddress
                 })
             }
-            this._isMounted =false;
+            this._isMounted = false;
         })
             .catch(err => console.log(err))
     }
 
     //fetch
     fetchData() {
-        this._isMounted =true;
+        this._isMounted = true;
         const data = {
             TenDiaChi: this.state.formattedAddress,
             KinhDo: this.state.add.lng,
             ViDo: this.state.add.lat,
-            NguoiDungId: 1
+            NguoiDungId: 2
         };
         return fetch('https://servertlcn.herokuapp.com/diachi',
             {
@@ -88,7 +87,7 @@ class NewAddress extends Component {
                 if (this._isMounted) {
                     // console.log(responseJson)
                 }
-                this._isMounted =false;
+                this._isMounted = false;
             })
             .catch((error) => {
                 console.log(error);
