@@ -14,17 +14,16 @@ class Cart extends Component {
     _isMounted = false;
     constructor(props) {
         super(props);
-
         this.state = {
             isLoading: true,
             refresh: false,
             dataSource: [],
-            isClick: false,
-            totalPrice:0,
-        };
-    }
+            isClick: props.isClick,
+            totalPrice: 0,
+        };        
+    }    
     //Event Click
-    ClickDiaChi() {
+    ClickDiaChi() {        
         this.setState({
             isClick: !this.state.isClick
         })
@@ -32,7 +31,7 @@ class Cart extends Component {
     diachi() {
         if (this.state.isClick)
             return (
-                <DiaChiUocLuong navigation={this.props.navigation} />
+                <DiaChiUocLuong navigation={this.props.navigation} close={()=>{this.ClickDiaChi()}} />
             );
         else
             return null
@@ -48,10 +47,10 @@ class Cart extends Component {
         this._isMounted = true;
         if (this._isMounted) {
             this.importData();
-        }
+        }        
     }
     componentWillUnmount() {
-        this._isMounted = false;
+        this._isMounted = false;        
     }
     importData = async () => {
         try {
@@ -61,7 +60,7 @@ class Cart extends Component {
             let total = 0;
             stores.map((result, i, store) => {
                 let value = JSON.parse(store[i][1]);
-                data.push(value);                
+                data.push(value);
                 total += parseFloat(value.TotalPrice);
             });
             this.setState({
@@ -72,7 +71,6 @@ class Cart extends Component {
             console.error(error)
         }
     }
-
     //Change Cart Data
     clearAllData() {
         AsyncStorage.getAllKeys()
@@ -94,7 +92,7 @@ class Cart extends Component {
             .then(data => {
                 data = JSON.parse(data);
                 data.Quantity++;
-                data.TotalPrice= data.Gia*data.Quantity
+                data.TotalPrice = data.Gia * data.Quantity
                 //save the value to AsyncStorage again
                 AsyncStorage.setItem('dataCart' + id.toString(), JSON.stringify(data));
 
@@ -107,7 +105,7 @@ class Cart extends Component {
                 data = JSON.parse(data);
                 if (data.Quantity > 0) {
                     data.Quantity--;
-                    data.TotalPrice= data.Gia*data.Quantity
+                    data.TotalPrice = data.Gia * data.Quantity
                 }
                 //save the value to AsyncStorage again
                 AsyncStorage.setItem('dataCart' + id.toString(), JSON.stringify(data));
@@ -134,8 +132,8 @@ class Cart extends Component {
                                             </TouchableOpacity>
                                         </View>
                                         <View>
-                                            <Text style={styles.txtPrice}>Giá/1: {e.Gia} VND</Text>                                            
-                                            <Text style={styles.txtPrice}>Tổng: {e.TotalPrice} VND</Text>                                        
+                                            <Text style={styles.txtPrice}>Giá/1: {e.Gia} VND</Text>
+                                            <Text style={styles.txtPrice}>Tổng: {e.TotalPrice} VND</Text>
                                         </View>
                                         <View style={styles.productController}>
                                             <View style={styles.numberOfProduct}>
@@ -153,7 +151,7 @@ class Cart extends Component {
                                             >
                                                 <Text style={styles.txtShowDetail} >SHOW DETAILS</Text>
                                             </TouchableOpacity>
-                                        </View>                                        
+                                        </View>
                                     </View>
                                 </View>
                             ))}

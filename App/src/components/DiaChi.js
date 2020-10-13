@@ -24,7 +24,6 @@ class DiaChi extends Component {
         this.fetchData();
     }
     fetchData() {
-        console.log("refresh")
         return fetch('https://servertlcn.herokuapp.com/diachi/' + this.state.idNguoidung + '/nguoidung', { method: 'GET' })
             .then((response) => response.json())
             .then((responseJson) => {
@@ -43,19 +42,7 @@ class DiaChi extends Component {
     }
     componentWillUnmount() {
         this._isMounted = false;
-    }
-    static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.params.refresh !== prevState.refresh) {
-            return { refresh: nextProps.params.refresh };
-        }
-        return null;
-    }
-    componentDidUpdate(prevProps, prevState) {
-        if (prevState.refresh !== this.state.refresh) {
-            this.setState({ refresh: this.props.params.refresh });
-            this.fetchData();
-        }
-    }
+    }    
     clickMe(id) {
 
     }
