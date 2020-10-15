@@ -27,14 +27,6 @@ class MyDrawer extends Component {
           }}
         />
         <Tab.Screen
-          name="CusInformation"
-          component={CusInformation}
-          options={{
-            tabBarLabel: 'CusInformation',
-            tabBarIcon: () => <Icon name="street-view" color="#333" size={24} />,
-          }}
-        />
-        <Tab.Screen
           name="Logictics"
           component={Logictics}
           options={{
