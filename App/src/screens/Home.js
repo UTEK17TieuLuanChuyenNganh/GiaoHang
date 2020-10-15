@@ -3,7 +3,6 @@ import { StyleSheet, View, Text, StatusBar, ScrollView, TouchableOpacity } from 
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import HomeSectionComponents from '../components/HomeSectionComponents';
-import { NavigationContainer } from '@react-navigation/native';
 class HomeScreen extends Component {
 
   cartclick() {
