@@ -11,7 +11,7 @@ const createDonHang = async (req, res) => {
         TinhTrangDon,
         NguoiDungId,
         BuuCucId,
-        ChuoiDonHangId,
+        ChuoiGiaoHangId,
         DiaChiId
     } = req.body;
     try {
@@ -24,13 +24,13 @@ const createDonHang = async (req, res) => {
             TinhTrangDon,
             NguoiDungId,
             BuuCucId,
-            ChuoiDonHangId,
+            ChuoiGiaoHangId,
             DiaChiId,
             daThanhToan: false
         }, {
             fields: ["NgayDatHang", "TienVanChuyen", "TongTien", "GhiChu",
                 "DanhGia", "TinhTrangDon", "NguoiDungId",
-                "BuuCucId", "ChuoiDonHangId", "DiaChiId"]
+                "BuuCucId", "ChuoiGiaoHangId", "DiaChiId"]
         });
         if (newDonHang) {
             res.json({
@@ -64,7 +64,7 @@ const updateDonHang = async (req, res) => {
         TinhTrangDon,
         NguoiDungId,
         BuuCucId,
-        ChuoiDonHangId,
+        ChuoiGiaoHangId,
         DiaChiId,
         daThanhToan,
     } = req.body;
@@ -80,7 +80,7 @@ const updateDonHang = async (req, res) => {
                 'TinhTrangDon',
                 'NguoiDungId',
                 'BuuCucId',
-                'ChuoiDonHangId',
+                'ChuoiGiaoHangId',
                 'DiaChiId',
                 'daThanhToan',
             ],
@@ -99,7 +99,7 @@ const updateDonHang = async (req, res) => {
                     TinhTrangDon: TinhTrangDon ? TinhTrangDon : DonHang.TinhTrangDon,
                     NguoiDungId: NguoiDungId ? NguoiDungId : DonHang.NguoiDungId,
                     BuuCucId: BuuCucId ? BuuCucId : DonHang.BuuCucId,
-                    ChuoiDonHangId: ChuoiDonHangId ? ChuoiDonHangId : DonHang.ChuoiDonHangId,
+                    ChuoiGiaoHangId: ChuoiGiaoHangId ? ChuoiGiaoHangId : DonHang.ChuoiGiaoHangId,
                     DiaChiId: DiaChiId ? DiaChiId : DonHang.DiaChiId,
                     daThanhToan: daThanhToan ? daThanhToan : DonHang.daThanhToan,
                 });
@@ -235,7 +235,7 @@ const getAllDonHang = async (req, res) => {
                 'TinhTrangDon',
                 'NguoiDungId',
                 'BuuCucId',
-                'ChuoiDonHangId',
+                'ChuoiGiaoHangId',
                 'DiaChiId',
                 'GhiChu',
                 'DanhGia',
@@ -270,7 +270,7 @@ const getDonHangById = async (req, res) => {
                 'TinhTrangDon',
                 'NguoiDungId',
                 'BuuCucId',
-                'ChuoiDonHangId',
+                'ChuoiGiaoHangId',
                 'DiaChiId',
                 'GhiChu',
                 'DanhGia',
@@ -302,10 +302,55 @@ const getDonHangById = async (req, res) => {
         });
     }
 }
-
+const getDonHangByNguoiDungId = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const DonHangs = await DonHang.findAll({
+            attributes: [
+                'id',
+                'NgayDatHang',
+                'TienVanChuyen',
+                'TongTien',
+                'TinhTrangDon',
+                'NguoiDungId',
+                'BuuCucId',
+                'ChuoiGiaoHangId',
+                'DiaChiId',
+                'GhiChu',
+                'DanhGia',
+                'daThanhToan',
+            ],
+            where: {
+                NguoiDungId: id,
+            },
+            include: [{ all: true }]
+        });
+        if (DonHangs.length > 0) {
+            res.json({
+                result: 'ok',
+                data: DonHangs,
+                message: "List DonHang successfully"
+            });
+        } else {
+            res.json({
+                result: 'failed',
+                data: {},
+                message: `Cannot find list DonHang to show. Error:${error}`
+            });
+        }
+    } catch (error) {
+        res.json({
+            result: 'failed',
+            data: [],
+            length: 0,
+            message: `Cannot list DonHang. Error:${error}`
+        });
+    }
+}
 module.exports = {
     createDonHang,
     updateDonHang,
     getAllDonHang,
-    getDonHangById
+    getDonHangById,
+    getDonHangByNguoiDungId
 }

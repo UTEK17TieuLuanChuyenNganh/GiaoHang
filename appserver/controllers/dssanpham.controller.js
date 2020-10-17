@@ -1,6 +1,6 @@
 const models = require('../models/index')
 const DSSanPham = models.DSSanPham
-
+const DonHang = models.DonHang
 const createDSSanPham = async(req, res) => {
     let {
         SoLuong,
@@ -248,9 +248,108 @@ const getDSSanPhamById = async(req, res) => {
         });
     }
 }
+const getDSSanPhamByDonHangId = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const DSSanPhams = await DSSanPham.findAll({
+            attributes: [
+                'id',
+                'SoLuong',
+                'DonHangId',
+                'SanPhamId',
+            ],
+            where: {
+                DonHangId: id,
+            },
+            include: [{all:true}]
+        });
+        if (DSSanPhams.length > 0) {
+            res.json({
+                result: 'ok',
+                data: DSSanPhams,
+                message: "List DSSanPham successfully"
+            });
+        } else {
+            res.json({
+                result: 'failed',
+                data: {},
+                message: `Cannot find list DSSanPham to show. Error:${error}`
+            });
+        }
+    } catch (error) {
+        res.json({
+            result: 'failed',
+            data: [],
+            length: 0,
+            message: `Cannot list DSSanPham. Error:${error}`
+        });
+    }
+}
+const getDSSanPhamByNguoiDungId = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const DonHangs = await DonHang.findAll({
+            attributes: [
+                'id',
+                'NgayDatHang',
+                'TienVanChuyen',
+                'TongTien',
+                'TinhTrangDon',
+                'NguoiDungId',
+                'BuuCucId',
+                'ChuoiGiaoHangId',
+                'DiaChiId',
+                'GhiChu',
+                'DanhGia',
+                'daThanhToan',
+            ],
+            where: {
+                NguoiDungId: id,
+            }
+        });
+        const DSSanPhams = await DSSanPham.findAll({
+            attributes: [
+                'id',
+                'SoLuong',
+                'DonHangId',
+                'SanPhamId',
+            ],
+            where: {
+                DonHangId: DonHangs[0].id,
+            },
+            include: [{all:true}]
+        });
+        let dataRes = {
+            Donhang: DonHangs,
+            listSanpham: DSSanPhams
+        }
+        if (DSSanPhams.length > 0) {
+            res.json({
+                result: 'ok',
+                data: dataRes,
+                message: "List DSSanPham successfully"
+            });
+        } else {
+            res.json({
+                result: 'failed',
+                data: {},
+                message: `Cannot find list DSSanPham to show. Error:${error}`
+            });
+        }
+    } catch (error) {
+        res.json({
+            result: 'failed',
+            data: [],
+            length: 0,
+            message: `Cannot list DSSanPham. Error:${error}`
+        });
+    }
+}
 module.exports = {
     createDSSanPham,
     updateDSSanPham,
     getAllDSSanPham,
     getDSSanPhamById,
+    getDSSanPhamByDonHangId,
+    getDSSanPhamByNguoiDungId
 }
