@@ -6,6 +6,8 @@ const { createDSSanPham } = require('../controllers/dssanpham.controller')
 const { updateDSSanPham } = require('../controllers/dssanpham.controller')
 const { getAllDSSanPham } = require('../controllers/dssanpham.controller')
 const { getDSSanPhamById } = require('../controllers/dssanpham.controller')
+const { getDSSanPhamByDonHangId } = require('../controllers/dssanpham.controller')
+const { getDSSanPhamByNguoiDungId } = require('../controllers/dssanpham.controller')
 
 //Models
 const models = require('../models/index')
@@ -23,4 +25,7 @@ router.get('/', getAllDSSanPham)
 //Get by Id?
 router.get('/:id', getDSSanPhamById)
 
+router.get('/:id/donhang', getDSSanPhamByDonHangId)
+
+router.get('/:id/nguoidung', getDSSanPhamByNguoiDungId)
 module.exports = router;

@@ -21,7 +21,6 @@ import {
 import HomeScreen from './src/screens/HomeScreen';
 
 
-
 class App extends Component {
   
   createStack() {

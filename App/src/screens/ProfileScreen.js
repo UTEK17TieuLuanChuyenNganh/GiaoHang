@@ -1,57 +1,63 @@
-import React from 'react';
-import {StyleSheet, View, Text, StatusBar} from 'react-native';
+import { StyleSheet, View, Text, StatusBar } from 'react-native';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
 import HeaderComponent from '../components/HeaderComponent';
+import ProfileItem from '../components/ProfileItem';
 
-const ProfileItem = ({icon, name}) => (
-  <View style={styles.itemContainer}>
-    <MaterialCommunityIcons name={icon} size={26} color="#1e1e1e" />
-    <Text style={[styles.itemText, {marginLeft: icon ? 20 : 0}]}>{name}</Text>
-    <FontAwesome name="angle-right" size={26} color="#1e1e1e" />
-  </View>
-);
+import React, { Component } from 'react';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-const ProfileScreen = () => {
-  return (
-    <View style={styles.screenContainer}>
-      <StatusBar barStyle="light-content" />
-      {/*  */}
-      <HeaderComponent title="Cá nhân" />
-      {/*  */}
-      <View style={styles.bodyContainer}>
-        <View style={styles.userContainer}>
-          <View style={styles.avatarContainer}>
-            <MaterialIcons name="person" size={26} color="#fff" />
+class ProfileScreen extends Component {
+
+  loginPress(){
+    this.props.navigation.navigate("Login")
+  }
+
+  render() {
+    return (
+      <View style={styles.screenContainer}>
+        <StatusBar barStyle="light-content" />
+        {/*  */}
+        <HeaderComponent title="Cá nhân" />
+        {/*  */}
+        {/* <TouchableOpacity> */}
+        <View style={styles.bodyContainer}>
+          <View>
+            <TouchableOpacity onPress={()=>{this.loginPress()}}>
+              <View style={styles.userContainer}>
+                <View style={styles.avatarContainer}>
+                  <MaterialIcons name="person" size={26} color="#fff" />
+                </View>
+                <View style={styles.textContainer}>
+                  <Text style={styles.welcomeText}>Chào mừng bạn đến với Tiki</Text>
+                  <Text style={styles.authText}>Đăng nhập/Đăng ký</Text>
+                </View>
+                <FontAwesome name="angle-right" size={26} color="#1e88e5" />
+              </View>
+            </TouchableOpacity>
           </View>
-          <View style={styles.textContainer}>
-            <Text style={styles.welcomeText}>Chào mừng bạn đến với Tiki</Text>
-            <Text style={styles.authText}>Đăng nhập/Đăng ký</Text>
-          </View>
-          <FontAwesome name="angle-right" size={26} color="#1e88e5" />
+          {/*  */}
+          <View style={styles.divider} />
+          <ProfileItem navigation={this.props.navigation} icon="format-list-bulleted" name="Quản lý đơn hàng" />
+          <ProfileItem navigation={this.props.navigation} icon="cart-outline" name="Sản phẩm đã mua" />
+          <ProfileItem navigation={this.props.navigation} icon="eye-outline" name="Sản phẩm đã xem" />
+          <ProfileItem navigation={this.props.navigation} icon="heart-outline" name="Sản phẩm yêu thích" />
+          <ProfileItem navigation={this.props.navigation} icon="bookmark-outline" name="Sản phẩm mua sau" />
+          <ProfileItem navigation={this.props.navigation} icon="star-outline" name="Sản phẩm đánh giá" />
+          {/*  */}
+          <View style={styles.divider} />
+          <ProfileItem navigation={this.props.navigation} name="Ưu đãi cho chủ thẻ ngân hàng" />
+          <ProfileItem navigation={this.props.navigation} name="Cài đặt" />
+          {/*  */}
+          <View style={styles.divider} />
+          <ProfileItem navigation={this.props.navigation} icon="headphones" name="Hỗ trợ" />
+          <ProfileItem navigation={this.props.navigation} icon="logout" name="Đăng xuất" />
         </View>
-        {/*  */}
-        <View style={styles.divider} />
-        <ProfileItem icon="format-list-bulleted" name="Quản lý đơn hàng" />
-        <ProfileItem icon="cart-outline" name="Sản phẩm đã mua" />
-        <ProfileItem icon="eye-outline" name="Sản phẩm đã xem" />
-        <ProfileItem icon="heart-outline" name="Sản phẩm yêu thích" />
-        <ProfileItem icon="bookmark-outline" name="Sản phẩm mua sau" />
-        <ProfileItem icon="star-outline" name="Sản phẩm đánh giá" />
-        {/*  */}
-        <View style={styles.divider} />
-        <ProfileItem name="Ưu đãi cho chủ thẻ ngân hàng" />
-        <ProfileItem name="Cài đặt" />
-        {/*  */}
-        <View style={styles.divider} />
-        <ProfileItem icon="headphones" name="Hỗ trợ" />
       </View>
-    </View>
-  );
-};
+    );
+  }
+}
 
 const styles = StyleSheet.create({
   screenContainer: {
@@ -90,17 +96,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   //
-  itemContainer: {
-    backgroundColor: '#fff',
-    flexDirection: 'row',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    alignItems: 'center',
-  },
-  itemText: {
-    flex: 1,
-    color: '#1e1e1e',
-  },
+
   //
   divider: {
     height: 10,

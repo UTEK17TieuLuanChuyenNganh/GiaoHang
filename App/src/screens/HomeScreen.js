@@ -8,6 +8,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import TabHome from './TabHome';
 import Adress from './Adress';
 import NewAddress from './NewAddress';
+import ProfileItem from '../components/ProfileItem';
+import QLDonhang from './QLDonhang';
+import DSSanphamdamua from './DSSanphamdamua';
+import Login from './Login';
 const Stack = createStackNavigator();
 class HomeScreen extends Component {
     render() {
@@ -22,6 +26,10 @@ class HomeScreen extends Component {
                     <Stack.Screen name='ProductDetail' component={ProductDetail} />
                     <Stack.Screen name='Adress' component={Adress}/>
                     <Stack.Screen name='NewAddress' component={NewAddress}/>
+                    <Stack.Screen name='ProfileItem' component={ProfileItem}/>
+                    <Stack.Screen name='QLDH' component={QLDonhang}/>
+                    <Stack.Screen name='DSSP' component={DSSanphamdamua}/>
+                    <Stack.Screen name='Login' component={Login}/>
                 </Stack.Navigator>
             </NavigationContainer>
         );

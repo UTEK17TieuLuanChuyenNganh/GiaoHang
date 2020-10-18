@@ -8,6 +8,7 @@ const { updateDonHang } = require('../controllers/donhang.controller')
 // const { enableDonHang } = require('../controllers/donhang.controller')
 const { getAllDonHang } = require('../controllers/donhang.controller')
 const { getDonHangById } = require('../controllers/donhang.controller')
+const { getDonHangByNguoiDungId } = require('../controllers/donhang.controller')
 
 //Models
 const models = require('../models/index')
@@ -31,4 +32,5 @@ router.get('/', getAllDonHang)
 //Get by Id?
 router.get('/:id', getDonHangById)
 
+router.get('/:id/nguoidung', getDonHangByNguoiDungId)
 module.exports = router;
