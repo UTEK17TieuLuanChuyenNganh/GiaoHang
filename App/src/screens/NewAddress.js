@@ -19,7 +19,8 @@ class NewAddress extends Component {
             add: {
                 lat: "",
                 lng: ""
-            }
+            },
+            user: props.route.params.user
         }        
     }
 
@@ -68,12 +69,12 @@ class NewAddress extends Component {
 
     //fetch
     fetchData() {
-        this._isMounted = true;
+        this._isMounted = true;        
         const data = {
             TenDiaChi: this.state.formattedAddress,
             KinhDo: this.state.add.lng,
             ViDo: this.state.add.lat,
-            NguoiDungId: 2
+            NguoiDungId: this.state.user.id
         };
         return fetch('https://servertlcn.herokuapp.com/diachi',
             {

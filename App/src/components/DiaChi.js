@@ -7,24 +7,25 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+
 class DiaChi extends Component {
     _isMounted = false;
     constructor(props) {
         super(props)
         this.state = {
             isLoading: true,
-            idNguoidung: props.idNguoidung,
             dataSource: [],
-            refresh: 0,
             navigation: props.navigation,
+            user: props.params.user
         }
     }
     componentDidMount() {
         this._isMounted = true;
         this.fetchData();
     }
-    fetchData() {
-        return fetch('https://servertlcn.herokuapp.com/diachi/' + this.state.idNguoidung + '/nguoidung', { method: 'GET' })
+
+    fetchData() {       
+        return fetch('https://servertlcn.herokuapp.com/diachi/' + this.state.user.id + '/nguoidung', { method: 'GET' })
             .then((response) => response.json())
             .then((responseJson) => {
                 if (this._isMounted) {
@@ -32,7 +33,6 @@ class DiaChi extends Component {
                         {
                             isLoading: false,
                             dataSource: responseJson.data,
-                            refresh: false
                         })
                 }
             })
@@ -42,7 +42,7 @@ class DiaChi extends Component {
     }
     componentWillUnmount() {
         this._isMounted = false;
-    }    
+    }
     clickMe(id) {
 
     }

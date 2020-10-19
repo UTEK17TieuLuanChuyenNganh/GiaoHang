@@ -1,4 +1,5 @@
 import { StyleSheet, View, Text, StatusBar } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -7,14 +8,95 @@ import ProfileItem from '../components/ProfileItem';
 
 import React, { Component } from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-
+import LoadingView from 'react-native-loading-view'
 class ProfileScreen extends Component {
 
-  loginPress(){
-    this.props.navigation.navigate("Login")
+  _isMounted = false;
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoading: true,
+      user: []
+    }
   }
 
+  componentDidMount() {
+    this._isMounted = true;
+    this.checkUser();
+  }
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+  checkUser = async () => {
+    try {
+      const value = await AsyncStorage.getItem('user');
+      if (value !== null) {
+        let data = JSON.parse(value);
+        this.setState({
+          user: data,
+          isLoading: false
+        })
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  loginPress() {
+    this.props.navigation.navigate("Login")
+  }
+  logoutPress = async () => {
+    try {
+      await AsyncStorage.removeItem('user');
+      this.setState({
+        user: []
+      });
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  //View
+  renderUser() {
+    if (this.state.user.Username) {
+      return (
+        <View>
+          <View style={styles.userContainer}>
+            <View style={styles.avatarContainer}>
+              <MaterialIcons name="person" size={26} color="#fff" />
+            </View>
+            <View style={styles.textContainer}>
+              <Text style={styles.welcomeText}>Chào mừng bạn đến với TLCN</Text>
+              <Text style={styles.authText}>{this.state.user.Username}</Text>
+            </View>
+            <FontAwesome name="angle-right" size={26} color="#1e88e5" />
+          </View>
+        </View>
+      );
+    }
+    return (
+      <View>
+        <TouchableOpacity onPress={() => { this.loginPress() }}>
+          <View style={styles.userContainer}>
+            <View style={styles.avatarContainer}>
+              <MaterialIcons name="person" size={26} color="#fff" />
+            </View>
+            <View style={styles.textContainer}>
+              <Text style={styles.welcomeText}>Chào mừng bạn đến với TLCN</Text>
+              <Text style={styles.authText}>Đăng nhập/Đăng ký</Text>
+            </View>
+            <FontAwesome name="angle-right" size={26} color="#1e88e5" />
+          </View>
+        </TouchableOpacity>
+      </View>);
+  }
   render() {
+    if (this.state.isLoading) {
+      return (
+        <LoadingView loading={this.state.isLoading}>
+          <Text>Loading...!</Text>
+        </LoadingView>
+      );
+    }
     return (
       <View style={styles.screenContainer}>
         <StatusBar barStyle="light-content" />
@@ -23,28 +105,27 @@ class ProfileScreen extends Component {
         {/*  */}
         {/* <TouchableOpacity> */}
         <View style={styles.bodyContainer}>
-          <View>
-            <TouchableOpacity onPress={()=>{this.loginPress()}}>
-              <View style={styles.userContainer}>
-                <View style={styles.avatarContainer}>
-                  <MaterialIcons name="person" size={26} color="#fff" />
-                </View>
-                <View style={styles.textContainer}>
-                  <Text style={styles.welcomeText}>Chào mừng bạn đến với Tiki</Text>
-                  <Text style={styles.authText}>Đăng nhập/Đăng ký</Text>
-                </View>
-                <FontAwesome name="angle-right" size={26} color="#1e88e5" />
-              </View>
-            </TouchableOpacity>
-          </View>
+          {this.renderUser()}
           {/*  */}
           <View style={styles.divider} />
-          <ProfileItem navigation={this.props.navigation} icon="format-list-bulleted" name="Quản lý đơn hàng" />
-          <ProfileItem navigation={this.props.navigation} icon="cart-outline" name="Sản phẩm đã mua" />
-          <ProfileItem navigation={this.props.navigation} icon="eye-outline" name="Sản phẩm đã xem" />
-          <ProfileItem navigation={this.props.navigation} icon="heart-outline" name="Sản phẩm yêu thích" />
-          <ProfileItem navigation={this.props.navigation} icon="bookmark-outline" name="Sản phẩm mua sau" />
-          <ProfileItem navigation={this.props.navigation} icon="star-outline" name="Sản phẩm đánh giá" />
+          <ProfileItem
+            user={this.state.user}
+            navigation={this.props.navigation}
+            icon="format-list-bulleted"
+            name="Quản lý đơn hàng" />
+          <ProfileItem
+            user={this.state.user}
+            navigation={this.props.navigation}
+            icon="cart-outline"
+            name="Sản phẩm đã mua" />
+          <ProfileItem
+            navigation={this.props.navigation}
+            icon="eye-outline"
+            name="Sản phẩm đã xem" />
+          <ProfileItem
+            navigation={this.props.navigation}
+            icon="heart-outline"
+            name="Sản phẩm yêu thích" />
           {/*  */}
           <View style={styles.divider} />
           <ProfileItem navigation={this.props.navigation} name="Ưu đãi cho chủ thẻ ngân hàng" />
@@ -52,7 +133,9 @@ class ProfileScreen extends Component {
           {/*  */}
           <View style={styles.divider} />
           <ProfileItem navigation={this.props.navigation} icon="headphones" name="Hỗ trợ" />
-          <ProfileItem navigation={this.props.navigation} icon="logout" name="Đăng xuất" />
+          <TouchableOpacity onPress={() => { this.logoutPress() }}>
+            <ProfileItem navigation={this.props.navigation} icon="logout" name="Đăng xuất" />
+          </TouchableOpacity>
         </View>
       </View>
     );

@@ -6,7 +6,7 @@ import {
 import AsyncStorage from '@react-native-community/async-storage';
 import HeaderComponent from '../components/HeaderComponent';
 import DiaChiUocLuong from './DiaChiUocLuong';
-import { NavigationContainer } from '@react-navigation/native';
+
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 class Cart extends Component {
@@ -18,12 +18,13 @@ class Cart extends Component {
             isLoading: true,
             refresh: false,
             dataSource: [],
+            user: [],
             isClick: props.isClick,
             totalPrice: 0,
-        };        
-    }    
+        };
+    }
     //Event Click
-    ClickDiaChi() {        
+    ClickDiaChi() {
         this.setState({
             isClick: !this.state.isClick
         })
@@ -31,7 +32,10 @@ class Cart extends Component {
     diachi() {
         if (this.state.isClick)
             return (
-                <DiaChiUocLuong navigation={this.props.navigation} close={()=>{this.ClickDiaChi()}} />
+                <DiaChiUocLuong 
+                navigation={this.props.navigation}
+                user={this.state.user}
+                close={() => { this.ClickDiaChi() }} />
             );
         else
             return null
@@ -47,25 +51,34 @@ class Cart extends Component {
         this._isMounted = true;
         if (this._isMounted) {
             this.importData();
-        }        
+        }
     }
     componentWillUnmount() {
-        this._isMounted = false;        
+        this._isMounted = false;
     }
     importData = async () => {
         try {
             const keys = await AsyncStorage.getAllKeys();
             const stores = await AsyncStorage.multiGet(keys)
             let data = [];
+            let currentUser = [];
             let total = 0;
             stores.map((result, i, store) => {
-                let value = JSON.parse(store[i][1]);
-                data.push(value);
-                total += parseFloat(value.TotalPrice);
+                if (store[i][0] != "user") {
+                    let value = JSON.parse(store[i][1]);
+                    data.push(value);
+                    total += parseFloat(value.TotalPrice);
+                }
+                else
+                {
+                    let value = JSON.parse(store[i][1])
+                    currentUser = value;
+                }
             });
             this.setState({
                 dataSource: data,
-                total: total
+                total: total,
+                user: currentUser
             })
         } catch (error) {
             console.error(error)

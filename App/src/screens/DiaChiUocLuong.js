@@ -1,22 +1,29 @@
 import React, { Component } from 'react';
 import {
-    View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, TextInput,LogBox
+    View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, TextInput, LogBox
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 LogBox.ignoreAllLogs();
 import Diachi from '../components/DiaChi';
-
+import AsyncStorage from '@react-native-community/async-storage';
 class DiaChiUocLuong extends Component {
-
+    _isMounted = false;
     constructor(props) {
         super(props);
         this.state = {
             addNewAddressClick: true,
+            user: props.user
         }
     }
-    adressclick() {                        
+    componentDidMount() {
+        this._isMounted = true;
+    }
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+    adressclick() {
         this.props.close();
-        this.props.navigation.navigate('NewAddress');        
+        this.props.navigation.navigate('NewAddress',{user:this.state.user});
     }
     addNewAddress() {
         this.setState({
@@ -25,10 +32,11 @@ class DiaChiUocLuong extends Component {
     }
     renderElement() {
         const params = {
-            navigation: this.props.navigation,
-        }  
-        return (
-            <Diachi params={params} idNguoidung={2} />
+            navigation: this.props.navigation,     
+            user: this.state.user  
+        }        
+        return (            
+            <Diachi params={params}/>
         );
     }
     renderAddNewAddress() {

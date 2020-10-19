@@ -1,14 +1,119 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon1 from 'react-native-vector-icons/AntDesign';
 import Header from '../components/HeaderComponent';
+import LoadingView from 'react-native-loading-view'
 class DSSanphamdamua extends Component {
-    showmenu = () => {
-        this.props.navigation.openDrawer();
+    _isMounted = false
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoading: true,
+            dataSource: [],
+            user: props.route.params.user
+        }
+    }
+    componentDidMount() {
+        this._isMounted = true;
+        this.fetchData();
+    }
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+    fetchData() {
+        return fetch('https://servertlcn.herokuapp.com/dssanpham/' + this.state.user.id + '/nguoidung', { method: 'GET' })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                if (this._isMounted) {
+                    this.setState(
+                        {
+                            isLoading: false,
+                            dataSource: responseJson.data
+                        })
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+    renderDonHang() {
+        return (
+        <ScrollView>
+            {this.state.dataSource.map((e, id) => (
+                <View
+                    style={{
+                        flexDirection: "row",
+                        borderTopColor: 'black',
+                        borderTopWidth: 1,
+                        marginLeft: 10,
+                    }}
+                    key={id.toString()}>
+                    <View style={styles.LabelIndfor}>
+                        <Text style={styles.detailaccount}>Mã đơn hàng: {e.DonHang.id}</Text>
+                        <Text style={styles.detailaccount1}>Người mua: {this.state.user.HoTen}</Text>
+                        <Text style={styles.detailaccount1}>Tên sản phẩm: {e.SanPham.TenSanPham}</Text>
+                        <Text style={styles.detailaccount1}>Số lượng: {e.SoLuong}</Text>
+                        <Text style={styles.detailaccount1}>Giá: {e.SanPham.Gia}</Text>
+                        <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
+                            <Text style={styles.detailaccount1}>Tổng tiền: {e.SoLuong * e.SanPham.Gia}VND</Text>
+                        </View>
+                    </View>
+                    <View style={{ flex: 1 / 3, flexDirection: "column" }}>
+                        <Image source={{ uri: `data:image/jpg;base64,${e.SanPham.Hinh}` }} style={styles.itemImage} />
+                        <View style={{ flexDirection: "row" }}>
+                            <Text style={styles.detailaccount1} >Tình trạng: </Text>
+                            <Icon name="check-circle" size={30} color="green" />
+                        </View>
+                    </View>
+                </View>
+            ))}
+        </ScrollView>
+        );
+    }
+    renderListSanPham() {
+        return (
+            <ScrollView>
+                {this.state.dataSource.listSanpham.map((e, id) => (
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            borderTopColor: 'black',
+                            borderTopWidth: 1,
+                            marginLeft: 10,
+                        }}
+                        key={id.toString()}>
+                        <View style={styles.LabelIndfor}>
+                            <Text style={styles.detailaccount}>Mã đơn hàng: {e.DonHang.id}</Text>
+                            <Text style={styles.detailaccount1}>Người mua: {this.state.user.HoTen}</Text>
+                            <Text style={styles.detailaccount1}>Tên sản phẩm: {e.SanPham.TenSanPham}</Text>
+                            <Text style={styles.detailaccount1}>Số lượng: {e.SoLuong}</Text>
+                            <Text style={styles.detailaccount1}>Giá: {e.SanPham.Gia}</Text>
+                            <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
+                                <Text style={styles.detailaccount1}>Tổng tiền: {e.SoLuong * e.SanPham.Gia}VND</Text>
+                            </View>
+                        </View>
+                        <View style={{ flex: 1 / 3, flexDirection: "column" }}>
+                            <Image source={{ uri: `data:image/jpg;base64,${e.SanPham.Hinh}` }} style={styles.itemImage} />
+                            <View style={{ flexDirection: "row" }}>
+                                <Text style={styles.detailaccount1} >Tình trạng: </Text>
+                                <Icon name="check-circle" size={30} color="green" />
+                            </View>
+                        </View>
+                    </View>
+                ))}
+            </ScrollView>
+        );
     }
     render() {
+        if (this.state.isLoading) {
+            return (
+                <LoadingView loading={this.state.isLoading}>
+                    <Text>Loading...!</Text>
+                </LoadingView>
+            );
+        }
         return (
             <View style={styles.BackgroundScreens}>
                 <Header title="Sản phẩm đã mua" />
@@ -16,40 +121,14 @@ class DSSanphamdamua extends Component {
                     <View style={styles.top}>
                         <View style={styles.ViewSoLuong}>
                             <Text style={{ fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}>Số Lượng:  </Text>
-                            <Text style={{ fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}>13</Text>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}>{this.state.dataSource.listSanpham.length}</Text>
                         </View>
-                        <ScrollView>
-                            <View>
-                                <View style={styles.LabelIndfor}>
-                                    <Text style={styles.detailaccount}>Trần Cao Quyền</Text>
-                                    <Text style={styles.detailaccount1}>Địa chỉ:07, đường N8, KDC:Đông An, P. Tân Đông Hiệp, Dĩ An, Bình Dương</Text>
-                                    <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
-                                        <Text style={styles.detailaccount1}>1.000.000Đ</Text>
-                                        <Icon name="check-circle" size={30} color="green" />
-                                    </View>
-                                    <Text style={styles.detailaccount}>Trần Cao Quyền</Text>
-                                    <Text style={styles.detailaccount1}>Địa chỉ:07, đường N8, KDC:Đông An, P. Tân Đông Hiệp, Dĩ An, Bình Dương</Text>
-                                    <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
-                                        <Text style={styles.detailaccount1}>1.000.000Đ</Text>
-                                        <Icon name="times-circle" size={30} color="red" />
-                                    </View>
-                                    <Text style={styles.detailaccount}>Trần Cao Quyền</Text>
-                                    <Text style={styles.detailaccount1}>Địa chỉ:07, đường N8, KDC:Đông An, P. Tân Đông Hiệp, Dĩ An, Bình Dương</Text>
-                                    <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
-                                        <Text style={styles.detailaccount1}>1.000.000Đ</Text>
-                                        <Icon name="truck" size={30} color="#581BB2" />
-                                    </View>
-                                    <Text style={styles.detailaccount}>Trần Cao Quyền</Text>
-                                    <Text style={styles.detailaccount1}>Địa chỉ:07, đường N8, KDC:Đông An, P. Tân Đông Hiệp, Dĩ An, Bình Dương</Text>
-                                    <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
-                                        <Text style={styles.detailaccount1}>1.000.000Đ</Text>
-                                        <Icon name="angle-double-right" size={30} color="blue" />
-                                    </View>
-                                </View>
-                            </View>
-                        </ScrollView>
-                    </View>
+                        {this.renderListSanPham()}
 
+                        <Icon name="times-circle" size={30} color="red" />
+                        <Icon name="truck" size={30} color="#581BB2" />
+                        <Icon name="angle-double-right" size={30} color="blue" />
+                    </View>
                 </View>
             </View>
         );
@@ -83,8 +162,6 @@ const styles = StyleSheet.create({
         fontSize: 17,
         marginTop: 5,
         fontWeight: 'bold',
-        borderTopColor: 'black',
-        borderTopWidth: 1
 
     },
     detailaccount1: {
@@ -103,7 +180,7 @@ const styles = StyleSheet.create({
     BackgroundScreens: {
         flex: 1,
 
-        backgroundColor: 'red'
+        backgroundColor: 'white'
     },
     top: {
         flex: 1,
@@ -118,6 +195,11 @@ const styles = StyleSheet.create({
         paddingBottom: 15,
         paddingLeft: 10,
         borderBottomWidth: 3
-    }
+    },
+    itemImage: {
+        marginTop: 10,
+        width: 140,
+        height: 120,
+    },
 })
 export default DSSanphamdamua;

@@ -25,7 +25,7 @@ class Sanpham extends Component {
     fetchData() {
         return fetch('https://servertlcn.herokuapp.com/sanpham/' + this.state.loaisanpham + '/type', { method: 'GET' })
             .then((response) => response.json())
-            .then((responseJson) => {
+            .then((responseJson) => {         
                 if (this._isMounted) {
                     this.setState(
                         {

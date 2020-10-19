@@ -4,32 +4,71 @@ import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon1 from 'react-native-vector-icons/AntDesign';
 import Header from '../components/HeaderComponent';
+import LoadingView from 'react-native-loading-view'
 class QLDonhang extends Component {
-    showmenu = () => {
-
+    _isMounted = false
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoading: true,
+            dataSource: [],
+            user: props.route.params.user
+        }
+    }
+    componentDidMount() {
+        this._isMounted = true;
+        this.fetchData();
+    }
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+    fetchData() {
+        return fetch('https://servertlcn.herokuapp.com/donhang/' + this.state.user.id + '/nguoidung', { method: 'GET' })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                if (this._isMounted) {
+                    this.setState(
+                        {
+                            isLoading: false,
+                            dataSource: responseJson.data
+                        })
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     }
     render() {
+        if (this.state.isLoading) {
+            return (
+                <LoadingView loading={this.state.isLoading}>
+                    <Text>Loading...!</Text>
+                </LoadingView>
+            );
+        }
         return (
             <View style={styles.BackgroundScreens}>
                 <Header title="Quản lý đơn hàng" />
                 <View style={{ flex: 1 }}>
                     <View style={styles.top}>
                         <ScrollView>
-                            <View>
-                                <View style={styles.LabelIndfor}>
-                                    <View style={styles.detailaccount}>
-                                        <Text style={styles.detailaccount1}>Trần Cao Quyền</Text>
-                                        <Text style={styles.detailaccount1}>Địa chỉ:07, đường N8, KDC:Đông An, P. Tân Đông Hiệp, Dĩ An, Bình Dương</Text>
-                                        <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
-                                            <Text style={styles.detailaccount1}>1.000.000Đ</Text>
-                                            <Icon name="check-circle" size={30} color="green" />
+                            {this.state.dataSource.map((e, id) => (
+                                <View key={id.toString()}>
+                                    <View style={styles.LabelIndfor}>
+                                        <View style={styles.detailaccount}>
+                                            <Text style={styles.detailaccount1}>{e.NguoiDung.HoTen}</Text>
+                                            <Text style={styles.detailaccount1}>{e.DiaChi.TenDiaChi}</Text>
+                                            <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
+                                                <Text style={styles.detailaccount1}>{e.TongTien} VND</Text>
+                                                <Icon name="check-circle" size={30} color="green" />
+                                            </View>
                                         </View>
+                                        <Icon name="times-circle" size={30} color="red" />
+                                        <Icon name="truck" size={30} color="#581BB2" />
+                                        <Icon name="angle-double-right" size={30} color="blue" />
                                     </View>
-                                    <Icon name="times-circle" size={30} color="red" />
-                                    <Icon name="truck" size={30} color="#581BB2" />
-                                    <Icon name="angle-double-right" size={30} color="blue" />
                                 </View>
-                            </View>
+                            ))}
                         </ScrollView>
                     </View>
 
@@ -85,7 +124,7 @@ const styles = StyleSheet.create({
     },
     BackgroundScreens: {
         flex: 1,
-        backgroundColor: 'red'
+        backgroundColor: 'white'
     },
     top: {
         flex: 1,

@@ -44,7 +44,7 @@ class Loaisanpham extends Component {
             loaisanpham: this.state.check
         }       
         return (
-            <Sanpham ref={ref => (this.child = ref)} params={params} />
+            <Sanpham params={params} />
         )
     }
     render() {

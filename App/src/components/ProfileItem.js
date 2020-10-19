@@ -8,16 +8,17 @@ class ProfileItem extends Component {
         super(props);
         this.state = {
             icon: props.icon,
-            name: props.name
+            name: props.name,
+            user: props.user
         }
     }    
     onclick(name) {
         switch(name)
         {
             case "Quản lý đơn hàng":
-                this.props.navigation.navigate("QLDH");break;
+                this.props.navigation.navigate("QLDH",{user:this.state.user});break;
             case "Sản phẩm đã mua":
-                this.props.navigation.navigate("DSSP");break;                            
+                this.props.navigation.navigate("DSSP",{user:this.state.user});break;                            
         }
     }
     render() {
