@@ -40,42 +40,27 @@ class DSSanphamdamua extends Component {
     }
     renderDonHang() {
         return (
-        <ScrollView>
-            {this.state.dataSource.map((e, id) => (
-                <View
-                    style={{
-                        flexDirection: "row",
-                        borderTopColor: 'black',
-                        borderTopWidth: 1,
-                        marginLeft: 10,
-                    }}
-                    key={id.toString()}>
-                    <View style={styles.LabelIndfor}>
-                        <Text style={styles.detailaccount}>Mã đơn hàng: {e.DonHang.id}</Text>
-                        <Text style={styles.detailaccount1}>Người mua: {this.state.user.HoTen}</Text>
-                        <Text style={styles.detailaccount1}>Tên sản phẩm: {e.SanPham.TenSanPham}</Text>
-                        <Text style={styles.detailaccount1}>Số lượng: {e.SoLuong}</Text>
-                        <Text style={styles.detailaccount1}>Giá: {e.SanPham.Gia}</Text>
-                        <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
-                            <Text style={styles.detailaccount1}>Tổng tiền: {e.SoLuong * e.SanPham.Gia}VND</Text>
+            <ScrollView>
+                {this.state.dataSource.map((e, id) => (
+                    <View style={{ flex: 1 }}>
+                        <View style={styles.top}>
+                            <View style={styles.ViewSoLuong}>
+                                <Text style={{ fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}>Mã đơn hàng:  </Text>
+                                <Text style={{ fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}>{e.DonHang.id} </Text>
+                                <Text style={{ fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}>/ Số Lượng:  </Text>
+                                <Text style={{ fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}>{e.listSanpham.length}</Text>
+                            </View>
+                            {this.renderListSanPham(e)}
                         </View>
                     </View>
-                    <View style={{ flex: 1 / 3, flexDirection: "column" }}>
-                        <Image source={{ uri: `data:image/jpg;base64,${e.SanPham.Hinh}` }} style={styles.itemImage} />
-                        <View style={{ flexDirection: "row" }}>
-                            <Text style={styles.detailaccount1} >Tình trạng: </Text>
-                            <Icon name="check-circle" size={30} color="green" />
-                        </View>
-                    </View>
-                </View>
-            ))}
-        </ScrollView>
+                ))}
+            </ScrollView>
         );
     }
-    renderListSanPham() {
+    renderListSanPham(element) {
         return (
             <ScrollView>
-                {this.state.dataSource.listSanpham.map((e, id) => (
+                {element.listSanpham.map((e, id) => (
                     <View
                         style={{
                             flexDirection: "row",
@@ -85,8 +70,7 @@ class DSSanphamdamua extends Component {
                         }}
                         key={id.toString()}>
                         <View style={styles.LabelIndfor}>
-                            <Text style={styles.detailaccount}>Mã đơn hàng: {e.DonHang.id}</Text>
-                            <Text style={styles.detailaccount1}>Người mua: {this.state.user.HoTen}</Text>
+                            <Text style={styles.detailaccount}>Người mua: {this.state.user.HoTen}</Text>
                             <Text style={styles.detailaccount1}>Tên sản phẩm: {e.SanPham.TenSanPham}</Text>
                             <Text style={styles.detailaccount1}>Số lượng: {e.SoLuong}</Text>
                             <Text style={styles.detailaccount1}>Giá: {e.SanPham.Gia}</Text>
@@ -117,19 +101,10 @@ class DSSanphamdamua extends Component {
         return (
             <View style={styles.BackgroundScreens}>
                 <Header title="Sản phẩm đã mua" />
-                <View style={{ flex: 1 }}>
-                    <View style={styles.top}>
-                        <View style={styles.ViewSoLuong}>
-                            <Text style={{ fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}>Số Lượng:  </Text>
-                            <Text style={{ fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}>{this.state.dataSource.listSanpham.length}</Text>
-                        </View>
-                        {this.renderListSanPham()}
-
-                        <Icon name="times-circle" size={30} color="red" />
-                        <Icon name="truck" size={30} color="#581BB2" />
-                        <Icon name="angle-double-right" size={30} color="blue" />
-                    </View>
-                </View>
+                {this.renderDonHang()}
+                <Icon name="times-circle" size={30} color="red" />
+                <Icon name="truck" size={30} color="#581BB2" />
+                <Icon name="angle-double-right" size={30} color="blue" />
             </View>
         );
     }
