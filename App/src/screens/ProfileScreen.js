@@ -37,6 +37,12 @@ class ProfileScreen extends Component {
           isLoading: false
         })
       }
+      else
+      {
+        this.setState({
+          isLoading:false
+        })
+      }
     } catch (error) {
       console.log(error)
     }

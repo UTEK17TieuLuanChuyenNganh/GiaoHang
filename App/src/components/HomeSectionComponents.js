@@ -7,25 +7,27 @@ import {
   Dimensions,
   ScrollView, TouchableOpacity
 } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 const { width } = Dimensions.get('window');
 const section_banner = require('../assets/section_banner.png');
 import Loaisanpham from './Loaisanpham'
 
 class HomeSectionComponents extends Component {
   _isMounted = false;
-  constructor(props){
+  constructor(props) {
     super(props);
-    this.state={
+    this.state = {
       navigation: props.navigation,
     }
   }
   clickme = () => {
-    console.log("clicked")
+    AsyncStorage.getAllKeys()
+      .then(keys => AsyncStorage.multiRemove(keys));
   }
-  componentDidMount(){this._isMounted = true;}
-  componentWillUnmount(){
+  componentDidMount() { this._isMounted = true; }
+  componentWillUnmount() {
     this._isMounted = false;
-}
+  }
   render() {
     return (
       <View style={styles.sectionContainer}>
@@ -34,7 +36,7 @@ class HomeSectionComponents extends Component {
         {/*  */}
         <Image source={section_banner} style={styles.sectionImage} />
         {/*  */}
-        <Loaisanpham navigation={this.props.navigation}/>
+        <Loaisanpham navigation={this.props.navigation} />
         <TouchableOpacity onPress={() => { this.clickme() }} style={styles.seeMoreContainer}>
           <Text style={styles.seeMoreText}>XEM THÊM</Text>
         </TouchableOpacity>

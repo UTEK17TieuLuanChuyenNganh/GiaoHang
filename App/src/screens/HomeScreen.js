@@ -13,6 +13,7 @@ import DSSanphamdamua from './DSSanphamdamua';
 import Login from './Login';
 import ProfileScreen from './ProfileScreen';
 import TabHomever2 from './TabHomever2';
+import Payment from './Payment';
 const Stack = createStackNavigator();
 class HomeScreen extends Component {
     render() {
@@ -32,7 +33,8 @@ class HomeScreen extends Component {
                     <Stack.Screen name='ProfileScreen' component={ProfileScreen}/>
                     <Stack.Screen name='QLDH' component={QLDonhang}/>
                     <Stack.Screen name='DSSP' component={DSSanphamdamua}/>
-                    <Stack.Screen name='Login' component={Login}/>                    
+                    <Stack.Screen name='Login' component={Login}/> 
+                    <Stack.Screen name='Payment' component={Payment}/>                    
                 </Stack.Navigator>
             </NavigationContainer>
         );

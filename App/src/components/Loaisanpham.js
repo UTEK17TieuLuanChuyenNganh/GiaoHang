@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import Sanpham from './Sanpham'
+import LoadingView from 'react-native-loading-view'
 class Loaisanpham extends Component {
     _isMounted = false;
     constructor(props) {
@@ -33,21 +34,28 @@ class Loaisanpham extends Component {
         this._isMounted = false;
     }
 
-    clickme(id) {        
+    clickme(id) {
         this.setState({
             check: id
-        });        
+        });
     }
     renderSanpham() {
         const params = {
             navigation: this.props.navigation,
             loaisanpham: this.state.check
-        }       
+        }
         return (
             <Sanpham params={params} />
         )
     }
     render() {
+        if (this.state.isLoading) {
+            return (
+                <LoadingView loading={this.state.isLoading}>
+                    <Text>Loading...!</Text>
+                </LoadingView>
+            );
+        }
         return (
             <View>
                 <ScrollView horizontal={true}>
@@ -60,7 +68,7 @@ class Loaisanpham extends Component {
                                         ? styles.filterActiveButtonContainer
                                         : styles.filterInactiveButtonContainer
                                 }>
-                                <TouchableOpacity onPress={() => { this.clickme(e.id)}}>
+                                <TouchableOpacity onPress={() => { this.clickme(e.id) }}>
                                     <Text style={
                                         this.state.check == e.id
                                             ? styles.filterActiveText

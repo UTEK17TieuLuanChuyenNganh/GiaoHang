@@ -5,6 +5,7 @@ import {
 import AsyncStorage from '@react-native-community/async-storage';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import HeaderComponent from '../components/HeaderComponent';
+import LoadingView from 'react-native-loading-view'
 class ProductDetail extends Component {
     _isMounted = false;
     constructor(props) {
@@ -53,6 +54,13 @@ class ProductDetail extends Component {
             textSmoke, textHighlight, textMain, titleContainer,
             descContainer, descStyle, txtMaterial, txtColor
         } = styles;
+        if (this.state.isLoading) {
+            return (
+                <LoadingView loading={this.state.isLoading}>
+                    <Text>Loading...!</Text>
+                </LoadingView>
+            );
+        }
         return (
             <View style={wrapper}>
                 <HeaderComponent title="Chi tiết sản phẩm" />

@@ -42,15 +42,17 @@ class DSSanphamdamua extends Component {
         return (
             <ScrollView>
                 {this.state.dataSource.map((e, id) => (
-                    <View style={{ flex: 1 }}>
-                        <View style={styles.top}>
-                            <View style={styles.ViewSoLuong}>
-                                <Text style={{ fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}>Mã đơn hàng:  </Text>
-                                <Text style={{ fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}>{e.DonHang.id} </Text>
-                                <Text style={{ fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}>/ Số Lượng:  </Text>
-                                <Text style={{ fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}>{e.listSanpham.length}</Text>
+                    <View key={id.toString()}>
+                        <View style={{ flex: 1 }}>
+                            <View style={styles.top}>
+                                <View style={styles.ViewSoLuong}>
+                                    <Text style={{ fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}>Mã đơn hàng:  </Text>
+                                    <Text style={{ fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}>{e.DonHang.id} </Text>
+                                    <Text style={{ fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}>/ Số Lượng:  </Text>
+                                    <Text style={{ fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}>{e.listSanpham.length}</Text>
+                                </View>
+                                {this.renderListSanPham(e)}
                             </View>
-                            {this.renderListSanPham(e)}
                         </View>
                     </View>
                 ))}

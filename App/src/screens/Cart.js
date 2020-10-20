@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import {
     View, Text, TouchableOpacity, ScrollView,
-    Dimensions, StyleSheet, Image,
+    Dimensions, StyleSheet, Image, Alert
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import HeaderComponent from '../components/HeaderComponent';
 import DiaChiUocLuong from './DiaChiUocLuong';
-
+import LoadingView from 'react-native-loading-view'
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 class Cart extends Component {
@@ -16,26 +16,28 @@ class Cart extends Component {
         super(props);
         this.state = {
             isLoading: true,
-            refresh: false,
+            address: [],
             dataSource: [],
             user: [],
             isClick: props.isClick,
             totalPrice: 0,
+            dataPayment: []
         };
     }
-    //Event Click
-    ClickDiaChi() {
+    //Event Click    
+    async ClickDiaChi() {
         this.setState({
             isClick: !this.state.isClick
         })
+        await this.importData()
     }
     diachi() {
         if (this.state.isClick)
             return (
-                <DiaChiUocLuong 
-                navigation={this.props.navigation}
-                user={this.state.user}
-                close={() => { this.ClickDiaChi() }} />
+                <DiaChiUocLuong
+                    navigation={this.props.navigation}
+                    user={this.state.user}
+                    close={() => { this.ClickDiaChi() }} />
             );
         else
             return null
@@ -62,15 +64,19 @@ class Cart extends Component {
             const stores = await AsyncStorage.multiGet(keys)
             let data = [];
             let currentUser = [];
+            let chosedAddress = []
             let total = 0;
             stores.map((result, i, store) => {
-                if (store[i][0] != "user") {
+                if (store[i][0] != "user" && store[i][0] != "address") {
                     let value = JSON.parse(store[i][1]);
                     data.push(value);
                     total += parseFloat(value.TotalPrice);
                 }
-                else
-                {
+                else if (store[i][0] == "address") {
+                    let value = JSON.parse(store[i][1])
+                    chosedAddress = value
+                }
+                else {
                     let value = JSON.parse(store[i][1])
                     currentUser = value;
                 }
@@ -78,20 +84,72 @@ class Cart extends Component {
             this.setState({
                 dataSource: data,
                 total: total,
-                user: currentUser
+                user: currentUser,
+                address: chosedAddress,
+                isLoading: false
             })
         } catch (error) {
             console.error(error)
         }
     }
-    //Change Cart Data
-    clearAllData() {
-        AsyncStorage.getAllKeys()
-            .then(keys => AsyncStorage.multiRemove(keys));
+
+    //Payment
+    thanhtoan = async () => {
+        let items = []
+        const promises = this.state.dataSource.map(async (e) => {
+            let quantity = 0;
+            await AsyncStorage.getItem('dataCart' + e.id.toString())
+                .then(data => {
+                    data = JSON.parse(data)
+                    quantity = data.Quantity
+                })
+            let value = {
+                name: e.TenSanPham,
+                price: Math.round(e.Gia / 23000),
+                currency: "USD",
+                quantity: quantity
+            }
+            items.push(value)
+        })
+        const results = await Promise.all(promises)
+
+        dataPayment = {
+            reciver: this.state.user.HoTen,
+            address: this.state.address.TenDiaChi,
+            shipping: 100,
+            items: items
+        }
         this.setState({
-            dataSource: []
+            dataPayment: dataPayment,
+            isLoading:false
         })
     }
+
+    async thanhtoanImplement() {
+        if (this.state.dataSource.length > 0) {
+            await this.thanhtoan();            
+            this.props.navigation.navigate("Payment",{dataPayment:this.state.dataPayment});
+        }
+    }
+    thanhtoanPress() {
+        Alert.alert(
+            'Thanh toán',
+            'Xác nhận thanh toán ?',
+            [
+                {
+                    text: 'Hủy',
+                    onPress: () => { },
+                    style: 'cancel'
+                },
+                {
+                    text: 'Xác nhận',
+                    onPress: () => { this.thanhtoanImplement() },
+
+                },
+            ],
+        );
+    }
+    //Change Cart Data
     removeFromCart = async (id) => {
         try {
             await AsyncStorage.removeItem('dataCart' + id.toString());
@@ -126,6 +184,7 @@ class Cart extends Component {
             }).done();
         this.importData();
     }
+
     //Render Screen
     rederELement() {
         if (this.state.dataSource.length > 0) {
@@ -181,7 +240,7 @@ class Cart extends Component {
                             <View style={styles.TotalPrice}>
                                 <Text style={styles.checkoutTitle}> Tổng cộng: {this.state.total} VND</Text>
                             </View>
-                            <TouchableOpacity onPress={() => { this.clearAllData() }} >
+                            <TouchableOpacity onPress={() => { this.thanhtoanPress() }} >
                                 <View style={styles.checkoutButton}>
                                     <Text style={styles.checkoutTitle}>Thanh Toán</Text>
                                 </View>
@@ -195,6 +254,13 @@ class Cart extends Component {
         return null;
     }
     render() {
+        if (this.state.isLoading) {
+            return (
+                <LoadingView loading={this.state.isLoading}>
+                    <Text>Loading...!</Text>
+                </LoadingView>
+            );
+        }
         return (
             <View style={styles.wrapper}>
                 <TouchableOpacity onPress={() => { this.CloseAdress() }}>

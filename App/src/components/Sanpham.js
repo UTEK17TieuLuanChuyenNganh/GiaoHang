@@ -6,7 +6,7 @@ import {
     Text,
     TouchableOpacity,
 } from 'react-native';
-
+import LoadingView from 'react-native-loading-view'
 class Sanpham extends Component {
     _isMounted = false;
     constructor(props) {
@@ -25,7 +25,7 @@ class Sanpham extends Component {
     fetchData() {
         return fetch('https://servertlcn.herokuapp.com/sanpham/' + this.state.loaisanpham + '/type', { method: 'GET' })
             .then((response) => response.json())
-            .then((responseJson) => {         
+            .then((responseJson) => {
                 if (this._isMounted) {
                     this.setState(
                         {
@@ -57,6 +57,13 @@ class Sanpham extends Component {
         this.state.navigation.navigate('ProductDetail', { id });
     }
     render() {
+        if (this.state.isLoading) {
+            return (
+                <LoadingView loading={this.state.isLoading}>
+                    <Text>Loading...!</Text>
+                </LoadingView>
+            );
+        }
         return (
             <View>
                 <View style={styles.listItemContainer}>

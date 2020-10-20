@@ -23,7 +23,7 @@ class DiaChiUocLuong extends Component {
     }
     adressclick() {
         this.props.close();
-        this.props.navigation.navigate('NewAddress',{user:this.state.user});
+        this.props.navigation.navigate('NewAddress', { user: this.state.user });
     }
     addNewAddress() {
         this.setState({
@@ -32,11 +32,11 @@ class DiaChiUocLuong extends Component {
     }
     renderElement() {
         const params = {
-            navigation: this.props.navigation,     
-            user: this.state.user  
-        }        
-        return (            
-            <Diachi params={params}/>
+            navigation: this.props.navigation,
+            user: this.state.user,
+        }
+        return (
+            <Diachi params={params} close={() => { this.props.close(); }} />
         );
     }
     renderAddNewAddress() {

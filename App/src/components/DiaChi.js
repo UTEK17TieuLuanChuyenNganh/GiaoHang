@@ -5,9 +5,10 @@ import {
     View,
     Text,
     TouchableOpacity,
+    Alert
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
+import AsyncStorage from '@react-native-community/async-storage';
 class DiaChi extends Component {
     _isMounted = false;
     constructor(props) {
@@ -15,7 +16,7 @@ class DiaChi extends Component {
         this.state = {
             isLoading: true,
             dataSource: [],
-            navigation: props.navigation,
+            navigation: props.params.navigation,
             user: props.params.user
         }
     }
@@ -24,7 +25,7 @@ class DiaChi extends Component {
         this.fetchData();
     }
 
-    fetchData() {       
+    fetchData() {
         return fetch('https://servertlcn.herokuapp.com/diachi/' + this.state.user.id + '/nguoidung', { method: 'GET' })
             .then((response) => response.json())
             .then((responseJson) => {
@@ -43,15 +44,49 @@ class DiaChi extends Component {
     componentWillUnmount() {
         this._isMounted = false;
     }
-    clickMe(id) {
 
+    //Chose Address 
+    addAddressToAsyncStore = async (data) => {
+        try {                             
+            await AsyncStorage.setItem(
+                'address', JSON.stringify(data)
+            );
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    async choseAddress(id, TenDiaChi) {        
+        let data = {
+            id: id,
+            TenDiaChi:TenDiaChi
+        }
+        await this.addAddressToAsyncStore(data)
+        this.props.close();
+    }
+    clickMe(id, TenDiaChi) {
+        Alert.alert(
+            'Chọn địa chỉ',
+            'Xác nhận chọn địa chỉ này ?',
+            [
+                {
+                    text: 'Hủy',
+                    onPress: () => { },
+                    style: 'cancel'
+                },
+                {
+                    text: 'Xác nhận',
+                    onPress: () => { this.choseAddress(id, TenDiaChi) },
+
+                },
+            ],
+        );
     }
     render() {
         return (
             <View>
                 {this.state.dataSource.map((e, id) => (
                     <View key={id.toString()}>
-                        <TouchableOpacity onPress={() => { }}>
+                        <TouchableOpacity onPress={() => { this.clickMe(e.id, e.TenDiaChi) }}>
                             <View style={styles.Adress}>
                                 <Text style={styles.AdressTitle}>
                                     {e.TenDiaChi}
