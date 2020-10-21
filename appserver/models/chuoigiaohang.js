@@ -1,7 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const ChuoiGiaoHang = sequelize.define('ChuoiGiaoHang', {
-    Chuoi: DataTypes.STRING,
+    Chuoi: DataTypes.STRING(10000),
     SoLuong: DataTypes.INTEGER
   }, {});
   ChuoiGiaoHang.associate = function(models) {
