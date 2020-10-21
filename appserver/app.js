@@ -18,7 +18,7 @@ const loaisanphamRoute = require('./routes/loaisanphamRoute');
 const sanphamRoute = require('./routes/sanphamRoute');
 const shipperRoute = require('./routes/shipperRoute');
 const lapchuoidonhangRoute = require('./routes/lapchuoidonhangRoute');
-
+const thanhtoanRoute = require('./routes/thanhtoanRoute');
 app.get('/sync', (req, res) => {
     let models = require('./models') 
     models.sequelize.sync()
@@ -41,7 +41,7 @@ app.use('/loaisanpham', loaisanphamRoute);
 app.use('/sanpham', sanphamRoute);
 app.use('/shipper', shipperRoute);
 app.use('/lapchuoidonhang',lapchuoidonhangRoute);
-
+app.use('/thanhtoan',thanhtoanRoute);
 
 // Add headers
 app.use(function(req, res, next) {

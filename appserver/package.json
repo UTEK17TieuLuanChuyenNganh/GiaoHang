@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",    
+    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon ./bin/www --exec babel-node"
   },
   "author": "",
@@ -21,6 +21,7 @@
     "morgan": "~1.9.1",
     "node-fetch": "^2.6.1",
     "nodemon": "^2.0.4",
+    "paypal-rest-sdk": "^1.8.1",
     "pg": "^8.0.3",
     "pg-hstore": "^2.3.3",
     "sequelize": "^5.21.7",

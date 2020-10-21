@@ -134,8 +134,8 @@ class ProfileScreen extends Component {
             name="Sản phẩm yêu thích" />
           {/*  */}
           <View style={styles.divider} />
-          <ProfileItem navigation={this.props.navigation} name="Ưu đãi cho chủ thẻ ngân hàng" />
-          <ProfileItem navigation={this.props.navigation} name="Cài đặt" />
+          <ProfileItem navigation={this.props.navigation} name="Ưu đãi" />
+          {/* <ProfileItem navigation={this.props.navigation} name="Cài đặt" /> */}
           {/*  */}
           <View style={styles.divider} />
           <ProfileItem navigation={this.props.navigation} icon="headphones" name="Hỗ trợ" />

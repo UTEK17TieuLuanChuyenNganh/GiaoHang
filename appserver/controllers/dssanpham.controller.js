@@ -1,7 +1,7 @@
 const models = require('../models/index')
 const DSSanPham = models.DSSanPham
 const DonHang = models.DonHang
-const createDSSanPham = async(req, res) => {
+const createDSSanPham = async (req, res) => {
     let {
         SoLuong,
         DonHangId,
@@ -36,7 +36,7 @@ const createDSSanPham = async(req, res) => {
     }
 }
 
-const updateDSSanPham = async(req, res) => {
+const updateDSSanPham = async (req, res) => {
     const { id } = req.params;
     const {
         SoLuong,
@@ -56,7 +56,7 @@ const updateDSSanPham = async(req, res) => {
             }
         });
         if (DSSanPhams.length > 0) {
-            DSSanPhams.forEach(async(DSSanPham) => {
+            DSSanPhams.forEach(async (DSSanPham) => {
                 await DSSanPham.update({
                     SoLuong: SoLuong ? SoLuong : DSSanPham.SoLuong,
                     DonHangId: DonHangId ? DonHangId : DSSanPham.DonHangId,
@@ -183,7 +183,7 @@ const updateDSSanPham = async(req, res) => {
 
 // }
 
-const getAllDSSanPham = async(req, res) => {
+const getAllDSSanPham = async (req, res) => {
     try {
         const DSSanPhams = await DSSanPham.findAll({
             attributes: [
@@ -212,7 +212,7 @@ const getAllDSSanPham = async(req, res) => {
     }
 }
 
-const getDSSanPhamById = async(req, res) => {
+const getDSSanPhamById = async (req, res) => {
     const { id } = req.params;
     try {
         const DSSanPhams = await DSSanPham.findAll({
@@ -248,7 +248,7 @@ const getDSSanPhamById = async(req, res) => {
         });
     }
 }
-const getDSSanPhamByDonHangId = async(req, res) => {
+const getDSSanPhamByDonHangId = async (req, res) => {
     const { id } = req.params;
     try {
         const DSSanPhams = await DSSanPham.findAll({
@@ -261,7 +261,7 @@ const getDSSanPhamByDonHangId = async(req, res) => {
             where: {
                 DonHangId: id,
             },
-            include: [{all:true}]
+            include: [{ all: true }]
         });
         if (DSSanPhams.length > 0) {
             res.json({
@@ -285,9 +285,10 @@ const getDSSanPhamByDonHangId = async(req, res) => {
         });
     }
 }
-const getDSSanPhamByNguoiDungId = async(req, res) => {
+const getDSSanPhamByNguoiDungId = async (req, res) => {
     const { id } = req.params;
     try {
+        const dataRes = [];
         const DonHangs = await DonHang.findAll({
             attributes: [
                 'id',
@@ -307,23 +308,28 @@ const getDSSanPhamByNguoiDungId = async(req, res) => {
                 NguoiDungId: id,
             }
         });
-        const DSSanPhams = await DSSanPham.findAll({
-            attributes: [
-                'id',
-                'SoLuong',
-                'DonHangId',
-                'SanPhamId',
-            ],
-            where: {
-                DonHangId: DonHangs[0].id,
-            },
-            include: [{all:true}]
-        });
-        let dataRes = {
-            Donhang: DonHangs,
-            listSanpham: DSSanPhams
-        }
-        if (DSSanPhams.length > 0) {
+
+        const promises = DonHangs.map(async (e) => {
+            let DSSanPhams = await DSSanPham.findAll({
+                attributes: [
+                    'id',
+                    'SoLuong',
+                    'DonHangId',
+                    'SanPhamId',
+                ],
+                where: {
+                    DonHangId: e.id,
+                },
+                include: [{ all: true }]
+            });
+            dataRes.push({
+                DonHang: e.dataValues,
+                listSanpham: DSSanPhams
+            })
+        })
+        const results = await Promise.all(promises)
+        console.log(dataRes);
+        if (dataRes.length > 0) {
             res.json({
                 result: 'ok',
                 data: dataRes,

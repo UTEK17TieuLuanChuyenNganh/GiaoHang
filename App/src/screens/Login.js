@@ -42,7 +42,7 @@ class Login extends Component {
 
     }
     registPress() {
-        // this.props.navigation.navigate("");
+        this.props.navigation.navigate("Register");
     }
     setData = async (data) => {
         try {
@@ -72,7 +72,7 @@ class Login extends Component {
                         <Text style={{ fontSize: 25, color: 'white' }}>Đăng Nhập</Text>
                     </View>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => { }} >
+                <TouchableOpacity onPress={() => { this.registPress()}} >
                     <Text style={{ fontStyle: "italic", fontSize: 20, color: 'black', margin: 20 }}>Đăng Ký</Text>
                 </TouchableOpacity>
             </View>

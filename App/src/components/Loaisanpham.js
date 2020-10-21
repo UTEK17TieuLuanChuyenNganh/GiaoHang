@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import {
+    View, Text, StyleSheet, ScrollView,
+    TouchableOpacity, Image, ActivityIndicator
+} from 'react-native';
 import Sanpham from './Sanpham'
 import LoadingView from 'react-native-loading-view'
 class Loaisanpham extends Component {
@@ -52,7 +55,9 @@ class Loaisanpham extends Component {
         if (this.state.isLoading) {
             return (
                 <LoadingView loading={this.state.isLoading}>
-                    <Text>Loading...!</Text>
+                    <ActivityIndicator
+                        color='black'
+                        size='large' />
                 </LoadingView>
             );
         }

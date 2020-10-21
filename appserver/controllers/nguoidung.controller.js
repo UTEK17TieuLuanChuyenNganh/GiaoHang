@@ -341,6 +341,50 @@ const getCustomerByEmail = async(req, res) => {
         });
     }
 }
+const getCustomerByUsername = async(req, res) => {
+    const { username } = req.params;
+    try {
+        const customers = await Customer.findAll({
+            attributes: [
+                'id',
+                'HoTen',
+                'SinhNhat',
+                'GioiTinh',
+                'Avatar',
+                'Email',
+                'SDT',
+                'Username',
+                'Password',
+                'laShop',
+            ],
+            where: {
+                Username: username,
+                isDisable: false
+
+            },
+        });
+        if (customers.length > 0) {
+            res.json({
+                result: 'ok',
+                data: customers[0],
+                message: "List customer successfully"
+            });
+        } else {
+            res.json({
+                result: 'failed',
+                data: {},
+                message: `Cannot find list customer to show. Error:${error}`
+            });
+        }
+    } catch (error) {
+        res.json({
+            result: 'failed',
+            data: [],
+            length: 0,
+            message: `Cannot list customer. Error:${error}`
+        });
+    }
+}
 module.exports = {
     createCustomer,
     updateCustomer,
@@ -348,5 +392,6 @@ module.exports = {
     enableCustomer,
     getAllCustomer,
     getCustomerById,
-    getCustomerByEmail
+    getCustomerByEmail,
+    getCustomerByUsername
 }

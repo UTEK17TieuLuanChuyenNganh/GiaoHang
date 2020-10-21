@@ -38,7 +38,7 @@ class HomeSectionComponents extends Component {
         {/*  */}
         <Loaisanpham navigation={this.props.navigation} />
         <TouchableOpacity onPress={() => { this.clickme() }} style={styles.seeMoreContainer}>
-          <Text style={styles.seeMoreText}>XEM THÊM</Text>
+          <Text style={styles.seeMoreText}>Clear Session</Text>
         </TouchableOpacity>
       </View>
     );

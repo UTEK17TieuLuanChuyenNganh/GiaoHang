@@ -9,6 +9,7 @@ const { enableCustomer } = require('../controllers/nguoidung.controller')
 const { getAllCustomer } = require('../controllers/nguoidung.controller')
 const { getCustomerById } = require('../controllers/nguoidung.controller')
 const { getCustomerByEmail } = require('../controllers/nguoidung.controller')
+const { getCustomerByUsername } = require('../controllers/nguoidung.controller')
 
 //Models
 const models = require('../models/index')
@@ -35,4 +36,5 @@ router.get('/:id', getCustomerById)
 //Get user by Email
 router.get('/:email/email', getCustomerByEmail)
 
+router.get('/:username/username', getCustomerByUsername)
 module.exports = router;
