@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, StatusBar } from 'react-native';
+import { StyleSheet, View, Text, StatusBar,ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';

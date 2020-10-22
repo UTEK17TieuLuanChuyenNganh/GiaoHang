@@ -1,46 +1,80 @@
 import React, { Component } from 'react';
-import { View, ScrollView, TouchableOpacity, Text, StyleSheet, TextInput, ActivityIndicator } from 'react-native';
+import {
+    View, ScrollView, TouchableOpacity, Text,
+    StyleSheet, TextInput, ActivityIndicator, Alert
+} from 'react-native';
 import Header from '../components/HeaderComponent';
-
+import { Base64 } from 'js-base64';
 import AsyncStorage from '@react-native-community/async-storage';
 class Register extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            isLoading: false,
             HoTen: "",
             SinhNhat: "",
             GioiTinh: "",
             Username: "",
             Password: "",
+            ConfirmPassword: "",
             Avatar: "",
             Email: "",
             SDT: "",
         }
     }
     fetchData() {
-        this.isLoading = true;
-        fetch('https://servertlcn.herokuapp.com/nguoidung',
-            {
-                method: 'GET',
-            })
-            .then((response) => response.json())
-            .then((responseJson) => {
-                if (this.isLoading && responseJson.data.Password == this.state.password) {
-                    this.setData(responseJson.data)
-                    this.props.navigation.navigate("TabHomeVer2");
-                }
-                else {
-                    this.setState({
-                        err: responseJson.result
-                    })
-                }
-                this.isLoading = false;
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+        if (this.state.Password.trim() != "" && this.state.HoTen != ""
+            && this.state.Username != "" && this.state.Password == this.state.ConfirmPassword) {
+            let encryptedPassword = Base64.encode(this.state.Password);;
+            let data = {
+                HoTen: this.state.HoTen,
+                SinhNhat: "10/22/2020",
+                GioiTinh: this.state.GioiTinh,
+                Username: this.state.Username,
+                Password: encryptedPassword,
+                Avatar: this.state.Avatar,
+                Email: this.state.Email,
+                SDT: this.state.SDT,
+            }
+            fetch('https://servertlcn.herokuapp.com/nguoidung',
+                {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: { 'Content-Type': 'application/json' }
+
+                })
+                .then((response) => response.json())
+                .then((responseJson) => {
+                    console.log(responseJson)
+                    Alert.alert(
+                        'Đăng Ký',
+                        'Thành công!',
+                        [
+                            {
+                                text: 'OK',
+                                onPress: () => { this.confirmPress() },
+
+                            },
+                        ],
+                    );
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
+        else {
+            Alert.alert(
+                'Đăng Ký',
+                'Thiếu thông tin!',
+                [
+                    {
+                        text: 'OK',
+                        onPress: () => { },
+
+                    },
+                ],
+            );
+        }
     }
     setData = async (data) => {
         try {
@@ -55,78 +89,84 @@ class Register extends Component {
         this.props.navigation.navigate("Login")
     }
     render() {
-        if (this.state.isLoading) {
-            return (
-                <ActivityIndicator animating={true} size="large" color="#0000ff" />
-            );
-        }
         return (
-            <View>
+            <View style={{ flex: 1, flexDirection: "column" }}>
                 <Header title='Đăng ký' />
-                <View style={{ flex: 1 }}>
-                    <View style={styles.AddressStyle}>
-                        <Text style={styles.TextStyle}>Họ tên:</Text>
-                        <TextInput
-                            onChangeText={(text) => this.setState({ HoTen: text })}
-                            value={this.state.HoTen}
-                            style={styles.TextInputStyle} />
-                    </View>
-                    <View style={styles.AddressStyle}>
-                        <Text style={styles.TextStyle}>Sinh nhật:</Text>
-                        <TextInput
-                            onChangeText={(text) => this.setState({ SinhNhat: text })}
-                            value={this.state.SinhNhat}
-                            style={styles.TextInputStyle} />
-                    </View>
-                    <View style={styles.AddressStyle}>
-                        <Text style={styles.TextStyle}>Giới tính:</Text>
-                        <TextInput
-                            onChangeText={(text) => this.setState({ GioiTinh: text })}
-                            value={this.state.GioiTinh}
-                            style={styles.TextInputStyle} />
-                    </View>
-                    <View style={styles.AddressStyle}>
-                        <Text style={styles.TextStyle}>Username:</Text>
-                        <TextInput
-                            onChangeText={(text) => this.setState({ Username: text })}
-                            value={this.state.Username}
-                            style={styles.TextInputStyle} />
-                    </View>
-                    <View style={styles.AddressStyle}>
-                        <Text style={styles.TextStyle}>Password:</Text>
-                        <TextInput
-                            onChangeText={(text) => this.setState({ Password: text })}
-                            value={this.state.Password}
-                            style={styles.TextInputStyle} />
-                    </View>
-                    <View style={styles.AddressStyle}>
-                        <Text style={styles.TextStyle}>Avatar:</Text>
-                        <TextInput
-                            onChangeText={(text) => this.setState({ Avatar: text })}
-                            value={this.state.Avatar}
-                            style={styles.TextInputStyle} />
-                    </View>
-                    <View style={styles.AddressStyle}>
-                        <Text style={styles.TextStyle}>Email:</Text>
-                        <TextInput
-                            onChangeText={(text) => this.setState({ Email: text })}
-                            value={this.state.Email}
-                            style={styles.TextInputStyle} />
-                    </View>
-                    <View style={styles.AddressStyle}>
-                        <Text style={styles.TextStyle}>SĐT:</Text>
-                        <TextInput
-                            onChangeText={(text) => this.setState({ SDT: text })}
-                            value={this.state.SDT}
-                            style={styles.TextInputStyle} />
-                    </View>
-                    <TouchableOpacity style={{ paddingTop: 30, justifyContent: 'center', alignItems: 'center' }}
-                        onPress={() => { }}>
-                        <View style={styles.SaveStyle}>
-                            <Text style={{ fontSize: 35, color: 'white' }}>Đăng ký</Text>
+                <ScrollView>
+                    <View style={{ flex: 1 }}>
+                        <View style={styles.AddressStyle}>
+                            <Text style={styles.TextStyle}>Họ tên:</Text>
+                            <TextInput
+                                onChangeText={(text) => this.setState({ HoTen: text })}
+                                value={this.state.HoTen}
+                                style={styles.TextInputStyle} />
                         </View>
-                    </TouchableOpacity>
-                </View>
+                        <View style={styles.AddressStyle}>
+                            <Text style={styles.TextStyle}>Sinh nhật:</Text>
+                            <TextInput
+                                onChangeText={(text) => this.setState({ SinhNhat: text })}
+                                value={this.state.SinhNhat}
+                                style={styles.TextInputStyle} />
+                        </View>
+                        <View style={styles.AddressStyle}>
+                            <Text style={styles.TextStyle}>Giới tính:</Text>
+                            <TextInput
+                                onChangeText={(text) => this.setState({ GioiTinh: text })}
+                                value={this.state.GioiTinh}
+                                style={styles.TextInputStyle} />
+                        </View>
+                        <View style={styles.AddressStyle}>
+                            <Text style={styles.TextStyle}>Username:</Text>
+                            <TextInput
+                                onChangeText={(text) => this.setState({ Username: text })}
+                                value={this.state.Username}
+                                style={styles.TextInputStyle} />
+                        </View>
+                        <View style={styles.AddressStyle}>
+                            <Text style={styles.TextStyle}>Password:</Text>
+                            <TextInput
+                                secureTextEntry={true}
+                                onChangeText={(text) => this.setState({ Password: text })}
+                                value={this.state.Password}
+                                style={styles.TextInputStyle} />
+                        </View>
+                        <View style={styles.AddressStyle}>
+                            <Text style={{ fontSize: 20 }}>Confirm{"\n"}Password:</Text>
+                            <TextInput
+                                secureTextEntry={true}
+                                onChangeText={(text) => this.setState({ ConfirmPassword: text })}
+                                value={this.state.ConfirmPassword}
+                                style={styles.TextInputStyle} />
+                        </View>
+                        <View style={styles.AddressStyle}>
+                            <Text style={styles.TextStyle}>Avatar:</Text>
+                            <TextInput
+                                onChangeText={(text) => this.setState({ Avatar: text })}
+                                value={this.state.Avatar}
+                                style={styles.TextInputStyle} />
+                        </View>
+                        <View style={styles.AddressStyle}>
+                            <Text style={styles.TextStyle}>Email:</Text>
+                            <TextInput
+                                onChangeText={(text) => this.setState({ Email: text })}
+                                value={this.state.Email}
+                                style={styles.TextInputStyle} />
+                        </View>
+                        <View style={styles.AddressStyle}>
+                            <Text style={styles.TextStyle}>SĐT:</Text>
+                            <TextInput
+                                onChangeText={(text) => this.setState({ SDT: text })}
+                                value={this.state.SDT}
+                                style={styles.TextInputStyle} />
+                        </View>
+                    </View>
+                </ScrollView>
+                <TouchableOpacity style={{ marginBottom: 10, justifyContent: 'center', alignItems: 'center' }}
+                    onPress={() => { this.fetchData() }}>
+                    <View style={styles.SaveStyle}>
+                        <Text style={{ fontSize: 35, color: 'white' }}>Đăng ký</Text>
+                    </View>
+                </TouchableOpacity>
             </View>
         );
     }
@@ -158,13 +198,13 @@ const styles = StyleSheet.create({
         paddingRight: 10
     },
     AddressStyle: {
-        height: 60,
+        height: 80,
         flexDirection: "row",
         justifyContent: "space-between",
         padding: 10
     },
     TextStyle: {
-        fontSize: 22
+        fontSize: 25
     },
     SaveStyle: {
         marginTop: 20,

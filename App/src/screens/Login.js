@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, Button, TextInput, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
+import { Base64 } from 'js-base64';
 class Login extends Component {
 
     isLoading = false;
@@ -25,16 +26,19 @@ class Login extends Component {
             })
             .then((response) => response.json())
             .then((responseJson) => {
-                if (this.isLoading && responseJson.data.Password == this.state.password) {
-                    this.setData(responseJson.data)
-                    this.props.navigation.navigate("TabHomeVer2");
+                if (responseJson.result != "failed") {
+                    var decryptedPassword = Base64.decode(responseJson.data.Password);
+                    if (this.isLoading && this.state.password.trim() == decryptedPassword) {
+                        this.setData(responseJson.data)
+                        this.props.navigation.navigate("TabHomeVer2");
+                    }
+                    else {
+                        this.setState({
+                            err: responseJson.result
+                        })
+                    }
+                    this.isLoading = false;
                 }
-                else {
-                    this.setState({
-                        err: responseJson.result
-                    })
-                }
-                this.isLoading = false;
             })
             .catch((error) => {
                 console.log(error);
@@ -72,7 +76,7 @@ class Login extends Component {
                         <Text style={{ fontSize: 25, color: 'white' }}>Đăng Nhập</Text>
                     </View>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => { this.registPress()}} >
+                <TouchableOpacity onPress={() => { this.registPress() }} >
                     <Text style={{ fontStyle: "italic", fontSize: 20, color: 'black', margin: 20 }}>Đăng Ký</Text>
                 </TouchableOpacity>
             </View>
