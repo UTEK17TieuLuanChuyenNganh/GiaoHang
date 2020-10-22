@@ -3,11 +3,13 @@ import {
     View,
     StyleSheet,
     Text,
-    ActivityIndicator
+    ActivityIndicator,
+    Dimensions
 } from 'react-native';
 import { WebView } from 'react-native-webview';
-import LoadingView from 'react-native-loading-view';
 import Header from '../components/HeaderComponent';
+const { width } = Dimensions.get('window').width;
+const { height } = Dimensions.get('window').height;
 const hideJS = `
     function formatStyle(){ 
         getElementByXpath("/html/body/pre").style.display="none";
@@ -23,6 +25,7 @@ class Payment extends Component {
             isLoading: true,
             dataPayment: props.route.params.dataPayment,
             url: "",
+            visible: true,
             result: []
         }
     }
@@ -54,40 +57,41 @@ class Payment extends Component {
             .catch((error) => {
                 console.log(error);
             });
-    }    
+    }
     closeWebView = async newNavState => {
         const { url } = newNavState;
         if (!url) return;
         if (url.includes('thanhtoan/execute?paymentId')) {
-            this.props.navigation.navigate("PaymentNotice",{dataPayment:this.state.dataPayment})
+            this.props.navigation.navigate("PaymentNotice", { dataPayment: this.state.dataPayment })
         }
+    }
+    hideSpinner() {
+        this.setState({ visible: false });
     }
     render() {
         if (this.state.isLoading) {
             return (
                 <LoadingView loading={this.state.isLoading}>
-                    <ActivityIndicator
-                        color='black'
-                        size='large'
-                        style={styles.flexContainer}
-                    />
+                    <ActivityIndicator animating={true} size="large" color="#0000ff" style={{marginBottom:height/2,marginLeft:width/2}} />
                 </LoadingView>
             );
         }
         else {
             return (
-                <View style={{ flex: 1 }}>
+                <View style={{ flex: 1, flexDirection: "column" }}>
                     <Header title="Thanh toán" />
                     <WebView
                         ref={ref => this.webviewRef = ref}
                         source={{ uri: this.state.url }}
                         style={styles.Webview}
-                        renderLoading={() => (
-                            <ActivityIndicator
-                                color='black'
-                                size='large'
-                                style={styles.Webview} />)}
+                        onLoad={() => { this.hideSpinner() }}
+                        startInLoadingState={true}
                         onNavigationStateChange={this.closeWebView} />
+                    {this.state.visible && (
+                        <View style={{alignItems:"center"}}>
+                            <ActivityIndicator animating={true} size="large" color="#0000ff" style={{marginBottom:300}} />
+                        </View>
+                    )}
                 </View>
             );
         }
@@ -95,7 +99,7 @@ class Payment extends Component {
 }
 const styles = StyleSheet.create({
     Webview: {
-        flex: 1,
+        flex: 1, backgroundColor: "green"
     },
     flexContainer: {
         flex: 1

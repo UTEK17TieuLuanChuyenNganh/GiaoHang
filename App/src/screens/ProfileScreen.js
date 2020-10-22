@@ -8,7 +8,7 @@ import ProfileItem from '../components/ProfileItem';
 
 import React, { Component } from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import LoadingView from 'react-native-loading-view'
+
 class ProfileScreen extends Component {
 
   _isMounted = false;
@@ -98,9 +98,7 @@ class ProfileScreen extends Component {
   render() {
     if (this.state.isLoading) {
       return (
-        <LoadingView loading={this.state.isLoading}>
-          <Text>Loading...!</Text>
-        </LoadingView>
+        <ActivityIndicator animating={true} size="large" color="#0000ff" />
       );
     }
     return (

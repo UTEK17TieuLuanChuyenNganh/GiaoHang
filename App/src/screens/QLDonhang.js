@@ -4,7 +4,6 @@ import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon1 from 'react-native-vector-icons/AntDesign';
 import Header from '../components/HeaderComponent';
-import LoadingView from 'react-native-loading-view'
 class QLDonhang extends Component {
     _isMounted = false
     constructor(props) {
@@ -41,9 +40,7 @@ class QLDonhang extends Component {
     render() {
         if (this.state.isLoading) {
             return (
-                <LoadingView loading={this.state.isLoading}>
-                    <Text>Loading...!</Text>
-                </LoadingView>
+                <ActivityIndicator animating={true} size="large" color="#0000ff" />
             );
         }
         return (

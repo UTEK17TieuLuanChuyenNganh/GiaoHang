@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import {
     View, Text, TouchableOpacity, ScrollView,
-    Dimensions, StyleSheet, Image, Alert
+    Dimensions, StyleSheet, Image, Alert, ActivityIndicator
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import HeaderComponent from '../components/HeaderComponent';
 import DiaChiUocLuong from './DiaChiUocLuong';
-import LoadingView from 'react-native-loading-view'
+
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 class Cart extends Component {
@@ -121,14 +121,14 @@ class Cart extends Component {
         }
         this.setState({
             dataPayment: dataPayment,
-            isLoading:false
+            isLoading: false
         })
     }
 
     async thanhtoanImplement() {
         if (this.state.dataSource.length > 0) {
-            await this.thanhtoan();            
-            this.props.navigation.navigate("Payment",{dataPayment:this.state.dataPayment});
+            await this.thanhtoan();
+            this.props.navigation.navigate("Payment", { dataPayment: this.state.dataPayment });
         }
     }
     thanhtoanPress() {
@@ -256,9 +256,7 @@ class Cart extends Component {
     render() {
         if (this.state.isLoading) {
             return (
-                <LoadingView loading={this.state.isLoading}>
-                    <Text>Loading...!</Text>
-                </LoadingView>
+                <ActivityIndicator animating={true} size="large" color="#0000ff" />
             );
         }
         return (

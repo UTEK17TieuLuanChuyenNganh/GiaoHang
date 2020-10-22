@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import {
-    View, Text, StyleSheet, Image, Dimensions, ScrollView, TouchableOpacity
+    View, Text, StyleSheet, Image, Dimensions, ScrollView, TouchableOpacity, ActivityIndicator
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import HeaderComponent from '../components/HeaderComponent';
-import LoadingView from 'react-native-loading-view'
 class ProductDetail extends Component {
     _isMounted = false;
     constructor(props) {
@@ -39,7 +38,7 @@ class ProductDetail extends Component {
     addtoCart = async (data) => {
         try {
             data.Quantity = 1;
-            data.TotalPrice = data.Gia;            
+            data.TotalPrice = data.Gia;
             await AsyncStorage.setItem(
                 'dataCart' + data.id.toString(), JSON.stringify(data)
             );
@@ -56,9 +55,7 @@ class ProductDetail extends Component {
         } = styles;
         if (this.state.isLoading) {
             return (
-                <LoadingView loading={this.state.isLoading}>
-                    <Text>Loading...!</Text>
-                </LoadingView>
+                <ActivityIndicator animating={true} size="large" color="#0000ff" />
             );
         }
         return (

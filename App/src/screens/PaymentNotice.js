@@ -6,7 +6,7 @@ import {
 } from 'react-native'
 import Header from '../components/HeaderComponent';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import LoadingView from 'react-native-loading-view';
+
 class PaymentNotice extends Component {
 
     _isMounted = false;
@@ -30,13 +30,7 @@ class PaymentNotice extends Component {
     render() {
         if (this.state.isLoading) {
             return (
-                <LoadingView loading={this.state.isLoading}>
-                    <ActivityIndicator
-                        color='black'
-                        size='large'
-                        style={styles.flexContainer}
-                    />
-                </LoadingView>
+                <ActivityIndicator animating={true} size="large" color="#0000ff" />
             );
         }
         return (

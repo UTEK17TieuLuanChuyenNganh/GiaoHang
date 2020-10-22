@@ -4,7 +4,7 @@ import {
     TouchableOpacity, Image, ActivityIndicator
 } from 'react-native';
 import Sanpham from './Sanpham'
-import LoadingView from 'react-native-loading-view'
+
 class Loaisanpham extends Component {
     _isMounted = false;
     constructor(props) {
@@ -54,11 +54,7 @@ class Loaisanpham extends Component {
     render() {
         if (this.state.isLoading) {
             return (
-                <LoadingView loading={this.state.isLoading}>
-                    <ActivityIndicator
-                        color='black'
-                        size='large' />
-                </LoadingView>
+                <ActivityIndicator animating={true} size="large" color="#0000ff" />
             );
         }
         return (

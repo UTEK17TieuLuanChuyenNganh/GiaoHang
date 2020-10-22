@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, ScrollView, TouchableOpacity, Text, StyleSheet, TextInput, ActivityIndicator } from 'react-native';
 import Header from '../components/HeaderComponent';
-import LoadingView from 'react-native-loading-view'
+
 import AsyncStorage from '@react-native-community/async-storage';
 class Register extends Component {
 
@@ -51,14 +51,13 @@ class Register extends Component {
             console.log(error);
         }
     }
+    confirmPress() {
+        this.props.navigation.navigate("Login")
+    }
     render() {
         if (this.state.isLoading) {
             return (
-                <LoadingView loading={this.state.isLoading}>
-                    <ActivityIndicator
-                        color='black'
-                        size='large' />
-                </LoadingView>
+                <ActivityIndicator animating={true} size="large" color="#0000ff" />
             );
         }
         return (
