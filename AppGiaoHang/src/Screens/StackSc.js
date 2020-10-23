@@ -4,7 +4,6 @@ import MyDrawer from './MyDrawer';
 import Setting from'./Setting';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
-import { View, Text, Button } from 'react-native';
 const Stack = createStackNavigator();
 class StackSc extends Component {
     render() {
