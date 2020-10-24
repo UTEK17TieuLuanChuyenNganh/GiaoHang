@@ -19,6 +19,8 @@ class Payment extends Component {
         this.state = {
             isLoading: true,
             dataPayment: props.route.params.dataPayment,
+            dataOrder: props.route.params.dataOrder,
+            dataListItems: props.route.params.dataListItems,
             url: "",
             visible: true,
             result: []
@@ -57,12 +59,12 @@ class Payment extends Component {
         const { url } = newNavState;
         if (!url) return;
         if (url.includes('thanhtoan/execute?paymentId')) {
-            this.props.navigation.navigate("PaymentNotice", { dataPayment: this.state.dataPayment })
+            this.props.navigation.navigate("PaymentNotice", { dataPayment: this.state.dataPayment, dataOrder: this.state.dataOrder, dataListItems: this.state.dataListItems })
         }
     }
     hideSpinner() {
         this.setState({ visible: false });
-    } 
+    }
     render() {
         if (this.state.isLoading) {
             return (
@@ -86,11 +88,11 @@ class Payment extends Component {
                         javaScriptEnabledAndroid={true}
                         javaScriptEnabled={true}
 
-                        onLoad={() => {this.hideSpinner();}}
+                        onLoad={() => { this.hideSpinner(); }}
 
                         startInLoadingState={true}
                         onNavigationStateChange={this.closeWebView} />
-                    {this.state.visible && (                       
+                    {this.state.visible && (
                         <View style={{ alignItems: "center" }}>
                             <ActivityIndicator animating={true} size="large" color="#0000ff" style={{ marginBottom: 300 }} />
                         </View>

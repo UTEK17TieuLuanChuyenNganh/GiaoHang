@@ -12,7 +12,7 @@ class TabHome extends Component {
     render() {
         return (
         <Tab.Navigator
-          initialRouteName="Profile"
+          initialRouteName="Home"
           tabBarOptions={{
             activeTintColor: '#157cdb',
             inactiveTintColor: '#262626',

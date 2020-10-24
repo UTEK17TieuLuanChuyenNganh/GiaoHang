@@ -21,15 +21,32 @@ class Cart extends Component {
             user: [],
             isClick: props.isClick,
             totalPrice: 0,
-            dataPayment: []
+            dataPayment: [],
+            dataOrder: [],
+            dataListItems: []
         };
     }
     //Event Click    
     async ClickDiaChi() {
-        this.setState({
-            isClick: !this.state.isClick
-        })
-        await this.importData()
+        if (this.state.user.id) {
+            this.setState({
+                isClick: !this.state.isClick
+            })
+            await this.importData()
+        }
+        else {
+            Alert.alert(
+                'Tài khoản',
+                'Bạn chưa đăng nhập',
+                [
+                    {
+                        text: 'OK',
+                        onPress: () => { },
+                        style: 'cancel'
+                    },
+                ],
+            );
+        }
     }
     diachi() {
         if (this.state.isClick)
@@ -96,6 +113,7 @@ class Cart extends Component {
     //Payment
     thanhtoan = async () => {
         let items = []
+        let listitems = []
         const promises = this.state.dataSource.map(async (e) => {
             let quantity = 0;
             await AsyncStorage.getItem('dataCart' + e.id.toString())
@@ -109,18 +127,36 @@ class Cart extends Component {
                 currency: "USD",
                 quantity: quantity
             }
+            let valueListItem = {
+                SanPhamId: e.id,
+                SoLuong: quantity,
+                DonHangId: null
+            }
             items.push(value)
+            listitems.push(valueListItem)
         })
         const results = await Promise.all(promises)
-
+        let shippingCost = 100
         dataPayment = {
             reciver: this.state.user.HoTen,
             address: this.state.address.TenDiaChi,
-            shipping: 100,
+            shipping: shippingCost,
             items: items
         }
+        dataOrder = {
+            NgayDatHang: Date.now(),
+            TienVanChuyen: shippingCost,
+            TongTien: shippingCost + this.state.total,
+            GhiChu: "",
+            DanhGia: "",
+            NguoiDungId: this.state.user.id,
+            DiaChiId: this.state.address.id
+        }
+        dataListItems = listitems;
         this.setState({
             dataPayment: dataPayment,
+            dataOrder: dataOrder,
+            dataListItems: dataListItems,
             isLoading: false
         })
     }
@@ -128,26 +164,62 @@ class Cart extends Component {
     async thanhtoanImplement() {
         if (this.state.dataSource.length > 0) {
             await this.thanhtoan();
-            this.props.navigation.navigate("Payment", { dataPayment: this.state.dataPayment });
+            if (this.state.dataPayment.items) {
+                this.props.navigation.navigate("Payment", { dataPayment: this.state.dataPayment, dataOrder: this.state.dataOrder, dataListItems: this.state.dataListItems });
+            }
+            else{
+                console.log(this.state.dataPayment)
+            }
         }
     }
     thanhtoanPress() {
-        Alert.alert(
-            'Thanh toán',
-            'Xác nhận thanh toán ?',
-            [
-                {
-                    text: 'Hủy',
-                    onPress: () => { },
-                    style: 'cancel'
-                },
-                {
-                    text: 'Xác nhận',
-                    onPress: () => { this.thanhtoanImplement() },
+        if (this.state.user.id) {
+            if (this.state.address.TenDiaChi) {
+                Alert.alert(
+                    'Thanh toán',
+                    'Xác nhận thanh toán ?',
+                    [
+                        {
+                            text: 'Hủy',
+                            onPress: () => { },
+                            style: 'cancel'
+                        },
+                        {
+                            text: 'Xác nhận',
+                            onPress: () => { this.thanhtoanImplement() },
 
-                },
-            ],
-        );
+                        },
+                    ],
+                );
+            }
+            else {
+                Alert.alert(
+                    'Địa chỉ',
+                    'Bạn chưa chọn địa chỉ giao hàng',
+                    [
+                        {
+                            text: 'OK',
+                            onPress: () => { },
+                            style: 'cancel'
+                        },
+                    ],
+                );
+            }
+        }
+        else {
+            Alert.alert(
+                'Tài khoản',
+                'Bạn chưa đăng nhập',
+                [
+                    {
+                        text: 'OK',
+                        onPress: () => { },
+                        style: 'cancel'
+                    },
+                ],
+            );
+
+        }
     }
     //Change Cart Data
     removeFromCart = async (id) => {
@@ -186,6 +258,19 @@ class Cart extends Component {
     }
 
     //Render Screen
+    renderAddress() {
+        if (this.state.address.TenDiaChi) {
+            return (
+                <TouchableOpacity onPress={() => { }}
+                    style={{ padding: 5, backgroundColor: '#EAEAEA', height: 50 }}>
+                    <View style={{ flex: 1, flexDirection: "row", justifyContent: 'flex-end' }}>
+                        <Text style={styles.checkoutTitle}>Địa chỉ giao hàng: {this.state.address.TenDiaChi}</Text>
+                    </View>
+                </TouchableOpacity>
+            );
+        }
+        return null;
+    }
     rederELement() {
         if (this.state.dataSource.length > 0) {
             let total = 0;
@@ -236,6 +321,7 @@ class Cart extends Component {
                                 <Icon name={this.state.isClick ? "chevron-down" : "chevron-up"} size={20} />
                             </View>
                         </TouchableOpacity>
+                        {this.renderAddress()}
                         <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
                             <View style={styles.TotalPrice}>
                                 <Text style={styles.checkoutTitle}> Tổng cộng: {this.state.total} VND</Text>
@@ -267,8 +353,6 @@ class Cart extends Component {
                 {this.rederELement()}
                 {this.diachi()}
             </View>
-
-
         );
     }
 }

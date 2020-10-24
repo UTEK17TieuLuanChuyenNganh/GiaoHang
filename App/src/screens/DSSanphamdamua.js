@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image,ActivityIndicator } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Icon1 from 'react-native-vector-icons/AntDesign';
 import Header from '../components/HeaderComponent';
 
 class DSSanphamdamua extends Component {
