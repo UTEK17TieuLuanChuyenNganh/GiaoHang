@@ -35,7 +35,35 @@ const createDSSanPham = async (req, res) => {
         });
     }
 }
-
+const createMultiDSSanPham = async (req, res) => {
+    let {
+        data
+    } = req.body;
+    try {
+        let newDSSanPham = await DSSanPham.bulkCreate(data,
+            {
+                fields: ["SoLuong", "DonHangId", "SanPhamId"]
+            });
+        if (newDSSanPham) {
+            res.json({
+                result: 'ok',
+                data: newDSSanPham
+            });
+        } else {
+            res.json({
+                result: 'failed',
+                data: {},
+                massage: `Insert a new DSSanPham failed`
+            });
+        }
+    } catch (error) {
+        res.json({
+            result: 'failed',
+            data: {},
+            message: `Insert a new DSSanPham failed. Error: ${error}`
+        });
+    }
+}
 const updateDSSanPham = async (req, res) => {
     const { id } = req.params;
     const {
@@ -353,9 +381,10 @@ const getDSSanPhamByNguoiDungId = async (req, res) => {
 }
 module.exports = {
     createDSSanPham,
+    createMultiDSSanPham,
     updateDSSanPham,
     getAllDSSanPham,
     getDSSanPhamById,
     getDSSanPhamByDonHangId,
-    getDSSanPhamByNguoiDungId
+    getDSSanPhamByNguoiDungId,
 }

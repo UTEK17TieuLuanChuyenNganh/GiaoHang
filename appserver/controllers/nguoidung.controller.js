@@ -1,7 +1,7 @@
 const models = require('../models/index')
 const Customer = models.NguoiDung
 
-const createCustomer = async(req, res) => {
+const createCustomer = async (req, res) => {
     let {
         HoTen,
         SinhNhat,
@@ -22,10 +22,10 @@ const createCustomer = async(req, res) => {
             Avatar,
             Email,
             SDT,
-            laShop:false,
-            isDisable:false
+            laShop: false,
+            isDisable: false
         }, {
-            fields: ["HoTen", "SinhNhat", "GioiTinh", "Username", "Password","Avatar", "Email", "SDT", "laShop",
+            fields: ["HoTen", "SinhNhat", "GioiTinh", "Username", "Password", "Avatar", "Email", "SDT", "laShop",
                 "isDisable"]
         });
         if (newCustomer) {
@@ -49,7 +49,7 @@ const createCustomer = async(req, res) => {
     }
 }
 
-const updateCustomer = async(req, res) => {
+const updateCustomer = async (req, res) => {
     const { id } = req.params;
     const {
         HoTen,
@@ -82,7 +82,7 @@ const updateCustomer = async(req, res) => {
             }
         });
         if (customers.length > 0) {
-            customers.forEach(async(customer) => {
+            customers.forEach(async (customer) => {
                 await customer.update({
                     HoTen: HoTen ? HoTen : customer.HoTen,
                     SinhNhat: SinhNhat ? SinhNhat : customer.SinhNhat,
@@ -117,7 +117,7 @@ const updateCustomer = async(req, res) => {
 
 }
 
-const disableCustomer = async(req, res) => {
+const disableCustomer = async (req, res) => {
     const { id } = req.params;
 
     try {
@@ -140,7 +140,7 @@ const disableCustomer = async(req, res) => {
             }
         });
         if (customers.length > 0) {
-            customers.forEach(async(customer) => {
+            customers.forEach(async (customer) => {
                 await customer.update({
                     isDisable: true
                 });
@@ -167,7 +167,7 @@ const disableCustomer = async(req, res) => {
 
 }
 
-const enableCustomer = async(req, res) => {
+const enableCustomer = async (req, res) => {
     const { id } = req.params;
 
     try {
@@ -190,7 +190,7 @@ const enableCustomer = async(req, res) => {
             }
         });
         if (customers.length > 0) {
-            customers.forEach(async(customer) => {
+            customers.forEach(async (customer) => {
                 await customer.update({
                     isDisable: false
                 });
@@ -217,7 +217,7 @@ const enableCustomer = async(req, res) => {
 
 }
 
-const getAllCustomer = async(req, res) => {
+const getAllCustomer = async (req, res) => {
     try {
         const customers = await Customer.findAll({
             attributes: [
@@ -252,7 +252,7 @@ const getAllCustomer = async(req, res) => {
     }
 }
 
-const getCustomerById = async(req, res) => {
+const getCustomerById = async (req, res) => {
     const { id } = req.params;
     try {
         const customers = await Customer.findAll({
@@ -297,7 +297,7 @@ const getCustomerById = async(req, res) => {
     }
 }
 //get customer by Email
-const getCustomerByEmail = async(req, res) => {
+const getCustomerByEmail = async (req, res) => {
     const { email } = req.params;
     try {
         const customers = await Customer.findAll({
@@ -341,7 +341,7 @@ const getCustomerByEmail = async(req, res) => {
         });
     }
 }
-const getCustomerByUsername = async(req, res) => {
+const getCustomerByUsername = async (req, res) => {
     const { username } = req.params;
     try {
         const customers = await Customer.findAll({
@@ -385,6 +385,7 @@ const getCustomerByUsername = async(req, res) => {
         });
     }
 }
+
 module.exports = {
     createCustomer,
     updateCustomer,
