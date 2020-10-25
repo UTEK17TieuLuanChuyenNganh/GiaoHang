@@ -20,7 +20,7 @@ class Logictics extends Component {
         this.props.navigation.openDrawer();
     }
     fetchData() {
-        return fetch('https://servertlcn.herokuapp.com/chuoigiaohang', { method: 'GET' })
+        return fetch('https://servertlcn.herokuapp.com/chuoigiaohang', { method: 'GET'})
             .then((response) => response.json())
             .then((responseJson) => {
                 //let data = await responseJson.data.json()

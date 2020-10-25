@@ -1,35 +1,39 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import {
-    View, Text, TouchableOpacity, StyleSheet, Dimensions, Linking, Platform, ActivityIndicator
-    , PermissionsAndroid
+    View,
+    Text,
+    TouchableOpacity,
+    StyleSheet,
+    Linking,
+    Platform,
+    PermissionsAndroid,
 } from 'react-native';
-//import navigator.geolocation from '@react-native-community/geolocation';
 import Logo from '../Component/Logo';
 import { WebView } from 'react-native-webview';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import CheckInternet from '../Component/CheckInternet';
+import Slider from 'react-native-slide-to-unlock';
 navigator.geolocation = require('@react-native-community/geolocation');
 const adrr1 = '10.889919, 106.775659'
 const adrr2 = '10.850114, 106.765102'
 const adrr3 = '10.850732, 106.771305'
 const adrr4 = '10.857018, 106.756880'
 const adrr5 = '10.919504, 106.783242'
+
+
+
 class MapScreens extends Component {
     _isMounted = true;
-    
-
     showmenu = () => {
         this.props.navigation.openDrawer();
     }
     makeCall = () => {
-
         let phoneNumber = '';
-
         if (Platform.OS === 'android') {
             phoneNumber = 'tel:${0987513566}';
         } else {
             phoneNumber = 'telprompt:${0987513566}';
         }
-
         Linking.openURL(phoneNumber);
     };
     async requestLocationPermission() {
@@ -47,7 +51,6 @@ class MapScreens extends Component {
                 await navigator.geolocation.getCurrentPosition(
                     (position) => {
                         //Alert.alert('latitiude:  ',position.coords.latitude.toFixed(2));
-
                     },
                     (error) => console.log(error),
                     { enableHighAccuracy: true, timeout: 10000 }
@@ -61,14 +64,9 @@ class MapScreens extends Component {
         }
     }
 
-
-
-
     componentDidMount() {
         this.requestLocationPermission();
         this._isMounted = true;
-        
-
     }
     componentWillUnmount() {
         this._isMounted = false;
@@ -80,12 +78,11 @@ class MapScreens extends Component {
     getggmap() {
         Linking.openURL(this.link2);
     }
+
     render() {
         return (
-
             <View style={{ flex: 1 }}>
                 <WebView
-                    // originWhitelist={['intent://']}
                     ref={ref => { }}
                     source={{ uri: this.link1 }}
                     style={styles.Webview}
@@ -94,48 +91,81 @@ class MapScreens extends Component {
                 <View style={styles.logost}>
                     <Logo openDrawerclick={() => { this.showmenu() }} />
                 </View>
-                <View style={styles.buttonaccess}>
-                    <TouchableOpacity onPress={() => { }} >
-                        <View style={styles.Buttonstyle}>
-                            <Text style={{ fontSize: 15, color: 'white' }}>Xác Nhận Giao Hàng</Text>
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => this.makeCall()} activeOpacity={0.7} style={styles.touchableButton}>
-                        <View style={styles.Buttonstyle}>
-                            <Text style={{ fontSize: 15, color: 'white' }}>Liên Hệ</Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
                 <View style={styles.ThongTin}>
                     <Text style={{ fontSize: 25 }}> Trần Cao Quyền</Text>
                     <Text style={{ fontSize: 20 }}> 0987513566</Text>
                     <Text style={{ fontSize: 20 }}> Tổng Thu: 10.000.000Đ</Text>
-                    <Text style={{ fontSize: 15, marginLeft: 4, marginRight: 4 }}> Địa chỉ:07, đường N8, KDC:Đông An, P. Tân Đông Hiệp, Dĩ An, Bình Dương</Text>
+
                 </View>
-                <View style={styles.direc}>
-                    <Icon.Button name='directions'
-                        onPress={() => this.getggmap()}
-                        size={25}
-                        style={{width:55}}
-                        color="white"
-                        backgroundColor="#004DFF"
-                    />
+                <View style={styles.buttonaccess}>
+                    <Text style={{ fontSize: 15, marginLeft: 2, marginRight: 2 }}> Địa chỉ: 07, đường N8, KDC:Đông An, P. Tân Đông Hiệp, Dĩ An, Bình Dương</Text>
+                    <View style={styles.direc}>
+                        <Slider
+                            onEndReached={() => {
+                                this.getggmap()
+                            }}
+                            containerStyle={{
+                                backgroundColor: '#E0E1DF',
+                                borderRadius: 20,
+                                overflow: 'hidden',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: "80%"
+                            }}
+                            sliderElement={
+                                <View style={{ backgroundColor: 'red', borderRadius: 20 ,margin:2}}>
+                                    <Icon
+                                        name='directions'
+                                        size={50}
+                                        color='black'
+                                    />
+                                </View>
+                            }
+                        >
+                            <Text style={{ fontSize: 30 }}>  {'>>'} Chỉ Đường {'>>'}</Text>
+                        </Slider>
+                    </View>
+                    <View style={styles.control}>
+                        <TouchableOpacity onPress={() => { }} >
+                            <View style={styles.Buttonstyle}>
+                                <Text style={{ fontSize: 15, color: 'white' }}>Xác Nhận Giao Hàng</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => this.makeCall()} activeOpacity={0.7} style={styles.touchableButton}>
+                            <View style={styles.Buttonstyle}>
+                                <Text style={{ fontSize: 15, color: 'white' }}>Liên Hệ</Text>
+                            </View>
+                        </TouchableOpacity>
+
+                    </View>
                 </View>
+
+                <CheckInternet />
             </View>
-
-
-
-
         );
     }
 }
 const styles = StyleSheet.create({
-    direc:{
+    control: {
+        justifyContent: "space-around",
+        flexDirection: "row"
+    },
+    noInternet: {
         position: "absolute",
         right: 0,
-        bottom: 95,
-        height: 50,
-        marginRight:5,
+        left: 0,
+        top: 125,
+        height: 25,
+        backgroundColor: "#FCB0B0",
+        alignItems: 'center'
+    },
+    direc: {
+        position: "absolute",
+        justifyContent: "center",
+        alignItems: "center",
+        right: 0,
+        left: 0,
+        bottom: 58
     },
     logost: {
         position: "absolute",
@@ -145,28 +175,27 @@ const styles = StyleSheet.create({
         height: 50,
     },
     buttonaccess: {
-        flexDirection: "row",
-        backgroundColor: "#F4F4F4",
-        position: "absolute",
-        left: 0,
-        right: 0,
-        top: 60,
-        height: 65,
-        justifyContent: "space-around",
-        alignItems: 'center',
-
-    },
-    ThongTin: {
         height: 150,
-        justifyContent: 'flex-end',
-        alignItems: 'flex-start',
+        justifyContent: "space-between",
+        alignItems: "stretch",
         backgroundColor: "#F4F4F4",
         paddingBottom: 10,
         position: "absolute",
         left: 0,
         right: 0,
         bottom: 0,
-        paddingLeft:5
+        paddingLeft: 0
+    },
+    ThongTin: {
+        flexDirection: "column",
+        backgroundColor: "#F4F4F4",
+        position: "absolute",
+        left: 0,
+        right: 0,
+        top: 60,
+        height: 90,
+        justifyContent: "space-around",
+        alignItems: "flex-start",
     },
 
     logo: {
