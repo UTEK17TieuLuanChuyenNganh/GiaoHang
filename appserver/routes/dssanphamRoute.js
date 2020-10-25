@@ -8,6 +8,7 @@ const { getAllDSSanPham } = require('../controllers/dssanpham.controller')
 const { getDSSanPhamById } = require('../controllers/dssanpham.controller')
 const { getDSSanPhamByDonHangId } = require('../controllers/dssanpham.controller')
 const { getDSSanPhamByNguoiDungId } = require('../controllers/dssanpham.controller')
+const { createMultiDSSanPham } = require('../controllers/dssanpham.controller')
 
 //Models
 const models = require('../models/index')
@@ -15,6 +16,9 @@ const DSSanPham = models.DSSanPham
 
 //Insert
 router.post('/', createDSSanPham)
+
+//MultiInsert
+router.post('/multi', createMultiDSSanPham)
 
 //Update data in DB
 router.put('/:id', updateDSSanPham)
