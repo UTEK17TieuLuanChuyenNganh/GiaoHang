@@ -9,6 +9,7 @@ const { getDSSanPhamById } = require('../controllers/dssanpham.controller')
 const { getDSSanPhamByDonHangId } = require('../controllers/dssanpham.controller')
 const { getDSSanPhamByNguoiDungId } = require('../controllers/dssanpham.controller')
 const { createMultiDSSanPham } = require('../controllers/dssanpham.controller')
+const { searchDSSanPham } = require('../controllers/dssanpham.controller')
 
 //Models
 const models = require('../models/index')
@@ -32,4 +33,6 @@ router.get('/:id', getDSSanPhamById)
 router.get('/:id/donhang', getDSSanPhamByDonHangId)
 
 router.get('/:id/nguoidung', getDSSanPhamByNguoiDungId)
+
+router.post('/search', searchDSSanPham)
 module.exports = router;

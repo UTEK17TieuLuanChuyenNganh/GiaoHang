@@ -1,6 +1,14 @@
 const models = require('../models/index')
+const Sequelize = require('sequelize')
+const Moment = require('moment')
 const DSSanPham = models.DSSanPham
 const DonHang = models.DonHang
+const Op = Sequelize.Op;
+const operatorsAliases = {
+    $like: Op.like,
+    $not: Op.not,
+    $between: Op.between
+}
 const createDSSanPham = async (req, res) => {
     let {
         SoLuong,
@@ -276,6 +284,7 @@ const getDSSanPhamById = async (req, res) => {
         });
     }
 }
+
 const getDSSanPhamByDonHangId = async (req, res) => {
     const { id } = req.params;
     try {
@@ -289,7 +298,9 @@ const getDSSanPhamByDonHangId = async (req, res) => {
             where: {
                 DonHangId: id,
             },
-            include: [{ all: true }]
+            include: [{ all: true }],
+            limit: 10,
+            order: [['id', 'asc']]
         });
         if (DSSanPhams.length > 0) {
             res.json({
@@ -313,6 +324,7 @@ const getDSSanPhamByDonHangId = async (req, res) => {
         });
     }
 }
+
 const getDSSanPhamByNguoiDungId = async (req, res) => {
     const { id } = req.params;
     try {
@@ -334,7 +346,9 @@ const getDSSanPhamByNguoiDungId = async (req, res) => {
             ],
             where: {
                 NguoiDungId: id,
-            }
+            },
+            limit: 10,
+            order: [['id', 'asc']]
         });
 
         const promises = DonHangs.map(async (e) => {
@@ -379,6 +393,86 @@ const getDSSanPhamByNguoiDungId = async (req, res) => {
         });
     }
 }
+
+const searchDSSanPham = async (req, res) => {
+    const { id, date, dateCheck } = req.body;
+    try {
+        let dateStart = Moment(date.dateStart, "MM/DD/YY").add(1, 'd')
+        let dateEnd = Moment(date.dateEnd, "MM/DD/YY").add(1, 'd')
+        const dataRes = [];
+        var whereClause;
+        if (dateCheck == true) {
+            whereClause = {
+                NguoiDungId: id,
+                NgayDatHang: { [Op.between]: [dateStart, dateEnd] },
+            }
+        }
+        else {
+            whereClause = {
+                NguoiDungId: id,
+            }
+        }
+        const DonHangs = await DonHang.findAll({
+            attributes: [
+                'id',
+                'NgayDatHang',
+                'TienVanChuyen',
+                'TongTien',
+                'TinhTrangDon',
+                'NguoiDungId',
+                'BuuCucId',
+                'ChuoiGiaoHangId',
+                'DiaChiId',
+                'GhiChu',
+                'DanhGia',
+                'daThanhToan',
+            ],
+            where: whereClause,
+            limit: 10,
+            order: [['id', 'asc']]
+        });
+
+        const promises = DonHangs.map(async (e) => {
+            let DSSanPhams = await DSSanPham.findAll({
+                attributes: [
+                    'id',
+                    'SoLuong',
+                    'DonHangId',
+                    'SanPhamId',
+                ],
+                where: {
+                    DonHangId: e.id,
+                },
+                include: [{ all: true }]
+            });
+            dataRes.push({
+                DonHang: e.dataValues,
+                listSanpham: DSSanPhams
+            })
+        })
+        const results = await Promise.all(promises)
+        if (dataRes.length > 0) {
+            res.json({
+                result: 'ok',
+                data: dataRes,
+                message: "List DSSanPham successfully"
+            });
+        } else {
+            res.json({
+                result: 'failed',
+                data: {},
+                message: `Cannot find list DSSanPham to show. Error:${error}`
+            });
+        }
+    } catch (error) {
+        res.json({
+            result: 'failed',
+            data: [],
+            length: 0,
+            message: `Cannot list DSSanPham. Error:${error}`
+        });
+    }
+}
 module.exports = {
     createDSSanPham,
     createMultiDSSanPham,
@@ -387,4 +481,5 @@ module.exports = {
     getDSSanPhamById,
     getDSSanPhamByDonHangId,
     getDSSanPhamByNguoiDungId,
+    searchDSSanPham
 }

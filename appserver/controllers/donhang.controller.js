@@ -1,6 +1,14 @@
 const models = require('../models/index')
+const Sequelize = require('sequelize')
+const Moment = require('moment')
 const DonHang = models.DonHang
 
+const Op = Sequelize.Op;
+const operatorsAliases = {
+    $like: Op.like,
+    $not: Op.not,
+    $between: Op.between
+}
 const createDonHang = async (req, res) => {
     let {
         NgayDatHang,
@@ -302,6 +310,7 @@ const getDonHangById = async (req, res) => {
         });
     }
 }
+
 const getDonHangByNguoiDungId = async (req, res) => {
     const { id } = req.params;
     try {
@@ -323,7 +332,9 @@ const getDonHangByNguoiDungId = async (req, res) => {
             where: {
                 NguoiDungId: id,
             },
-            include: [{ all: true }]
+            include: [{ all: true }],
+            limit: 10,
+            order: [['id', 'asc']]
         });
         if (DonHangs.length > 0) {
             res.json({
@@ -347,10 +358,62 @@ const getDonHangByNguoiDungId = async (req, res) => {
         });
     }
 }
+
+const searchDonHang = async (req, res) => {
+    const { date } = req.body;
+    try {
+        let dateStart = Moment(date.dateStart, "MM/DD/YY").add(1, 'd')        
+        let dateEnd = Moment(date.dateEnd, "MM/DD/YY").add(1, 'd')
+        const DonHangs = await DonHang.findAll({
+            attributes: [
+                'id',
+                'NgayDatHang',
+                'TienVanChuyen',
+                'TongTien',
+                'TinhTrangDon',
+                'NguoiDungId',
+                'BuuCucId',
+                'ChuoiGiaoHangId',
+                'DiaChiId',
+                'GhiChu',
+                'DanhGia',
+                'daThanhToan',
+            ],
+            where: {
+                NgayDatHang: { [Op.between]: [dateStart, dateEnd] },
+            },
+            include: [{ all: true }],
+            limit: 10,
+            order: [['id', 'asc']]
+        });
+        if (DonHangs.length > 0) {
+            res.json({
+                result: 'ok',
+                data: DonHangs,
+                message: "List DonHang successfully"
+            });
+        } else {
+            res.json({
+                result: 'failed',
+                data: {},
+                message: `Cannot find list DonHang to show. Error:${error}`
+            });
+        }
+    } catch (error) {
+        res.json({
+            result: 'failed',
+            data: [],
+            length: 0,
+            message: `Cannot list DonHang. Error:${error}`
+        });
+    }
+}
+
 module.exports = {
     createDonHang,
     updateDonHang,
     getAllDonHang,
     getDonHangById,
-    getDonHangByNguoiDungId
+    getDonHangByNguoiDungId,
+    searchDonHang
 }

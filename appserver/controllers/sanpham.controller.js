@@ -1,7 +1,12 @@
 const models = require('../models/index')
+const Sequelize = require('sequelize')
 const SanPham = models.SanPham
-
-const createSanPham = async(req, res) => {
+const Op = Sequelize.Op;
+const operatorsAliases = {
+    $like: Op.like,
+    $not: Op.not
+}
+const createSanPham = async (req, res) => {
     let {
         TenSanPham,
         MoTa,
@@ -28,10 +33,10 @@ const createSanPham = async(req, res) => {
             KhoiLuong,
             DanhGia,
             LoaiSanPhamId,
-            isDisable:false
+            isDisable: false
         }, {
             fields: ["TenSanPham", "MoTa", "Gia", "NgayCapNhat", "KhuyenMai", "Hinh",
-            "SoLuong","KichCo","KhoiLuong","DanhGia","LoaiSanPhamId","isDisable"]
+                "SoLuong", "KichCo", "KhoiLuong", "DanhGia", "LoaiSanPhamId", "isDisable"]
         });
         if (newSanPham) {
             res.json({
@@ -54,7 +59,7 @@ const createSanPham = async(req, res) => {
     }
 }
 
-const updateSanPham = async(req, res) => {
+const updateSanPham = async (req, res) => {
     const { id } = req.params;
     const {
         TenSanPham,
@@ -83,7 +88,7 @@ const updateSanPham = async(req, res) => {
                 'KichCo',
                 'KhoiLuong',
                 'DanhGia',
-                'LoaiSanPhamId'               
+                'LoaiSanPhamId'
             ],
             where: {
                 id,
@@ -91,7 +96,7 @@ const updateSanPham = async(req, res) => {
             }
         });
         if (SanPhams.length > 0) {
-            SanPhams.forEach(async(SanPham) => {
+            SanPhams.forEach(async (SanPham) => {
                 await SanPham.update({
                     TenSanPham: TenSanPham ? TenSanPham : SanPham.TenSanPham,
                     MoTa: MoTa ? MoTa : SanPham.MoTa,
@@ -99,11 +104,11 @@ const updateSanPham = async(req, res) => {
                     NgayCapNhat: NgayCapNhat ? NgayCapNhat : SanPham.NgayCapNhat,
                     KhuyenMai: KhuyenMai ? KhuyenMai : SanPham.KhuyenMai,
                     Hinh: Hinh ? Hinh : SanPham.Hinh,
-                    SoLuong: SoLuong ? SoLuong : SanPham.SoLuong, 
-                    KichCo: KichCo ? KichCo : SanPham.KichCo, 
-                    KhoiLuong: KhoiLuong ? KhoiLuong : SanPham.KhoiLuong, 
-                    DanhGia: DanhGia ? DanhGia : SanPham.DanhGia,  
-                    LoaiSanPhamId: LoaiSanPhamId ? LoaiSanPhamId : SanPham.LoaiSanPhamId,                 
+                    SoLuong: SoLuong ? SoLuong : SanPham.SoLuong,
+                    KichCo: KichCo ? KichCo : SanPham.KichCo,
+                    KhoiLuong: KhoiLuong ? KhoiLuong : SanPham.KhoiLuong,
+                    DanhGia: DanhGia ? DanhGia : SanPham.DanhGia,
+                    LoaiSanPhamId: LoaiSanPhamId ? LoaiSanPhamId : SanPham.LoaiSanPhamId,
                 });
             });
             res.json({
@@ -128,7 +133,7 @@ const updateSanPham = async(req, res) => {
 
 }
 
-const disableSanPham = async(req, res) => {
+const disableSanPham = async (req, res) => {
     const { id } = req.params;
 
     try {
@@ -152,7 +157,7 @@ const disableSanPham = async(req, res) => {
             }
         });
         if (SanPhams.length > 0) {
-            SanPhams.forEach(async(SanPham) => {
+            SanPhams.forEach(async (SanPham) => {
                 await SanPham.update({
                     isDisable: true
                 });
@@ -179,7 +184,7 @@ const disableSanPham = async(req, res) => {
 
 }
 
-const enableSanPham = async(req, res) => {
+const enableSanPham = async (req, res) => {
     const { id } = req.params;
 
     try {
@@ -203,7 +208,7 @@ const enableSanPham = async(req, res) => {
             }
         });
         if (SanPhams.length > 0) {
-            SanPhams.forEach(async(SanPham) => {
+            SanPhams.forEach(async (SanPham) => {
                 await SanPham.update({
                     isDisable: false
                 });
@@ -230,7 +235,7 @@ const enableSanPham = async(req, res) => {
 
 }
 
-const getAllSanPham = async(req, res) => {
+const getAllSanPham = async (req, res) => {
     try {
         const SanPhams = await SanPham.findAll({
             attributes: [
@@ -267,7 +272,7 @@ const getAllSanPham = async(req, res) => {
     }
 }
 
-const getSanPhamById = async(req, res) => {
+const getSanPhamById = async (req, res) => {
     const { id } = req.params;
     try {
         const SanPhams = await SanPham.findAll({
@@ -313,7 +318,8 @@ const getSanPhamById = async(req, res) => {
         });
     }
 }
-const getSanPhamByType = async(req, res) => {
+
+const getSanPhamByType = async (req, res) => {
     const { typeId } = req.params;
     try {
         const SanPhams = await SanPham.findAll({
@@ -359,6 +365,54 @@ const getSanPhamByType = async(req, res) => {
     }
 }
 
+const searchSanPham = async (req, res) => {
+    const { name } = req.params;
+    try {
+        const SanPhams = await SanPham.findAll({
+            attributes: [
+                'id',
+                'TenSanPham',
+                'MoTa',
+                'Gia',
+                'Hinh',
+                'SoLuong',
+                'KichCo',
+                'KhoiLuong',
+                'DanhGia',
+                'NgayCapNhat',
+                'KhuyenMai',
+                'LoaiSanPhamId'
+            ],
+            where: {
+                TenSanPham: Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('TenSanPham')),
+                    { [Op.like]: '%' + name + '%' }),
+                isDisable: false
+            },
+            limit: 10,
+            order: [['id','asc']]
+        });
+        if (SanPhams.length > 0) {
+            res.json({
+                result: 'ok',
+                data: SanPhams,
+                message: "List SanPham successfully"
+            });
+        } else {
+            res.json({
+                result: 'failed',
+                data: {},
+                message: `Cannot find list SanPham to show. Error:${error}`
+            });
+        }
+    } catch (error) {
+        res.json({
+            result: 'failed',
+            data: [],
+            length: 0,
+            message: `Cannot list SanPham. Error:${error}`
+        });
+    }
+}
 module.exports = {
     createSanPham,
     updateSanPham,
@@ -367,4 +421,5 @@ module.exports = {
     getAllSanPham,
     getSanPhamById,
     getSanPhamByType,
+    searchSanPham
 }
