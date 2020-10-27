@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Image,ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Image, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Header from '../components/HeaderComponent';
-
+import DateTimePicker from '@react-native-community/datetimepicker';
+import Moment from 'moment';
 class DSSanphamdamua extends Component {
     _isMounted = false
     constructor(props) {
@@ -11,7 +12,11 @@ class DSSanphamdamua extends Component {
         this.state = {
             isLoading: true,
             dataSource: [],
-            user: props.route.params.user
+            user: props.route.params.user,
+            checkSearchByDate: false,
+            isVisible: false,
+            dateStart: null,
+            dateEnd: null
         }
     }
     componentDidMount() {
@@ -20,6 +25,32 @@ class DSSanphamdamua extends Component {
     }
     componentWillUnmount() {
         this._isMounted = false;
+    }
+    searchByDate() {
+        this.setState({
+            checkSearchByDate: !this.state.checkSearchByDate
+        })
+        this.forceUpdate();
+    }
+    confirmSearchByDate() {
+        if (this.state.dateStart == null || this.state.dateEnd == "" ||
+            this.state.dateEnd == null || this.state.dateStart == "") {
+            return;
+        }
+        else {
+            let dateS = Moment(this.state.dateStart, "MM/DD/YY");
+            let dateE = Moment(this.state.dateEnd, "MM/DD/YY");
+            let diff = dateE.diff(dateS);
+            if (diff >= 0) {
+                this.setState({
+                    isLoading: true
+                })
+                this.fetchDataPost();
+            }
+            else {
+                return;
+            }
+        }
     }
     fetchData() {
         return fetch('https://servertlcn.herokuapp.com/dssanpham/' + this.state.user.id + '/nguoidung', { method: 'GET' })
@@ -36,6 +67,128 @@ class DSSanphamdamua extends Component {
             .catch((error) => {
                 console.log(error);
             });
+    }
+    fetchDataPost() {
+        let data = {
+            id: this.state.user.id,
+            date: {
+                dateStart: this.state.dateStart,
+                dateEnd: this.state.dateEnd
+            },
+            dateCheck: true
+        }
+        console.log(data)
+        return fetch('https://servertlcn.herokuapp.com/dssanpham/search',
+            {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: { 'Content-Type': 'application/json' }
+
+            })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                if (this._isMounted) {
+                    this.setState(
+                        {
+                            isLoading: false,
+                            dataSource: responseJson.data
+                        })
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+    renderDatetimePicker() {
+        if (this.state.isVisible) {
+            return (
+                <DateTimePicker
+                    value={new Date()}
+                    mode="date"
+                    display="default"
+                    onTouchCancel={() => { this.setState({ displayCalendar: "flex" }) }}
+                    onChange={(event, value) => {
+                        var dt = Moment(value).format("MM-DD-YYYY")
+                        if (this.state.dateStart == "") {
+                            this.setState({
+                                dateStart: dt,
+                                isVisible: false
+                            })
+                        }
+                        if (this.state.dateEnd == "") {
+                            this.setState({
+                                dateEnd: dt,
+                                isVisible: false
+                            })
+                        }
+                    }}
+                />
+            )
+        } else return null
+    }
+    renderSearchByDate() {
+        if (this.state.checkSearchByDate) {
+            return (
+                <View>
+                    <TouchableOpacity style={{
+                        marginBottom: 10,
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }}
+                        onPress={() => {
+                            this.setState({
+                                isVisible: true,
+                                dateStart: "",
+                            })
+                        }}>
+                        <View style={{
+                            height: 50,
+                            width: 249,
+                            flexDirection: "row",
+                            backgroundColor: 'white',
+                            justifyContent: "space-between",
+                            alignItems: 'center',
+                            borderRadius: 30,
+                        }}>
+                            <Text style={{ fontSize: 17 }}>Ngày bắt đầu:</Text>
+                            <Icon name="calendar" size={24} color="blue" />
+                            <Text style={{ fontSize: 17, paddingRight: 20 }}>{this.state.dateStart}</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{
+                        marginBottom: 10,
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }}
+                        onPress={() => {
+                            this.setState({
+                                isVisible: true,
+                                dateEnd: "",
+                            })
+                        }}>
+                        <View style={{
+                            height: 50,
+                            width: 249,
+                            flexDirection: "row",
+                            backgroundColor: 'white',
+                            justifyContent: "space-between",
+                            alignItems: 'center',
+                            borderRadius: 30,
+                        }}>
+                            <Text style={{ fontSize: 17 }}>Ngày kết thúc:</Text>
+                            <Icon name="calendar" size={24} color="blue" />
+                            <Text style={{ fontSize: 17, paddingRight: 20 }}>{this.state.dateEnd}</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{ paddingTop: 10, paddingBottom: 10, justifyContent: 'center', alignItems: 'center' }}
+                        onPress={() => { this.confirmSearchByDate() }}>
+                        <View style={styles.SaveStyle}>
+                            <Text style={{ fontSize: 20, color: 'white' }}>Tìm</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            );
+        } return null;
     }
     renderDonHang() {
         return (
@@ -100,6 +253,15 @@ class DSSanphamdamua extends Component {
         return (
             <View style={styles.BackgroundScreens}>
                 <Header title="Sản phẩm đã mua" />
+                {this.renderSearchByDate()}
+                {this.renderDatetimePicker()}
+                <TouchableOpacity onPress={() => { this.searchByDate() }}
+                    style={{ padding: 5, backgroundColor: '#EAEAEA', height: 35 }}>
+                    <View style={{ flex: 1, flexDirection: "row", justifyContent: 'flex-end' }}>
+                        <Text style={styles.checkoutTitle}>Tìm theo ngày/tháng</Text>
+                        <Icon name={this.state.checkSearchByDate ? "chevron-up" : "chevron-down"} size={20} />
+                    </View>
+                </TouchableOpacity>
                 {this.renderDonHang()}
                 <Icon name="times-circle" size={30} color="red" />
                 <Icon name="truck" size={30} color="#581BB2" />
@@ -111,6 +273,21 @@ class DSSanphamdamua extends Component {
 
 
 const styles = StyleSheet.create({
+    SaveStyle: {
+        height: 40,
+        width: 80,
+        backgroundColor: 'blue',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 20
+    },
+    checkoutTitle: {
+        color: 'black',
+        fontSize: 15,
+        fontWeight: 'bold',
+        fontFamily: 'Avenir',
+        marginRight: 10
+    },
     ThongTin: {
         flex: 1 / 2.2,
         justifyContent: 'flex-end',

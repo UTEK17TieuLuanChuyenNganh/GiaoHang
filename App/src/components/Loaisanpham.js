@@ -45,7 +45,9 @@ class Loaisanpham extends Component {
     renderSanpham() {
         const params = {
             navigation: this.props.navigation,
-            loaisanpham: this.state.check
+            loaisanpham: this.state.check,
+            search : false,
+            searchText:""
         }
         return (
             <Sanpham params={params} />

@@ -12,6 +12,9 @@ target 'App' do
 
   pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
 
+
+  pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
+
   target 'AppTests' do
     inherit! :complete
     # Pods for testing

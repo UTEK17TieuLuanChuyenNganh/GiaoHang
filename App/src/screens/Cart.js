@@ -123,7 +123,7 @@ class Cart extends Component {
                 })
             let value = {
                 name: e.TenSanPham,
-                price: Math.round(e.Gia / 23000),
+                price: Math.round(e.TotalPrice / 23000),
                 currency: "USD",
                 quantity: quantity
             }
@@ -167,7 +167,7 @@ class Cart extends Component {
             if (this.state.dataPayment.items) {
                 this.props.navigation.navigate("Payment", { dataPayment: this.state.dataPayment, dataOrder: this.state.dataOrder, dataListItems: this.state.dataListItems });
             }
-            else{
+            else {
                 console.log(this.state.dataPayment)
             }
         }

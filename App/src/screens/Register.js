@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
 import {
     View, ScrollView, TouchableOpacity, Text,
-    StyleSheet, TextInput, ActivityIndicator, Alert
+    StyleSheet, TextInput, ActivityIndicator, Alert, Image
 } from 'react-native';
 import Header from '../components/HeaderComponent';
 import { Base64 } from 'js-base64';
 import AsyncStorage from '@react-native-community/async-storage';
+import ImagePicker from 'react-native-image-picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import Moment from 'moment';
 class Register extends Component {
 
     constructor(props) {
@@ -20,6 +24,9 @@ class Register extends Component {
             Avatar: "",
             Email: "",
             SDT: "",
+            isVisible: false,
+            // displayCalendar: "flex",
+            styleContent:"center"
         }
     }
     fetchData() {
@@ -28,7 +35,7 @@ class Register extends Component {
             let encryptedPassword = Base64.encode(this.state.Password);;
             let data = {
                 HoTen: this.state.HoTen,
-                SinhNhat: "10/22/2020",
+                SinhNhat: this.state.SinhNhat,
                 GioiTinh: this.state.GioiTinh,
                 Username: this.state.Username,
                 Password: encryptedPassword,
@@ -44,8 +51,7 @@ class Register extends Component {
 
                 })
                 .then((response) => response.json())
-                .then((responseJson) => {
-                    console.log(responseJson)
+                .then((responseJson) => { 
                     Alert.alert(
                         'Đăng Ký',
                         'Thành công!',
@@ -85,6 +91,33 @@ class Register extends Component {
             console.log(error);
         }
     }
+    pickImage() {
+        const options = {
+            title: 'Select Avatar',
+            storageOptions: {
+                skipBackup: true,
+                path: 'images',
+            },
+        };
+        ImagePicker.showImagePicker(options, (response) => {
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            } else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+            } else {
+                const source = response.data;
+
+                // You can also display the image using data:
+                // const source = { uri: 'data:image/jpeg;base64,' + response.data };
+
+                this.setState({
+                    Avatar: source,
+                });
+            }
+        })
+    }
     confirmPress() {
         this.props.navigation.navigate("Login")
     }
@@ -102,11 +135,42 @@ class Register extends Component {
                                 style={styles.TextInputStyle} />
                         </View>
                         <View style={styles.AddressStyle}>
-                            <Text style={styles.TextStyle}>Sinh nhật:</Text>
-                            <TextInput
-                                onChangeText={(text) => this.setState({ SinhNhat: text })}
-                                value={this.state.SinhNhat}
-                                style={styles.TextInputStyle} />
+                            <Text style={styles.TextStyle}>Sinh nhật:</Text>                            
+                            <TouchableOpacity style={{
+                                marginBottom: 10, justifyContent: 'center',
+                                alignItems: 'center'
+                            }}
+                                onPress={() => {
+                                    this.setState({
+                                        isVisible: true,
+                                        styleContent: 'space-around'
+                                    })
+                                }}>
+                                <View style={{
+                                    height: 50,
+                                    width: 249,
+                                    flexDirection:"row",
+                                    backgroundColor: 'white',
+                                    justifyContent: this.state.styleContent,
+                                    alignItems: 'center',
+                                    borderRadius: 30,
+                                }}>                                    
+                                    <Icon name="calendar" size={24} color="blue" />
+                                    <Text style={{fontSize:17,paddingRight:20}}>{this.state.SinhNhat}</Text>
+                                </View>
+                            </TouchableOpacity>
+                            {this.state.isVisible ?
+                                <DateTimePicker
+                                    value={new Date()}
+                                    mode="date"
+                                    display="default"
+                                    onTouchCancel={() => { this.setState({ displayCalendar: "flex" }) }}
+                                    onChange={(event, value) => { 
+                                        var dt = Moment(value).format("MM-DD-YYYY") 
+                                        this.setState({ 
+                                            SinhNhat: dt, 
+                                            isVisible: false }) }}
+                                /> : null}                          
                         </View>
                         <View style={styles.AddressStyle}>
                             <Text style={styles.TextStyle}>Giới tính:</Text>
@@ -140,10 +204,14 @@ class Register extends Component {
                         </View>
                         <View style={styles.AddressStyle}>
                             <Text style={styles.TextStyle}>Avatar:</Text>
-                            <TextInput
-                                onChangeText={(text) => this.setState({ Avatar: text })}
-                                value={this.state.Avatar}
-                                style={styles.TextInputStyle} />
+                            {this.state.Avatar == "" ?
+                                <TouchableOpacity style={{ marginBottom: 10, justifyContent: 'center', alignItems: 'center' }}
+                                    onPress={() => { this.pickImage() }}>
+                                    <View style={styles.selectPhotoStyle}>
+                                        <Text style={{ fontSize: 25, color: 'white' }}>Chọn hình ảnh</Text>
+                                    </View>
+                                </TouchableOpacity> :
+                                <Image source={{ uri: `data:image/jpg;base64,${this.state.Avatar}` }} style={styles.itemImage} />}
                         </View>
                         <View style={styles.AddressStyle}>
                             <Text style={styles.TextStyle}>Email:</Text>
@@ -183,6 +251,12 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         padding: 10
     },
+    itemImage: {
+        width: 200,
+        height: 75,
+        paddingBottom: 10,
+        paddingRight: 50
+    },
     AdressTitle: {
         fontSize: 15
     },
@@ -211,6 +285,14 @@ const styles = StyleSheet.create({
         height: 60,
         width: 200,
         backgroundColor: 'blue',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 30
+    },
+    selectPhotoStyle: {
+        height: 50,
+        width: 249,
+        backgroundColor: 'green',
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 30

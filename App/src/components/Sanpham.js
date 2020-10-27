@@ -17,6 +17,8 @@ class Sanpham extends Component {
             loaisanpham: props.params.loaisanpham,
             dataSource: [],
             navigation: props.params.navigation,
+            search: props.params.search,
+            searchText: props.params.searchText
         }
     }
     componentDidMount() {
@@ -24,7 +26,14 @@ class Sanpham extends Component {
         this.fetchData();
     }
     fetchData() {
-        return fetch('https://servertlcn.herokuapp.com/sanpham/' + this.state.loaisanpham + '/type', { method: 'GET' })
+        let url = "";
+        if (!this.state.search || this.state.searchText == "") {
+            url = 'https://servertlcn.herokuapp.com/sanpham/' + this.state.loaisanpham + '/type'
+        }
+        else {
+            url = 'https://servertlcn.herokuapp.com/sanpham/' + this.state.searchText + '/search'
+        }
+        return fetch(url, { method: 'GET' })
             .then((response) => response.json())
             .then((responseJson) => {
                 if (this._isMounted) {
@@ -32,7 +41,7 @@ class Sanpham extends Component {
                         {
                             isLoading: false,
                             dataSource: responseJson.data
-                        })
+                        })                                                   
                 }
             })
             .catch((error) => {

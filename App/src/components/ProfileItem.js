@@ -11,15 +11,17 @@ class ProfileItem extends Component {
             name: props.name,
             user: props.user
         }
-    }    
+    }
     onclick(name) {
-        switch(name)
-        {
-            case "Quản lý đơn hàng":
-                this.props.navigation.navigate("QLDH",{user:this.state.user});break;
-            case "Sản phẩm đã mua":
-                this.props.navigation.navigate("DSSP",{user:this.state.user});break;                            
+        if (this.state.user.id) {
+            switch (name) {
+                case "Quản lý đơn hàng":
+                    this.props.navigation.navigate("QLDH", { user: this.state.user }); break;
+                case "Sản phẩm đã mua":
+                    this.props.navigation.navigate("DSSP", { user: this.state.user }); break;
+            }
         }
+        else return;
     }
     render() {
         return (

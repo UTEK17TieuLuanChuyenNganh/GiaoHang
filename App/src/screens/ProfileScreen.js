@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, StatusBar,ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, StatusBar, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -37,10 +37,9 @@ class ProfileScreen extends Component {
           isLoading: false
         })
       }
-      else
-      {
+      else {
         this.setState({
-          isLoading:false
+          isLoading: false
         })
       }
     } catch (error) {
@@ -51,14 +50,16 @@ class ProfileScreen extends Component {
     this.props.navigation.navigate("Login")
   }
   logoutPress = async () => {
-    try {
-      await AsyncStorage.removeItem('user');
-      this.setState({
-        user: []
-      });
-    } catch (error) {
-      console.error(error)
-    }
+    if (this.state.user.id) {
+      try {
+        await AsyncStorage.removeItem('user');
+        this.setState({
+          user: []
+        });
+      } catch (error) {
+        console.error(error)
+      }
+    } else return;
   }
 
   //View
@@ -111,7 +112,12 @@ class ProfileScreen extends Component {
         <View style={styles.bodyContainer}>
           {this.renderUser()}
           {/*  */}
-          <View style={styles.divider} />
+          <View style={styles.divider} />      
+          <ProfileItem
+            user={this.state.user}
+            navigation={this.props.navigation}
+            icon="card-account-details-outline"
+            name="Thông tin cá nhân" />    
           <ProfileItem
             user={this.state.user}
             navigation={this.props.navigation}
@@ -123,22 +129,24 @@ class ProfileScreen extends Component {
             icon="cart-outline"
             name="Sản phẩm đã mua" />
           <ProfileItem
+            user={this.state.user}
             navigation={this.props.navigation}
             icon="eye-outline"
             name="Sản phẩm đã xem" />
           <ProfileItem
+            user={this.state.user}
             navigation={this.props.navigation}
             icon="heart-outline"
             name="Sản phẩm yêu thích" />
           {/*  */}
           <View style={styles.divider} />
-          <ProfileItem navigation={this.props.navigation} name="Ưu đãi" />
+          <ProfileItem navigation={this.props.navigation} user={this.state.user} name="Ưu đãi" />
           {/* <ProfileItem navigation={this.props.navigation} name="Cài đặt" /> */}
           {/*  */}
           <View style={styles.divider} />
-          <ProfileItem navigation={this.props.navigation} icon="headphones" name="Hỗ trợ" />
+          <ProfileItem navigation={this.props.navigation} user={this.state.user} icon="headphones" name="Hỗ trợ" />
           <TouchableOpacity onPress={() => { this.logoutPress() }}>
-            <ProfileItem navigation={this.props.navigation} icon="logout" name="Đăng xuất" />
+            <ProfileItem navigation={this.props.navigation} user={this.state.user} icon="logout" name="Đăng xuất" />
           </TouchableOpacity>
         </View>
       </View>

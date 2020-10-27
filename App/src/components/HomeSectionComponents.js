@@ -11,7 +11,6 @@ import AsyncStorage from '@react-native-community/async-storage';
 const { width } = Dimensions.get('window');
 const section_banner = require('../assets/section_banner.png');
 import Loaisanpham from './Loaisanpham'
-
 class HomeSectionComponents extends Component {
   _isMounted = false;
   constructor(props) {
@@ -31,11 +30,6 @@ class HomeSectionComponents extends Component {
   render() {
     return (
       <View style={styles.sectionContainer}>
-        {/*  */}
-        <Text style={styles.sectionTitle}>Điện thoại - Máy tính bảng</Text>
-        {/*  */}
-        <Image source={section_banner} style={styles.sectionImage} />
-        {/*  */}
         <Loaisanpham navigation={this.props.navigation} />
         <TouchableOpacity onPress={() => { this.clickme() }} style={styles.seeMoreContainer}>
           <Text style={styles.seeMoreText}>Clear Session</Text>
