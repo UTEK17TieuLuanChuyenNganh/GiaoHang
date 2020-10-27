@@ -360,9 +360,9 @@ const getDonHangByNguoiDungId = async (req, res) => {
 }
 
 const searchDonHang = async (req, res) => {
-    const { date } = req.body;
+    const { id, date, dateCheck } = req.body;
     try {
-        let dateStart = Moment(date.dateStart, "MM/DD/YY").add(1, 'd')        
+        let dateStart = Moment(date.dateStart, "MM/DD/YY").add(1, 'd')
         let dateEnd = Moment(date.dateEnd, "MM/DD/YY").add(1, 'd')
         const DonHangs = await DonHang.findAll({
             attributes: [
@@ -380,6 +380,7 @@ const searchDonHang = async (req, res) => {
                 'daThanhToan',
             ],
             where: {
+                NguoiDungId: id,
                 NgayDatHang: { [Op.between]: [dateStart, dateEnd] },
             },
             include: [{ all: true }],
