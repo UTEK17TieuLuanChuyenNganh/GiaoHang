@@ -1,7 +1,8 @@
 const models = require('../models/index')
 const Shipper = models.Shipper
+const NguoiDung = models.NguoiDung
 
-const createShipper = async(req, res) => {
+const createShipper = async (req, res) => {
     let {
         CMND,
         STK,
@@ -40,7 +41,7 @@ const createShipper = async(req, res) => {
     }
 }
 
-const updateShipper = async(req, res) => {
+const updateShipper = async (req, res) => {
     const { id } = req.params;
     const {
         CMND,
@@ -64,7 +65,7 @@ const updateShipper = async(req, res) => {
             }
         });
         if (Shippers.length > 0) {
-            Shippers.forEach(async(Shipper) => {
+            Shippers.forEach(async (Shipper) => {
                 await Shipper.update({
                     CMND: CMND ? CMND : Shipper.CMND,
                     STK: STK ? STK : Shipper.STK,
@@ -193,7 +194,7 @@ const updateShipper = async(req, res) => {
 
 // }
 
-const getAllShipper = async(req, res) => {
+const getAllShipper = async (req, res) => {
     try {
         const Shippers = await Shipper.findAll({
             attributes: [
@@ -221,7 +222,7 @@ const getAllShipper = async(req, res) => {
     }
 }
 
-const getShipperById = async(req, res) => {
+const getShipperById = async (req, res) => {
     const { id } = req.params;
     try {
         const Shippers = await Shipper.findAll({
@@ -236,6 +237,7 @@ const getShipperById = async(req, res) => {
             where: {
                 id: id,
             },
+            include: [{ all: true }]
         });
         if (Shippers.length > 0) {
             res.json({
@@ -259,50 +261,60 @@ const getShipperById = async(req, res) => {
         });
     }
 }
-//get Shipper by Email
-// const getShipperByEmail = async(req, res) => {
-//     const { email } = req.params;
-//     try {
-//         const Shippers = await Shipper.findAll({
-//             attributes: [
-//                 'id',
-//                 'CMND',
-//                 'STK',
-//                 'Diem',
-//                 'Email',
-//                 'SDT',
-//                 'PhuongTienVanChuyen',
-//                 'NguoiDungId',
-//                 'laShop',
-//             ],
-//             where: {
-//                 Email: email,
-//                 isDisable: false
 
-//             },
-//         });
-//         if (Shippers.length > 0) {
-//             res.json({
-//                 result: 'ok',
-//                 data: Shippers[0],
-//                 message: "List Shipper successfully"
-//             });
-//         } else {
-//             res.json({
-//                 result: 'failed',
-//                 data: {},
-//                 message: `Cannot find list Shipper to show. Error:${error}`
-//             });
-//         }
-//     } catch (error) {
-//         res.json({
-//             result: 'failed',
-//             data: [],
-//             length: 0,
-//             message: `Cannot list Shipper. Error:${error}`
-//         });
-//     }
-// }
+//get Shipper by Email
+const getShipperByUsername = async (req, res) => {
+    const { usn } = req.params;
+    try {
+        let attributesUS = [
+            'HoTen',
+            'SinhNhat',
+            'GioiTinh',
+            'Username',
+            'Password',
+            'Avatar',
+            'Email',
+            'SDT',
+            'laShop',
+            'isDisable'
+        ]
+        const Shippers = await Shipper.findAll({
+            attributes: [
+                'id',
+                'CMND',
+                'STK',
+                'Diem',                
+                'PhuongTienVanChuyen',
+                'NguoiDungId',
+            ],
+            include: [{
+                model: NguoiDung,                
+                attributes: attributesUS,
+                where: { Username: usn }
+            }]
+        });
+        if (Shippers.length > 0) {
+            res.json({
+                result: 'ok',
+                data: Shippers[0],
+                message: "List Shipper successfully"
+            });
+        } else {
+            res.json({
+                result: 'failed',
+                data: {},
+                message: `Cannot find list Shipper to show. Error:${error}`
+            });
+        }
+    } catch (error) {
+        res.json({
+            result: 'failed',
+            data: [],
+            length: 0,
+            message: `Cannot list Shipper. Error:${error}`
+        });
+    }
+}
 module.exports = {
     createShipper,
     updateShipper,
@@ -310,5 +322,5 @@ module.exports = {
     //enableShipper,
     getAllShipper,
     getShipperById,
-    //getShipperByEmail
+    getShipperByUsername
 }

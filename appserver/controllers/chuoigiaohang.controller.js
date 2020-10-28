@@ -57,10 +57,10 @@ const updateChuoiGiaoHang = async (req, res) => {
                 'Chuoi',
                 'SoLuong',
                 'BuuCucId',
-                'ShipperId', ,
+                'ShipperId',
             ],
             where: {
-                id,
+                id: id
             }
         });
         if (ChuoiGiaoHangs.length > 0) {
@@ -260,9 +260,48 @@ const getChuoiGiaoHangById = async (req, res) => {
     }
 }
 
+const getChuoiGiaoHangByIdShipper = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const ChuoiGiaoHangs = await ChuoiGiaoHang.findAll({
+            attributes: [
+                'id',
+                'Chuoi',
+                'SoLuong',
+                'BuuCucId',
+                'ShipperId',
+            ],
+            where: {
+                ShipperId: id,
+            },
+            include: [{ all: true }],
+        });
+        if (ChuoiGiaoHangs.length > 0) {
+            res.json({
+                result: 'ok',
+                data: ChuoiGiaoHangs[0],
+                message: "List ChuoiGiaoHang successfully"
+            });
+        } else {
+            res.json({
+                result: 'failed',
+                data: {},
+                message: `Cannot find list ChuoiGiaoHang to show. Error:${error}`
+            });
+        }
+    } catch (error) {
+        res.json({
+            result: 'failed',
+            data: [],
+            length: 0,
+            message: `Cannot list ChuoiGiaoHang. Error:${error}`
+        });
+    }
+}
 module.exports = {
     createChuoiGiaoHang,
     updateChuoiGiaoHang,
     getAllChuoiGiaoHang,
     getChuoiGiaoHangById,
+    getChuoiGiaoHangByIdShipper
 }
