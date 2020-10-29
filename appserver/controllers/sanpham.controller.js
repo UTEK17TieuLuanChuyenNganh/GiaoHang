@@ -388,7 +388,6 @@ const searchSanPham = async (req, res) => {
                     { [Op.like]: '%' + name + '%' }),
                 isDisable: false
             },
-            limit: 10,
             order: [['id','asc']]
         });
         if (SanPhams.length > 0) {

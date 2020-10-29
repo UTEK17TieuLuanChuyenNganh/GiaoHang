@@ -10,6 +10,8 @@ const { getAllDonHang } = require('../controllers/donhang.controller')
 const { getDonHangById } = require('../controllers/donhang.controller')
 const { getDonHangByNguoiDungId } = require('../controllers/donhang.controller')
 const { searchDonHang } = require('../controllers/donhang.controller')
+const { getAllDonHangByNguoiDungId } = require('../controllers/donhang.controller')
+const { searchDonHangCount } = require('../controllers/donhang.controller')
 
 //Models
 const models = require('../models/index')
@@ -30,11 +32,14 @@ router.put('/:id', updateDonHang)
 // Query all data from DB
 router.get('/', getAllDonHang)
 
+router.get('/:id/nguoidung', getAllDonHangByNguoiDungId)
 //Get by Id?
 router.get('/:id', getDonHangById)
 
-router.get('/:id/nguoidung', getDonHangByNguoiDungId)
+router.get('/:id/nguoidung/:page/page', getDonHangByNguoiDungId)
 
-router.post('/search', searchDonHang)
+router.post('/search/:page/page', searchDonHang)
+
+router.post('/search/count', searchDonHangCount)
 
 module.exports = router;

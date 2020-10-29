@@ -286,8 +286,9 @@ const getDSSanPhamById = async (req, res) => {
 }
 
 const getDSSanPhamByDonHangId = async (req, res) => {
-    const { id } = req.params;
+    const { id, page } = req.params;
     try {
+        const pageIndex = (page - 1) * 10;
         const DSSanPhams = await DSSanPham.findAll({
             attributes: [
                 'id',
@@ -298,8 +299,9 @@ const getDSSanPhamByDonHangId = async (req, res) => {
             where: {
                 DonHangId: id,
             },
-            include: [{ all: true }],
+            offset: pageIndex,
             limit: 10,
+            include: [{ all: true }],
             order: [['id', 'asc']]
         });
         if (DSSanPhams.length > 0) {
@@ -326,8 +328,9 @@ const getDSSanPhamByDonHangId = async (req, res) => {
 }
 
 const getDSSanPhamByNguoiDungId = async (req, res) => {
-    const { id } = req.params;
+    const { id, page } = req.params;
     try {
+        const pageIndex = (page - 1) * 10;
         const dataRes = [];
         const DonHangs = await DonHang.findAll({
             attributes: [
@@ -347,10 +350,10 @@ const getDSSanPhamByNguoiDungId = async (req, res) => {
             where: {
                 NguoiDungId: id,
             },
+            offset: pageIndex,
             limit: 10,
             order: [['id', 'asc']]
         });
-
         const promises = DonHangs.map(async (e) => {
             let DSSanPhams = await DSSanPham.findAll({
                 attributes: [
@@ -370,7 +373,6 @@ const getDSSanPhamByNguoiDungId = async (req, res) => {
             })
         })
         const results = await Promise.all(promises)
-        console.log(dataRes);
         if (dataRes.length > 0) {
             res.json({
                 result: 'ok',
@@ -396,7 +398,9 @@ const getDSSanPhamByNguoiDungId = async (req, res) => {
 
 const searchDSSanPham = async (req, res) => {
     const { id, date, dateCheck } = req.body;
+    const { page } = req.params;
     try {
+        const pageIndex = (page - 1) * 10;
         let dateStart = Moment(date.dateStart, "MM/DD/YY").add(1, 'd')
         let dateEnd = Moment(date.dateEnd, "MM/DD/YY").add(1, 'd')
         const dataRes = [];
@@ -428,6 +432,7 @@ const searchDSSanPham = async (req, res) => {
                 'daThanhToan',
             ],
             where: whereClause,
+            offset: pageIndex,
             limit: 10,
             order: [['id', 'asc']]
         });

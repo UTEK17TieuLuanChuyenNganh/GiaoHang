@@ -248,7 +248,45 @@ const getAllDonHang = async (req, res) => {
                 'GhiChu',
                 'DanhGia',
                 'daThanhToan',
-            ]
+            ],
+        });
+        res.json({
+            result: 'ok',
+            data: DonHangs,
+            length: DonHangs.length,
+            message: "List DonHang successfully"
+        });
+    } catch (error) {
+        res.json({
+            result: 'failed',
+            data: [],
+            length: 0,
+            message: `Cannot list DonHang. Error:${error}`
+        });
+    }
+}
+
+const getAllDonHangByNguoiDungId = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const DonHangs = await DonHang.findAll({
+            attributes: [
+                'id',
+                'NgayDatHang',
+                'TienVanChuyen',
+                'TongTien',
+                'TinhTrangDon',
+                'NguoiDungId',
+                'BuuCucId',
+                'ChuoiGiaoHangId',
+                'DiaChiId',
+                'GhiChu',
+                'DanhGia',
+                'daThanhToan',
+            ],
+            where: {
+                NguoiDungId: id
+            }
         });
         res.json({
             result: 'ok',
@@ -312,8 +350,9 @@ const getDonHangById = async (req, res) => {
 }
 
 const getDonHangByNguoiDungId = async (req, res) => {
-    const { id } = req.params;
+    const { id, page } = req.params;
     try {
+        const pageIndex = (page - 1) * 10;
         const DonHangs = await DonHang.findAll({
             attributes: [
                 'id',
@@ -332,8 +371,9 @@ const getDonHangByNguoiDungId = async (req, res) => {
             where: {
                 NguoiDungId: id,
             },
-            include: [{ all: true }],
+            offset: pageIndex,
             limit: 10,
+            include: [{ all: true }],
             order: [['id', 'asc']]
         });
         if (DonHangs.length > 0) {
@@ -361,7 +401,9 @@ const getDonHangByNguoiDungId = async (req, res) => {
 
 const searchDonHang = async (req, res) => {
     const { id, date, dateCheck } = req.body;
+    const { page } = req.params;
     try {
+        const pageIndex = (page - 1) * 10;
         let dateStart = Moment(date.dateStart, "MM/DD/YY").add(1, 'd')
         let dateEnd = Moment(date.dateEnd, "MM/DD/YY").add(1, 'd')
         const DonHangs = await DonHang.findAll({
@@ -384,6 +426,7 @@ const searchDonHang = async (req, res) => {
                 NgayDatHang: { [Op.between]: [dateStart, dateEnd] },
             },
             include: [{ all: true }],
+            offset: pageIndex,
             limit: 10,
             order: [['id', 'asc']]
         });
@@ -410,11 +453,63 @@ const searchDonHang = async (req, res) => {
     }
 }
 
+const searchDonHangCount = async (req, res) => {
+    const { id, date, dateCheck } = req.body;
+    try {
+        let dateStart = Moment(date.dateStart, "MM/DD/YY").add(1, 'd')
+        let dateEnd = Moment(date.dateEnd, "MM/DD/YY").add(1, 'd')
+        const DonHangs = await DonHang.findAll({
+            attributes: [
+                'id',
+                'NgayDatHang',
+                'TienVanChuyen',
+                'TongTien',
+                'TinhTrangDon',
+                'NguoiDungId',
+                'BuuCucId',
+                'ChuoiGiaoHangId',
+                'DiaChiId',
+                'GhiChu',
+                'DanhGia',
+                'daThanhToan',
+            ],
+            where: {
+                NguoiDungId: id,
+                NgayDatHang: { [Op.between]: [dateStart, dateEnd] },
+            },
+            include: [{ all: true }],
+            order: [['id', 'asc']]
+        });
+        if (DonHangs.length > 0) {
+            res.json({
+                result: 'ok',
+                data: DonHangs,
+                length: DonHangs.length,
+                message: "List DonHang successfully"
+            });
+        } else {
+            res.json({
+                result: 'failed',
+                data: {},
+                message: `Cannot find list DonHang to show. Error:${error}`
+            });
+        }
+    } catch (error) {
+        res.json({
+            result: 'failed',
+            data: [],
+            length: 0,
+            message: `Cannot list DonHang. Error:${error}`
+        });
+    }
+}
 module.exports = {
     createDonHang,
     updateDonHang,
     getAllDonHang,
     getDonHangById,
+    getAllDonHangByNguoiDungId,
     getDonHangByNguoiDungId,
-    searchDonHang
+    searchDonHang,
+    searchDonHangCount
 }
