@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Header from '../components/HeaderComponent';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Moment from 'moment';
+import Pagination from '../components/Pagination';
 class QLDonhang extends Component {
     _isMounted = false
     constructor(props) {
@@ -16,16 +17,21 @@ class QLDonhang extends Component {
             checkSearchByDate: false,
             isVisible: false,
             dateStart: null,
-            dateEnd: null
+            dateEnd: null,
+            page: 1,
+            pageAmount: 0,
         }
     }
     componentDidMount() {
         this._isMounted = true;
+        this.getAmountPage();
         this.fetchData();
     }
     componentWillUnmount() {
         this._isMounted = false;
     }
+
+    //search implement
     searchByDate() {
         this.setState({
             checkSearchByDate: !this.state.checkSearchByDate
@@ -45,6 +51,7 @@ class QLDonhang extends Component {
                 this.setState({
                     isLoading: true
                 })
+                this.getAmountPageByDate();
                 this.fetchDataPost();
             }
             else {
@@ -52,8 +59,10 @@ class QLDonhang extends Component {
             }
         }
     }
+
+    //fetchData
     fetchData() {
-        return fetch('https://servertlcn.herokuapp.com/donhang/' + this.state.user.id + '/nguoidung', { method: 'GET' })
+        return fetch('https://servertlcn.herokuapp.com/donhang/' + this.state.user.id + '/nguoidung/' + this.state.page + '/page', { method: 'GET' })
             .then((response) => response.json())
             .then((responseJson) => {
                 if (this._isMounted) {
@@ -77,8 +86,7 @@ class QLDonhang extends Component {
             },
             dateCheck: true
         }
-        console.log(data)
-        return fetch('https://servertlcn.herokuapp.com/donhang/search',
+        return fetch('https://servertlcn.herokuapp.com/donhang/search/' + this.state.page + '/page',
             {
                 method: 'POST',
                 body: JSON.stringify(data),
@@ -86,7 +94,7 @@ class QLDonhang extends Component {
 
             })
             .then((response) => response.json())
-            .then((responseJson) => {  
+            .then((responseJson) => {
                 if (this._isMounted) {
                     this.setState(
                         {
@@ -99,6 +107,84 @@ class QLDonhang extends Component {
                 console.log(error);
             });
     }
+
+    //Pagination
+    getAmountPage() {
+        return fetch('https://servertlcn.herokuapp.com/donhang/' + this.state.user.id + '/nguoidung', { method: 'GET' })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                let count = responseJson.length / 10
+                let page = Math.round(responseJson.length / 10)
+                let resultPage = 0;
+                if (count > page) {
+                    resultPage = page + 1
+                }
+                else {
+                    resultPage = page
+                }
+                if (this._isMounted) {
+                    this.setState(
+                        {
+                            pageAmount: resultPage
+                        })
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+    getAmountPageByDate() {
+        let data = {
+            id: this.state.user.id,
+            date: {
+                dateStart: this.state.dateStart,
+                dateEnd: this.state.dateEnd
+            },
+            dateCheck: true
+        }
+        return fetch('https://servertlcn.herokuapp.com/donhang/search/count',
+            {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: { 'Content-Type': 'application/json' }
+
+            })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                let count = responseJson.length / 10
+                let page = Math.round(responseJson.length / 10)
+                let resultPage = 0;
+                if (count > page) {
+                    resultPage = page + 1
+                }
+                else {
+                    resultPage = page
+                }
+                if (this._isMounted) {
+                    this.setState(
+                        {
+                            pageAmount: resultPage
+                        })
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+    async setCurrentPage(pageIndex) {
+        await this.setState({
+            page: pageIndex
+        })
+        if (this.state.checkSearchByDate) {
+            this.fetchDataPost();
+        }
+        else {
+            this.fetchData()
+        }
+    }
+
+
+    //render
     renderDatetimePicker() {
         if (this.state.isVisible) {
             return (
@@ -222,13 +308,20 @@ class QLDonhang extends Component {
                                                 <Icon name="check-circle" size={30} color="green" />
                                             </View>
                                         </View>
-                                        <Icon name="times-circle" size={30} color="red" />
-                                        <Icon name="truck" size={30} color="#581BB2" />
-                                        <Icon name="angle-double-right" size={30} color="blue" />
                                     </View>
                                 </View>
                             ))}
                         </ScrollView>
+                        <View style={{ height: 80, alignItems: "center", flexDirection: "column", backgroundColor: "#1e88e5" }}>
+                            <Text style={{ fontSize: 20, paddingLeft: 10, paddingBottom: 5, color: "white" }}>Page:</Text>
+                            <View>
+                                <Pagination pageAmount={this.state.pageAmount}
+                                    setCurrentPage={(pageIndex) => { this.setCurrentPage(pageIndex) }} />
+                            </View>
+                        </View>
+                        {/* <Icon name="times-circle" size={30} color="red" />
+                        <Icon name="truck" size={30} color="#581BB2" />
+                        <Icon name="angle-double-right" size={30} color="blue" /> */}
                     </View>
 
                 </View>
