@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, TextInput, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TextInput, Text, BackHandler, TouchableOpacity } from 'react-native';
 
 import Geocoder from 'react-native-geocoder';
 import HeaderComponent from '../components/HeaderComponent';
@@ -21,14 +21,20 @@ class NewAddress extends Component {
                 lng: ""
             },
             user: props.route.params.user
-        }        
+        }
+        this.handleBackPress = this.handleBackPress.bind(this);
     }
-
+    handleBackPress() {
+        this.props.navigation.goBack();
+        return true;
+    }
     componentDidMount() {
         this._isMounted = true;
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
     }
     componentWillUnmount() {
-        this._isMounted = false;        
+        this._isMounted = false;
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
     }
     //input data
     getlatlong() {
@@ -53,7 +59,7 @@ class NewAddress extends Component {
             this._isMounted = false;
         })
             .catch(err => console.log(err))
-    }    
+    }
     getHintAddress(address) {
         this._isMounted = true;
         Geocoder.geocodeAddress(address).then(res => {
@@ -69,7 +75,7 @@ class NewAddress extends Component {
 
     //fetch
     fetchData() {
-        this._isMounted = true;        
+        this._isMounted = true;
         const data = {
             TenDiaChi: this.state.formattedAddress,
             KinhDo: this.state.add.lng,

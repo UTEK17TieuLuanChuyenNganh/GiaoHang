@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator,BackHandler, TouchableOpacity } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Header from '../components/HeaderComponent';
@@ -21,14 +21,21 @@ class QLDonhang extends Component {
             page: 1,
             pageAmount: 0,
         }
+        this.handleBackPress = this.handleBackPress.bind(this);
+    }
+    handleBackPress() {
+        this.props.navigation.goBack();
+        return true;
     }
     componentDidMount() {
         this._isMounted = true;
         this.getAmountPage();
         this.fetchData();
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
     }
     componentWillUnmount() {
         this._isMounted = false;
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
     }
 
     //search implement

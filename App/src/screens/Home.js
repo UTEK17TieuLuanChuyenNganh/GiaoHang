@@ -18,7 +18,7 @@ class HomeScreen extends Component {
     super(props);
     this.state = {
       searchText: "",
-      searchSubmit: false,      
+      searchSubmit: false,
     }
     this.handleBackPress = this.handleBackPress.bind(this);
   }
@@ -68,7 +68,7 @@ class HomeScreen extends Component {
         <Image source={section_banner} style={styles.sectionImage} />
         {this.state.searchSubmit ?
           this.renderSearch() :
-          <HomeSectionComponents navigation={this.props.navigation}/>}
+          <HomeSectionComponents navigation={this.props.navigation} />}
       </View>
     );
   }

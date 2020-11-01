@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Image, ActivityIndicator, TouchableOpacity } from 'react-native';
+import {
+    View, Text, StyleSheet, Image,
+    BackHandler, ActivityIndicator, TouchableOpacity
+} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Header from '../components/HeaderComponent';
@@ -21,16 +24,22 @@ class DSSanphamdamua extends Component {
             page: 1,
             pageAmount: 0,
         }
+        this.handleBackPress = this.handleBackPress.bind(this);
     }
     componentDidMount() {
         this._isMounted = true;
         this.getAmountPage();
         this.fetchData();
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
     }
     componentWillUnmount() {
         this._isMounted = false;
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
     }
-
+    handleBackPress() {
+        this.props.navigation.goBack();
+        return true;
+    }
     //search implement
     searchByDate() {
         this.setState({
@@ -351,9 +360,9 @@ class DSSanphamdamua extends Component {
                     </View>
                 </TouchableOpacity>
                 {this.renderDonHang()}
-                <View style={{ height: 80,alignItems:"center", flexDirection: "column", backgroundColor: "#1e88e5" }}>
-                <Text style={{ fontSize: 20,paddingLeft:10, paddingBottom: 5,color:"white" }}>Page:</Text>
-                    <View>                        
+                <View style={{ height: 80, alignItems: "center", flexDirection: "column", backgroundColor: "#1e88e5" }}>
+                    <Text style={{ fontSize: 20, paddingLeft: 10, paddingBottom: 5, color: "white" }}>Page:</Text>
+                    <View>
                         <Pagination pageAmount={this.state.pageAmount}
                             setCurrentPage={(pageIndex) => { this.setCurrentPage(pageIndex) }} />
                     </View>

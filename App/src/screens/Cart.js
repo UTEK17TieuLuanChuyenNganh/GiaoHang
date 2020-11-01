@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
     View, Text, TouchableOpacity, ScrollView,
-    Dimensions, StyleSheet, Image, Alert, ActivityIndicator
+    BackHandler, StyleSheet, Image, Alert, ActivityIndicator
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import HeaderComponent from '../components/HeaderComponent';
@@ -25,8 +25,13 @@ class Cart extends Component {
             dataOrder: [],
             dataListItems: []
         };
+        this.handleBackPress = this.handleBackPress.bind(this);
     }
     //Event Click    
+    handleBackPress() {
+        this.props.navigation.goBack();
+        return true;
+    }
     async ClickDiaChi() {
         if (this.state.user.id) {
             this.setState({
@@ -71,9 +76,11 @@ class Cart extends Component {
         if (this._isMounted) {
             this.importData();
         }
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
     }
     componentWillUnmount() {
         this._isMounted = false;
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
     }
     importData = async () => {
         try {

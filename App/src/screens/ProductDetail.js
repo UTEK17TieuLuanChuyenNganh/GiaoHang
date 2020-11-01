@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import {
-    View, Text, StyleSheet, Image, Dimensions, ScrollView, TouchableOpacity, ActivityIndicator
+    View, Text, StyleSheet, Image, Dimensions,
+    ScrollView, TouchableOpacity, ActivityIndicator,
+    BackHandler
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -15,8 +17,10 @@ class ProductDetail extends Component {
             navigation: props.navigation,
             route: props.route
         };
+        this.handleBackPress = this.handleBackPress.bind(this);
     }
     componentDidMount() {
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
         this._isMounted = true;
         return fetch('https://servertlcn.herokuapp.com/sanpham/' + this.state.route.params.id, { method: 'GET' })
             .then((response) => response.json())
@@ -34,6 +38,11 @@ class ProductDetail extends Component {
     }
     componentWillUnmount() {
         this._isMounted = false;
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
+    }
+    handleBackPress() {
+        this.state.navigation.goBack();
+        return true;
     }
     addtoCart = async (data) => {
         try {
