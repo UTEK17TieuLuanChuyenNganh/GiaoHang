@@ -11,6 +11,8 @@ import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
+import android.database.CursorWindow;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -48,6 +50,15 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+    try {
+      Field field = CursorWindow.class.getDeclaredField("sCursorWindowSize");
+      field.setAccessible(true);
+      field.set(null, 100 * 1024 * 1024); //the 100MB is the new size
+    } catch (Exception e) {
+    // if (DEBUG_MODE) {
+    //   e.printStackTrace();
+    // }
+}
   }
 
   /**
