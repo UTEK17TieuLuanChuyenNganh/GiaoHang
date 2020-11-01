@@ -9,6 +9,12 @@ import CheckStatus from './CheckStatus';
 import CusInformation from './CusInformation';
 const Tab = createBottomTabNavigator();
 class MyDrawer extends Component {
+   //users=this.props.navigation.state.params.user
+  componentDidMount(){
+        // ()=>{
+        //   this.props.navigation.navigate('MapScreens',{user:users})
+        // }
+    }
   render() {
     return (
       <Tab.Navigator

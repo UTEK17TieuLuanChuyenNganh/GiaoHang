@@ -7,12 +7,15 @@ import {
     Linking,
     Platform,
     PermissionsAndroid,
+    Alert,
 } from 'react-native';
 import Logo from '../Component/Logo';
 import { WebView } from 'react-native-webview';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import CheckInternet from '../Component/CheckInternet';
 import Slider from 'react-native-slide-to-unlock';
+import AsyncStorage from '@react-native-community/async-storage';
+import Logictics from './Logictics';
 navigator.geolocation = require('@react-native-community/geolocation');
 const adrr1 = '10.889919, 106.775659'
 const adrr2 = '10.850114, 106.765102'
@@ -23,16 +26,73 @@ const adrr5 = '10.919504, 106.783242'
 
 
 class MapScreens extends Component {
-    _isMounted = true;
+    _isMounted = false;
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoading: true,
+            dataSource: [],
+            chuoiId: '',
+            user: [],
+            index: 0,
+            status:''
+        }
+    }
+    async demo() {
+        await this.checkUser()
+        await this.fetchData()
+        await this.createLinkAddress()
+    }
+    checkUser = async () => {
+        try {
+            const value = await AsyncStorage.getItem('user');
+            if (value !== null) {
+                let data = JSON.parse(value);
+                this.setState({
+                    user: data,
+                    //isLoading: false
+                })
+            }
+            else {
+                this.setState({
+                    isLoading: false
+                })
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    fetchData() {
+        return fetch('https://servertlcn.herokuapp.com/chuoigiaohang/' + this.state.user.id + '/shipper',
+            { method: 'GET' })
+            .then(async (responseJson) => {
+                responseJson = await responseJson.json()
+
+                let data = responseJson.data.Chuoi
+                data = await JSON.parse(data)
+                if (this._isMounted) {
+                    this.setState(
+                        {
+                            //isLoading: false,
+                            dataSource: data.chuoidonhang,
+                            chuoiId: responseJson.data.id,
+                        })
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+
     showmenu = () => {
         this.props.navigation.openDrawer();
     }
     makeCall = () => {
         let phoneNumber = '';
         if (Platform.OS === 'android') {
-            phoneNumber = 'tel:${0987513566}';
+            phoneNumber = 'tel:${' + this.state.dataSource[this.state.index].reciver.sdt + '}';
         } else {
-            phoneNumber = 'telprompt:${0987513566}';
+            phoneNumber = 'telprompt:${' + this.state.dataSource[this.state.index].reciver.sdt + '}';
         }
         Linking.openURL(phoneNumber);
     };
@@ -65,86 +125,159 @@ class MapScreens extends Component {
     }
 
     componentDidMount() {
-        this.requestLocationPermission();
         this._isMounted = true;
+        // this.checkUser();
+        // this.fetchData(this.state.user.id)
+        this.demo()
+        this.requestLocationPermission();
     }
     componentWillUnmount() {
         this._isMounted = false;
     }
-
+    addressOrder = ''
+    link = 'https://www.google.com/maps/dir'
+    linkDirect = 'https://maps.app.goo.gl/?link=https://www.google.com/maps/dir'
     link1 = `https://www.google.com/maps/dir/${adrr5}/${adrr1}/${adrr3}/${adrr2}/${adrr4}`
     link2 = `https://maps.app.goo.gl/?link=https://www.google.com/maps/dir/${adrr5}/${adrr1}/${adrr3}/${adrr2}/${adrr4},11z/data%3D!4m2!4m1!3e0!11m1!6b1?entry%3Dml&apn=com.google.android.apps.maps&amv=914018424&isi=585027354&ibi=com.google.Maps&ius=comgooglemapsurl&utm_campaign=ml_promo&ct=ml-nav-nopromo-dr-nlu&mt=8&pt=9008&efr=1`
     link3 = `https://maps.app.goo.gl/?link=https://www.google.com/maps/dir/${adrr5}/${adrr1}/${adrr3}/${adrr2}/${adrr4},11z/data%3D!4m2!4m1!3e0!11m1!6b1?entry%3Dml`
     getggmap() {
-        Linking.openURL(this.link2);
+        Linking.openURL(this.linkDirect);
     }
+    createLinkAddress() {
+        try {
+            for (i = 0; i < this.state.dataSource.length; i++) {
+                this.addressOrder = this.addressOrder + '/' + this.state.dataSource[i].address.KinhDo + ',' + this.state.dataSource[i].address.ViDo
+            }
+            this.link += this.addressOrder;
+            this.linkDirect += this.addressOrder + ',11z/data%3D!4m2!4m1!3e0!11m1!6b1?entry%3Dml&apn=com.google.android.apps.maps&amv=914018424&isi=585027354&ibi=com.google.Maps&ius=comgooglemapsurl&utm_campaign=ml_promo&ct=ml-nav-nopromo-dr-nlu&mt=8&pt=9008&efr=1'
+            this.setState({
+                isLoading: false
+            })
+        } catch (error) {
+            console.log(error)
+        }
 
-    render() {
-        return (
-            <View style={{ flex: 1 }}>
-                <WebView
-                    ref={ref => { }}
-                    source={{ uri: this.link1 }}
-                    style={styles.Webview}
-                    geolocationEnabled={true}
-                />
-                <View style={styles.logost}>
-                    <Logo openDrawerclick={() => { this.showmenu() }} />
-                </View>
-                <View style={styles.ThongTin}>
-                    <Text style={{ fontSize: 25 }}> Trần Cao Quyền</Text>
-                    <Text style={{ fontSize: 20 }}> 0987513566</Text>
-                    <Text style={{ fontSize: 20 }}> Tổng Thu: 10.000.000Đ</Text>
+    }
+     Xacnhan(){
+        Alert.alert(
+            'Giao Hang',
+            'Xac Nhan',
+            [
+                {
+                    text: 'Thanh Cong',
+                    onPress:  () => { this.PutJson('thanh cong') },
 
-                </View>
-                <View style={styles.buttonaccess}>
-                    <Text style={{ fontSize: 15, marginLeft: 2, marginRight: 2 }}> Địa chỉ: 07, đường N8, KDC:Đông An, P. Tân Đông Hiệp, Dĩ An, Bình Dương</Text>
-                    <View style={styles.direc}>
-                        <Slider
-                            onEndReached={() => {
-                                this.getggmap()
-                            }}
-                            containerStyle={{
-                                backgroundColor: '#E0E1DF',
-                                borderRadius: 20,
-                                overflow: 'hidden',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                width: "80%"
-                            }}
-                            sliderElement={
-                                <View style={{ backgroundColor: 'red', borderRadius: 20 ,margin:2}}>
-                                    <Icon
-                                        name='directions'
-                                        size={50}
-                                        color='black'
-                                    />
-                                </View>
-                            }
-                        >
-                            <Text style={{ fontSize: 30 }}>  {'>>'} Chỉ Đường {'>>'}</Text>
-                        </Slider>
-                    </View>
-                    <View style={styles.control}>
-                        <TouchableOpacity onPress={() => { }} >
-                            <View style={styles.Buttonstyle}>
-                                <Text style={{ fontSize: 15, color: 'white' }}>Xác Nhận Giao Hàng</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => this.makeCall()} activeOpacity={0.7} style={styles.touchableButton}>
-                            <View style={styles.Buttonstyle}>
-                                <Text style={{ fontSize: 15, color: 'white' }}>Liên Hệ</Text>
-                            </View>
-                        </TouchableOpacity>
+                },
+                {
+                    text: 'That Bai',
+                    onPress:  () => { this.PutJson('that bai')},
 
-                    </View>
-                </View>
-
-                <CheckInternet />
-            </View>
+                },
+            ],
         );
+     }
+    async PutJson(str) {
+        let temp = { chuoidonhang: this.state.dataSource }
+        temp.chuoidonhang[this.state.index].donhang.TinhTrangDon = str
+        let a = await JSON.stringify(temp)
+        let data = {
+            Chuoi: a
+        }
+        fetch('https://servertlcn.herokuapp.com/chuoigiaohang/' + this.state.chuoiId,
+            {
+                method: 'PUT',
+                body: JSON.stringify(data),
+                headers: { 'Content-Type': 'application/json' }
+
+            })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.forceUpdate();
+                console.log(responseJson)
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     }
+    renderElement() {
+        if (this.state.dataSource.length > 0) {
+            return (
+                <View style={styles.ThongTin}>
+                    <Text style={{ fontSize: 25 }}>{this.state.dataSource[this.state.index].reciver.name}</Text>
+                    <Text style={{ fontSize: 20 }}> {this.state.dataSource[this.state.index].reciver.sdt}</Text>
+                    <Text style={{ fontSize: 20 }}> {this.state.dataSource[this.state.index].donhang.TongTien} VND</Text>
+                </View>
+            )
+        }
+        return null;
+    }
+    render() {
+        if (!this.state.isLoading) {
+            return (
+                <View style={{ flex: 1 }}>
+                    <WebView
+                        ref={ref => { }}
+                        source={{ uri: this.link }}
+                        style={styles.Webview}
+                        geolocationEnabled={true}
+                    />
+                    <View style={styles.logost}>
+                        <Logo openDrawerclick={() => { this.showmenu() }} />
+                    </View>
+                    {this.renderElement()}
+
+                    <View style={styles.buttonaccess}>
+                        <Text style={{ fontSize: 15, marginLeft: 2, marginRight: 2 }}> {this.state.dataSource[this.state.index].address.TenDiaChi}</Text>
+                        <View style={styles.direc}>
+                            <Slider
+                                onEndReached={() => {
+                                    this.getggmap()
+                                }}
+                                containerStyle={{
+                                    backgroundColor: '#E0E1DF',
+                                    borderRadius: 20,
+                                    overflow: 'hidden',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    width: "80%"
+                                }}
+                                sliderElement={
+                                    <View style={{ backgroundColor: 'red', borderRadius: 20, margin: 2 }}>
+                                        <Icon
+                                            name='directions'
+                                            size={50}
+                                            color='black'
+                                        />
+                                    </View>
+                                }
+                            >
+                                <Text style={{ fontSize: 30 }}>  {'>>'} Chỉ Đường {'>>'}</Text>
+                            </Slider>
+                        </View>
+                        <View style={styles.control}>
+                            <TouchableOpacity onPress={() => { this.Xacnhan() }} >
+                                <View style={styles.Buttonstyle}>
+                                    <Text style={{ fontSize: 15, color: 'white' }}>Xác Nhận Giao Hàng</Text>
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => this.makeCall()} activeOpacity={0.7} style={styles.touchableButton}>
+                                <View style={styles.Buttonstyle}>
+                                    <Text style={{ fontSize: 15, color: 'white' }}>Liên Hệ</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                        </View>
+                    </View>
+
+                    <CheckInternet />
+                </View>
+            );
+        } return null;
+    }
+
 }
+
+
 const styles = StyleSheet.create({
     control: {
         justifyContent: "space-around",
