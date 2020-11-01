@@ -27,12 +27,13 @@ class Login extends Component {
 
     loginclick() {
         this.isLoading = true;
-        return fetch('https://servertlcn.herokuapp.com/nguoidung/'+this.state.username+'/username',
+        console.log(this.state.username)
+        return fetch('https://servertlcn.herokuapp.com/shipper/'+this.state.username+'/username',
              { method: 'GET' })
             .then(async (response) => {
                 let data = await response.json()
                 if (data.result != "failed") {                    
-                   var decryptedPassword = Base64.decode(data.data.Password);
+                   var decryptedPassword = Base64.decode(data.data.NguoiDung.Password);
                     if (this.isLoading && this.state.password.trim() == decryptedPassword) {
                         this.setData(data.data)
                         this.props.navigation.replace('MyDrawer');

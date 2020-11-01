@@ -8,10 +8,14 @@ import Setting from './Setting';
 import Profile from './Profile';
 
 const Drawer = createDrawerNavigator();
+
 class MyDrawer extends Component {
+   
+    componentDidMount(){
+       
+    }
     render() {
         return (
-
             <Drawer.Navigator initialRouteName="MyTab" >
                 <Drawer.Screen
                     name="MyTab"
@@ -29,7 +33,6 @@ class MyDrawer extends Component {
                     component={Setting}
                     options={{ drawerLabel: 'Cài Đặt' }}
                 />
-
             </Drawer.Navigator>
 
         );

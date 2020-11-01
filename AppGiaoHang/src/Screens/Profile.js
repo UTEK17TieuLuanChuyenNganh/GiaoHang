@@ -1,11 +1,90 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Image, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, Image, ImageBackground, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
+import AsyncStorage from '@react-native-community/async-storage';
 class Profile extends Component {
+    _isMounted = false;
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoading: true,
+            user: [],
+            dataSource: []
+        }
+    }
+    checkUser = async () => {
+        try {
+            const value = await AsyncStorage.getItem('user');
+            if (value !== null) {
+                let data = JSON.parse(value);
+                this.setState({
+                    user: data,
+                    //isLoading: false
+                })
+                this.fetchData(this.state.user.id);
+            }
+            else {
+                this.setState({
+                    isLoading: false
+                })
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    fetchData(id) {
+        //console.log(this.state.user.Username)
+        return fetch('https://servertlcn.herokuapp.com/shipper/'+id,
+            { method: 'GET' })
+            .then(async (response) => {
+                let data = await response.json()
+                console.log(data)
+                if (data.result != "failed") {
+                    if (this._isMounted) {
+                        this.setState({
+                            dataSource: data.data,
+                            isLoading: false
+                        })
+                    }
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+
+    componentDidMount() {
+        this._isMounted = true;
+        this.checkUser();
+    }
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
     showmenu = () => {
         this.props.navigation.openDrawer();
     }
+    renderElement() {
+        let acc = this.state.dataSource
+        return (
+                <View style={styles.Information}>
+                    <Text style={styles.detailaccount}>{(acc.NguoiDung.SinhNhat !== {}) ? acc.NguoiDung.SinhNhat.split('T')[0].trim() : ''}</Text>
+                    <Text style={styles.detailaccount}>{acc.NguoiDung.GioiTinh}</Text>
+                    <Text style={styles.detailaccount}>{acc.NguoiDung.Email}</Text>
+                    <Text style={styles.detailaccount}>{acc.NguoiDung.SDT}</Text>
+                    <Text style={styles.detailaccount}>{acc.CMND}</Text>
+                    <Text style={styles.detailaccount}>{acc.STK}</Text>
+                    <Text style={styles.detailaccount}>{acc.PhuongTienVanChuyen}</Text>
+                </View>
+        )
+    }
     render() {
+        if (this.state.isLoading) {
+            return (
+                <View style={[styles.container, styles.horizontal]}>
+                    <ActivityIndicator size={70} color="red" />
+                </View>
+            )
+        }
         return (
             <View style={{ flex: 1 }}>
 
@@ -15,17 +94,17 @@ class Profile extends Component {
                         <View style={{ width: 50 }}>
                             <Icon.Button name='menu'
                                 backgroundColor="rgba(0.0, 0.0, 0.0, 0.0)"
-                               
+
                                 onPress={this.showmenu}
                                 size={30}
-                                style={{padding:5}}
-                                
+                                style={{ padding: 5 }}
+
                             />
                         </View>
                         <Image source={require('../../Image/Image/avaPro.jpg')}
                             style={styles.circleImageLayout} />
                         <View style={styles.nameShipper}>
-                            <Text style={{ fontSize: 30, fontWeight: 'bold', fontStyle: 'italic' }}>Trần Cao Quyền</Text>
+                            <Text style={{ fontSize: 30, fontWeight: 'bold', fontStyle: 'italic' }}>{this.state.dataSource.NguoiDung.HoTen}</Text>
                         </View>
                     </View>
                 </ImageBackground>
@@ -40,7 +119,7 @@ class Profile extends Component {
                         <Text style={styles.detailaccount}>Phương Tiện:</Text>
                     </View>
                     <View style={styles.Information}>
-                        <Text>Profile Screen</Text>
+                        {this.renderElement()}
                     </View>
                 </View>
 
@@ -71,7 +150,7 @@ const styles = StyleSheet.create({
         borderRadius: 200 / 2,
         margin: 10,
         marginLeft: -30,
-        marginTop:25
+        marginTop: 25
     },
     Information: {
         //backgroundColor: 'yellow',
@@ -89,6 +168,14 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginBottom: 10,
         fontWeight: 'bold'
+    },container: {
+        flex: 1,
+        justifyContent: "center"
+    },
+    horizontal: {
+        flexDirection: "row",
+        justifyContent: "space-around",
+        padding: 10
     }
 })
 

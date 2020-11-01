@@ -3,6 +3,9 @@ import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'rea
 import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon1 from 'react-native-vector-icons/AntDesign';
+import AsyncStorage from '@react-native-community/async-storage';
+import MapScreens from './MapScreens';
+import DeprecatedViewPropTypes from 'react-native/Libraries/DeprecatedPropTypes/DeprecatedViewPropTypes';
 
 class Logictics extends Component {
     _isMounted = true;
@@ -10,29 +13,52 @@ class Logictics extends Component {
         super(props)
         this.state = {
             isLoading: true,
-            dataSource: [],
+            //dataSource: [],
+            user:[],
             soluong: 0,
         }
     }
-
-
+    
+    checkUser = async () => {
+        try {
+            const value = await AsyncStorage.getItem('user');
+            if (value !== null) {
+                let data = JSON.parse(value);
+                this.setState({
+                    user: data,
+                    //isLoading: false
+                })
+                this.fetchData()
+            }
+            else {
+                this.setState({
+                    isLoading: false
+                })
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
     showmenu = () => {
         this.props.navigation.openDrawer();
     }
     fetchData() {
-        return fetch('https://servertlcn.herokuapp.com/chuoigiaohang', { method: 'GET'})
-            .then((response) => response.json())
-            .then((responseJson) => {
-                //let data = await responseJson.data.json()
-                let data = responseJson.data[0].Chuoi
-                data = JSON.parse(data)
+        return fetch('https://servertlcn.herokuapp.com/chuoigiaohang/' + this.state.user.id + '/shipper',
+            { method: 'GET' })
+            .then(async (responseJson) => {
+                responseJson = await responseJson.json()
+                //console.log(responseJson.data.Chuoi)
+                let data = responseJson.data.Chuoi
+
+                data = await JSON.parse(data)
                 if (this._isMounted) {
                     this.setState(
                         {
                             isLoading: false,
                             dataSource: data.chuoidonhang,
-                            soluong: responseJson.data[0].SoLuong
+                            soluong: responseJson.data.SoLuong
                         })
+                    //console.log(this.state.dataSource)
                 }
             })
             .catch((error) => {
@@ -40,7 +66,7 @@ class Logictics extends Component {
             });
     }
     componentDidMount() {
-        this.fetchData();
+       this.checkUser()
     }
     renderSoLuong() {
         return (
@@ -122,6 +148,7 @@ class Logictics extends Component {
         );
     }
 }
+
 
 
 const styles = StyleSheet.create({
