@@ -28,7 +28,7 @@ class Login extends Component {
             .then((responseJson) => {
                 if (responseJson.result != "failed") {
                     var decryptedPassword = Base64.decode(responseJson.data.Password);
-                    if (this.isLoading && this.state.password.trim() == decryptedPassword) {
+                    if (this.isLoading && this.state.password.trim() == decryptedPassword) {                        
                         this.setData(responseJson.data)
                         this.props.navigation.navigate("TabHomeVer2");
                     }
