@@ -4,12 +4,14 @@ module.exports = (sequelize, DataTypes) => {
     TenDiaChi: DataTypes.STRING,
     KinhDo: DataTypes.STRING,
     ViDo: DataTypes.STRING,
-    ThoiGianUocLuong: DataTypes.STRING,
+    ThoiGianBatDau: DataTypes.DATE,
+    ThoiGianKetThuc: DataTypes.DATE,
+    DonhangId: DataTypes.STRING,
     laMacDinh: DataTypes.BOOLEAN
   }, {});
-  DiaChi.associate = function(models) {
-    DiaChi.belongsTo(models.NguoiDung, {foreignKey: 'NguoiDungId'});  
-    DiaChi.hasMany(models.DonHang, { as: 'diachi_donhang' });    
+  DiaChi.associate = function (models) {
+    DiaChi.belongsTo(models.NguoiDung, { foreignKey: 'NguoiDungId' });
+    DiaChi.hasMany(models.DonHang, { as: 'diachi_donhang' });
   };
   return DiaChi;
 };

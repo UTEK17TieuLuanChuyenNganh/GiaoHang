@@ -2,12 +2,14 @@ const models = require('../models/index')
 const Sequelize = require('sequelize')
 const Moment = require('moment')
 const DonHang = models.DonHang
-
+const Diachi = models.Diachi
 const Op = Sequelize.Op;
 const operatorsAliases = {
     $like: Op.like,
     $not: Op.not,
-    $between: Op.between
+    $between: Op.between,
+    $or: Op.or,
+    $and: Op.and
 }
 const createDonHang = async (req, res) => {
     let {
@@ -249,6 +251,7 @@ const getAllDonHang = async (req, res) => {
                 'DanhGia',
                 'daThanhToan',
             ],
+            include: [{ all: true }]
         });
         res.json({
             result: 'ok',
@@ -503,6 +506,85 @@ const searchDonHangCount = async (req, res) => {
         });
     }
 }
+
+// const searchDonHangInTimeRange = async (req, res) => {
+//     const { id,timerange } = req.body;
+//     try {        
+//         let timeStart = Moment(timerange.timeStart, "h:mm")
+//         let timeEnd = Moment(timerange.timeEnd, "h:mm")
+//         const DonHangs = await DonHang.findAll({
+//             attributes: [
+//                 'id',
+//                 'NgayDatHang',
+//                 'TienVanChuyen',
+//                 'TongTien',
+//                 'TinhTrangDon',
+//                 'NguoiDungId',
+//                 'BuuCucId',
+//                 'ChuoiGiaoHangId',
+//                 'DiaChiId',
+//                 'GhiChu',
+//                 'DanhGia',
+//                 'daThanhToan',
+//             ],
+//             where: {
+//                 NguoiDungId: id,
+//             },
+//             include: [{
+//                 model: Diachi,
+//                 where: {
+//                     [Op.or]: [
+//                         {
+//                             [Op.and]: [
+//                                 { ThoiGianBatDau: { [Op.between]: [timeStart, timeEnd] } },
+//                                 Sequelize.where(Sequelize.fn('datediff', Sequelize.fn('hour'), timeEnd, Sequelize.col('ThoiGianKetThuc')), {
+//                                     [Op.and]: [
+//                                         { [Op.gt]: 2 },
+//                                         { [Op.lt]: 6 },
+//                                     ]
+//                                 })
+//                             ]
+//                         },
+//                         {
+//                             [Op.and]: [
+//                                 { ThoiGianKetThuc: { [Op.between]: [timeStart, timeEnd] } },
+//                                 Sequelize.where(Sequelize.fn('datediff', Sequelize.fn('hour'), Sequelize.col('ThoiGianKetThuc'), timeStart), {
+//                                     [Op.and]: [
+//                                         { [Op.gt]: 2 },
+//                                         { [Op.lt]: 6 },
+//                                     ]
+//                                 })
+//                             ]
+//                         },
+//                     ],
+//                     laMacDinh: true
+//                 }
+//             }],
+//             order: [['id', 'asc']]
+//         });
+//         if (DonHangs.length > 0) {
+//             res.json({
+//                 result: 'ok',
+//                 data: DonHangs,
+//                 length: DonHangs.length,
+//                 message: "List DonHang successfully"
+//             });
+//         } else {
+//             res.json({
+//                 result: 'failed',
+//                 data: {},
+//                 message: `Cannot find list DonHang to show. Error:${error}`
+//             });
+//         }
+//     } catch (error) {
+//         res.json({
+//             result: 'failed',
+//             data: [],
+//             length: 0,
+//             message: `Cannot list DonHang. Error:${error}`
+//         });
+//     }
+// }
 module.exports = {
     createDonHang,
     updateDonHang,
@@ -511,5 +593,5 @@ module.exports = {
     getAllDonHangByNguoiDungId,
     getDonHangByNguoiDungId,
     searchDonHang,
-    searchDonHangCount
+    searchDonHangCount,
 }

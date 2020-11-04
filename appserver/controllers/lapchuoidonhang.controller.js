@@ -1,6 +1,58 @@
 const models = require('../models/index')
 const fetch = require('node-fetch');
 const bingKey = 'AsM4wGyTSNX5s9JyVa62Kwrd8Yuis4IsMMfbnjNIX3J6ol8ldiLIUHWW9DXYuQNa';
+
+//b1 select don hang theo khung gio
+const getDonhang = async (req, res) => {
+    const { id, timerange } = req.body;
+    let dataPost = {
+        id: id,
+        timerange: {
+            timeStart: timerange.timeStart,
+            timeEnd: timerange.timeEnd
+        }
+    }
+    let settings = {
+        method: "POST",
+        body: JSON.stringify(dataPost),
+        headers: { 'Content-Type': 'application/json' },
+    };
+    let dataFetch = await fetch('https://servertlcn.herokuapp.com/diachi/search', settings)
+    let dataRes = await dataFetch.json();
+    let dataSend = [];
+    //console.log(dataRes)
+    if (dataRes.length > 0) {
+        for (let e of dataRes.data) {
+            try {                
+                let temp = {
+                    idDonhang: e.DonhangId,
+                    idDiachi: e.id,
+                    Kinhdo: e.KinhDo,
+                    Vido: e.ViDo
+                }
+                dataSend.push(temp);
+            }
+            catch (error) {
+                console.log('error' + error);
+            }
+        }
+        return new Promise((resolve, reject) => {
+            res.json({
+                result: 'ok',
+                data: dataSend,
+            })
+        })
+    }else{
+        return new Promise((resolve, reject) => {
+            res.json({
+                result: 'fail',
+                data: dataSend,
+            })
+        })
+    }
+}
+
+
 const listCoord =
     [
         { "latitude": 10.8579009, "longitude": 106.737498 },
@@ -43,7 +95,7 @@ const getDistance = async (req, res) => {
             if (checkrow != e.originIndex) {
                 matrixData[checkrow] = dataperRow;
                 dataperRow = [];
-                checkrow = e.originIndex;                
+                checkrow = e.originIndex;
                 dataperRow[e.destinationIndex] = e.travelDistance;
             }
             else {
@@ -54,12 +106,13 @@ const getDistance = async (req, res) => {
             console.log('error' + error);
         }
     }
-    
-    return new Promise((resolve,reject)=>{
+
+    return new Promise((resolve, reject) => {
         res.json(matrixData)
     })
-    
+
 };
 module.exports = {
     getDistance,
+    getDonhang
 }
