@@ -20,12 +20,12 @@ paypal.configure({
 router.post('/pay', (req, res) => {
     items = req.body;
     total = 0;
-    let itemsData = items.items;    
+    let itemsData = items.items;
     shipping = items.shipping
     shippingAddress = items.address
     reciver = items.reciver
     itemsData.forEach((e => {
-        total += e.price;
+        total += e.price * e.quantity;
     }));
     if (itemsData.length > 0) {
         let create_payment_json = {
@@ -58,7 +58,7 @@ router.post('/pay', (req, res) => {
                 },
                 "description": "Thanh toán mặt hàng"
             }]
-        };        
+        };
         paypal.payment.create(create_payment_json, function (error, payment) {
             if (error) {
                 throw error;

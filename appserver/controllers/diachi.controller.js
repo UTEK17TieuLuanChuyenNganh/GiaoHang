@@ -325,7 +325,9 @@ const searchDiachiInTimeRange = async (req, res) => {
                    `AND (DATE_PART('hour','${timerange.timeEnd}'::timestamp - "DiaChi"."ThoiGianBatDau"::timestamp) BETWEEN 2 AND 4)`+
                     `OR `+ 
                    `("DiaChi"."ThoiGianKetThuc" BETWEEN '${timeStart}' AND '${timeEnd}') `+		   
-                   `AND (DATE_PART('hour',"DiaChi"."ThoiGianKetThuc"::timestamp - '${timerange.timeStart}'::timestamp) BETWEEN 2 AND 4)`)
+                   `AND (DATE_PART('hour',"DiaChi"."ThoiGianKetThuc"::timestamp - '${timerange.timeStart}'::timestamp) BETWEEN 2 AND 4) `+
+                   `OR `+
+                   `((DATE_PART('hour','${timerange.timeEnd}'::timestamp - "DiaChi"."ThoiGianBatDau"::timestamp)) = (DATE_PART('hour',"DiaChi"."ThoiGianKetThuc"::timestamp - '${timerange.timeEnd}'::timestamp)))`)
                 ],
             },
             include: [{ all: true }],
