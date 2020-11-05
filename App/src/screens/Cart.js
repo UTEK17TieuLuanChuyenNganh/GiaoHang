@@ -73,14 +73,15 @@ class Cart extends Component {
     //Load Data
     componentDidMount() {
         this._isMounted = true;
-        if (this._isMounted) {
-            this.importData();
-        }
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+        this._subscribe = this.props.navigation.addListener('focus', () => {
+            this.importData();
+        });
     }
     componentWillUnmount() {
         this._isMounted = false;
         BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
+        this._subscribe();
     }
     importData = async () => {
         try {
@@ -130,7 +131,7 @@ class Cart extends Component {
                 })
             let value = {
                 name: e.TenSanPham,
-                price: Math.round(e.TotalPrice / 23000),
+                price: e.Gia,
                 currency: "USD",
                 quantity: quantity
             }

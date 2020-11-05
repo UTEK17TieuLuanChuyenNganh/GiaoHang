@@ -1,6 +1,5 @@
 import { StyleSheet, View, Text, StatusBar, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
-
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import HeaderComponent from '../components/HeaderComponent';
@@ -8,7 +7,6 @@ import ProfileItem from '../components/ProfileItem';
 
 import React, { Component } from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-
 class ProfileScreen extends Component {
 
   _isMounted = false;
@@ -22,10 +20,13 @@ class ProfileScreen extends Component {
 
   componentDidMount() {
     this._isMounted = true;
-    this.checkUser();
+    this._subscribe = this.props.navigation.addListener('focus', () => {
+      this.checkUser();
+    });
   }
   componentWillUnmount() {
     this._isMounted = false;
+    this._subscribe();
   }
   checkUser = async () => {
     try {
@@ -112,12 +113,12 @@ class ProfileScreen extends Component {
         <View style={styles.bodyContainer}>
           {this.renderUser()}
           {/*  */}
-          <View style={styles.divider} />      
+          <View style={styles.divider} />
           <ProfileItem
             user={this.state.user}
             navigation={this.props.navigation}
             icon="card-account-details-outline"
-            name="Thông tin cá nhân" />    
+            name="Thông tin cá nhân" />
           <ProfileItem
             user={this.state.user}
             navigation={this.props.navigation}

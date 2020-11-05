@@ -26,8 +26,34 @@ class Register extends Component {
             SDT: "",
             isVisible: false,
             // displayCalendar: "flex",
-            styleContent:"center"
+            styleContent: "center"
         }
+    }
+    regist(data) {
+        return fetch('https://servertlcn.herokuapp.com/nguoidung',
+            {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: { 'Content-Type': 'application/json' }
+
+            })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                Alert.alert(
+                    'Đăng Ký',
+                    'Thành công!',
+                    [
+                        {
+                            text: 'OK',
+                            onPress: () => { this.confirmPress() },
+
+                        },
+                    ],
+                );
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     }
     fetchData() {
         if (this.state.Password.trim() != "" && this.state.HoTen != ""
@@ -43,26 +69,28 @@ class Register extends Component {
                 Email: this.state.Email,
                 SDT: this.state.SDT,
             }
-            fetch('https://servertlcn.herokuapp.com/nguoidung',
+            fetch('https://servertlcn.herokuapp.com/nguoidung/' + this.state.Username + '/username',
                 {
-                    method: 'POST',
-                    body: JSON.stringify(data),
-                    headers: { 'Content-Type': 'application/json' }
-
+                    method: 'GET',
                 })
                 .then((response) => response.json())
-                .then((responseJson) => { 
-                    Alert.alert(
-                        'Đăng Ký',
-                        'Thành công!',
-                        [
-                            {
-                                text: 'OK',
-                                onPress: () => { this.confirmPress() },
+                .then((responseJson) => {
+                    if (responseJson.result == "ok") {
+                        Alert.alert(
+                            'Đăng Ký',
+                            'Username đã tồn tại!',
+                            [
+                                {
+                                    text: 'OK',
+                                    onPress: () => { },
 
-                            },
-                        ],
-                    );
+                                },
+                            ],
+                        );
+                    }
+                    else {
+                        this.regist(data)
+                    }
                 })
                 .catch((error) => {
                     console.log(error);
@@ -135,7 +163,7 @@ class Register extends Component {
                                 style={styles.TextInputStyle} />
                         </View>
                         <View style={styles.AddressStyle}>
-                            <Text style={styles.TextStyle}>Sinh nhật:</Text>                            
+                            <Text style={styles.TextStyle}>Sinh nhật:</Text>
                             <TouchableOpacity style={{
                                 marginBottom: 10, justifyContent: 'center',
                                 alignItems: 'center'
@@ -149,14 +177,14 @@ class Register extends Component {
                                 <View style={{
                                     height: 50,
                                     width: 249,
-                                    flexDirection:"row",
+                                    flexDirection: "row",
                                     backgroundColor: 'white',
                                     justifyContent: this.state.styleContent,
                                     alignItems: 'center',
                                     borderRadius: 30,
-                                }}>                                    
+                                }}>
                                     <Icon name="calendar" size={24} color="blue" />
-                                    <Text style={{fontSize:17,paddingRight:20}}>{this.state.SinhNhat}</Text>
+                                    <Text style={{ fontSize: 17, paddingRight: 20 }}>{this.state.SinhNhat}</Text>
                                 </View>
                             </TouchableOpacity>
                             {this.state.isVisible ?
@@ -165,12 +193,15 @@ class Register extends Component {
                                     mode="date"
                                     display="default"
                                     onTouchCancel={() => { this.setState({ displayCalendar: "flex" }) }}
-                                    onChange={(event, value) => { 
-                                        var dt = Moment(value).format("MM-DD-YYYY") 
-                                        this.setState({ 
-                                            SinhNhat: dt, 
-                                            isVisible: false }) }}
-                                /> : null}                          
+                                    onChange={(event, value) => {
+
+                                        var dt = Moment(value).format("MM-DD-YYYY")
+                                        this.setState({
+                                            SinhNhat: dt,
+                                            isVisible: false
+                                        })
+                                    }}
+                                /> : null}
                         </View>
                         <View style={styles.AddressStyle}>
                             <Text style={styles.TextStyle}>Giới tính:</Text>

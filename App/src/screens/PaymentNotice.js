@@ -53,9 +53,9 @@ class PaymentNotice extends Component {
 
             })
             .then((response) => response.json())
-            .then((responseJson) => {
+            .then(async (responseJson) => {
                 if (this._isMounted) {
-                    this.clearCart();   
+                    await this.clearCart();   
                     this.setState({
                         isLoading:false
                     })                 
@@ -91,6 +91,12 @@ class PaymentNotice extends Component {
                 console.log(error);
             });
     }
+    goBackToHome(){
+        if(!this.state.isLoading)
+        {
+            this.props.navigation.navigate("TabHome")
+        }
+    }
     render() {
         if (this.state.isLoading) {
             return (
@@ -104,7 +110,7 @@ class PaymentNotice extends Component {
                     <Icon name="check-circle" size={200} color="green" />
                     <Text style={{ paddingTop: 20, fontSize: 35 }}>Giao dịch thành công!</Text>
                     <TouchableOpacity style={{ paddingTop: 30, justifyContent: 'center', alignItems: 'center' }}
-                        onPress={() => { this.props.navigation.navigate("TabHomeVer2") }}>
+                        onPress={() => { this.goBackToHome() }}>
                         <View style={{
                             marginTop: 20,
                             height: 60,

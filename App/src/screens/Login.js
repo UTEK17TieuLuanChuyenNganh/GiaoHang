@@ -30,7 +30,7 @@ class Login extends Component {
                     var decryptedPassword = Base64.decode(responseJson.data.Password);
                     if (this.isLoading && this.state.password.trim() == decryptedPassword) {                        
                         this.setData(responseJson.data)
-                        this.props.navigation.navigate("TabHomeVer2");
+                        this.props.navigation.goBack();
                     }
                     else {
                         this.setState({

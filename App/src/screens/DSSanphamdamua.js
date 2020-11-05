@@ -152,7 +152,6 @@ class DSSanphamdamua extends Component {
             },
             dateCheck: true
         }
-        console.log(data)
         return fetch('https://servertlcn.herokuapp.com/donhang/search/count',
             {
                 method: 'POST',
