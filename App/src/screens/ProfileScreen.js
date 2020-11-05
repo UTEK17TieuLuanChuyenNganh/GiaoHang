@@ -20,8 +20,9 @@ class ProfileScreen extends Component {
 
   componentDidMount() {
     this._isMounted = true;
-    this._subscribe = this.props.navigation.addListener('focus', () => {
-      this.checkUser();
+    this._subscribe = this.props.navigation.addListener('focus', async () => {
+      await this.checkUser();
+      this.forceUpdate();
     });
   }
   componentWillUnmount() {
@@ -53,8 +54,9 @@ class ProfileScreen extends Component {
   logoutPress = async () => {
     if (this.state.user.id) {
       try {
-        await AsyncStorage.removeItem('user');
-        this.setState({
+        await AsyncStorage.getAllKeys()
+          .then(keys => AsyncStorage.multiRemove(keys));
+        await this.setState({
           user: []
         });
       } catch (error) {

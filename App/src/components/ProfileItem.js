@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, StatusBar } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-community/async-storage';
 class ProfileItem extends Component {
     constructor(props) {
         super(props);
@@ -12,13 +13,27 @@ class ProfileItem extends Component {
             user: props.user
         }
     }
-    onclick(name) {
+    checkUser = async () => {
+        try {
+          const value = await AsyncStorage.getItem('user');
+          if (value !== null) {
+            let data = JSON.parse(value);
+            this.setState({
+              user: data,
+            })
+          }
+        } catch (error) {
+          console.log(error)
+        }
+      }
+    async onclick(name) {    
+        await this.checkUser();
         if (this.state.user.id) {
             switch (name) {
                 case "Quản lý đơn hàng":
-                    this.props.navigation.navigate("QLDH", { user: this.state.user }); break;
+                    this.props.navigation.navigate("QLDH"); break;
                 case "Sản phẩm đã mua":
-                    this.props.navigation.navigate("DSSP", { user: this.state.user }); break;
+                    this.props.navigation.navigate("DSSP"); break;
             }
         }
         else return;

@@ -9,6 +9,7 @@ import Header from '../components/HeaderComponent';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Moment from 'moment';
 import Pagination from '../components/Pagination';
+import AsyncStorage from '@react-native-community/async-storage';
 class DSSanphamdamua extends Component {
     _isMounted = false
     constructor(props) {
@@ -16,7 +17,7 @@ class DSSanphamdamua extends Component {
         this.state = {
             isLoading: true,
             dataSource: [],
-            user: props.route.params.user,
+            user: [],
             checkSearchByDate: false,
             isVisible: false,
             dateStart: null,
@@ -28,17 +29,38 @@ class DSSanphamdamua extends Component {
     }
     componentDidMount() {
         this._isMounted = true;
-        this.getAmountPage();
-        this.fetchData();
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+        this._subscribe = this.props.navigation.addListener('focus', async () => {
+            await this.checkUser();
+            await this.getAmountPage();
+            await this.fetchData();
+            //this.forceUpdate();
+        });
     }
     componentWillUnmount() {
         this._isMounted = false;
         BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
+        this._subscribe();
     }
     handleBackPress() {
         this.props.navigation.goBack();
         return true;
+    }
+    checkUser = async () => {
+        try {
+            const value = await AsyncStorage.getItem('user');
+            if (value !== null) {
+                let data = JSON.parse(value);
+                this.setState({
+                    user: data,
+                })
+            }
+            else {
+                console.log("Chua dang nhap")
+            }
+        } catch (error) {
+            console.log(error)
+        }
     }
     //search implement
     searchByDate() {

@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator,BackHandler, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, BackHandler, TouchableOpacity } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Header from '../components/HeaderComponent';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Moment from 'moment';
 import Pagination from '../components/Pagination';
+import AsyncStorage from '@react-native-community/async-storage';
 class QLDonhang extends Component {
     _isMounted = false
     constructor(props) {
@@ -13,7 +14,7 @@ class QLDonhang extends Component {
         this.state = {
             isLoading: true,
             dataSource: [],
-            user: props.route.params.user,
+            user: [],
             checkSearchByDate: false,
             isVisible: false,
             dateStart: null,
@@ -29,15 +30,35 @@ class QLDonhang extends Component {
     }
     componentDidMount() {
         this._isMounted = true;
-        this.getAmountPage();
-        this.fetchData();
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+        this._subscribe = this.props.navigation.addListener('focus', async () => {
+            await this.checkUser();
+            await this.getAmountPage();
+            await this.fetchData();
+            //this.forceUpdate();
+        });
     }
     componentWillUnmount() {
         this._isMounted = false;
         BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
+        this._subscribe();
     }
-
+    checkUser = async () => {
+        try {
+            const value = await AsyncStorage.getItem('user');
+            if (value !== null) {
+                let data = JSON.parse(value);
+                this.setState({
+                    user: data,
+                })
+            }
+            else {
+                console.log("Chua dang nhap")
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
     //search implement
     searchByDate() {
         this.setState({

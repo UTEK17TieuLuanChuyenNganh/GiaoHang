@@ -28,10 +28,10 @@ class HomeScreen extends Component {
   componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
   }
-  handleBackPress() {
-    this.setState({
+  async handleBackPress() {
+    await this.setState({
       searchSubmit: false
-    })
+    })    
     return true;
   }
   cartclick() {
