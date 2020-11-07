@@ -41,7 +41,8 @@ class QLDonhang extends Component {
     componentWillUnmount() {
         this._isMounted = false;
         BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
-        this._subscribe();
+        //this._subscribe();
+        this.props.navigation.removeListener(this._subscribe);
     }
     checkUser = async () => {
         try {
