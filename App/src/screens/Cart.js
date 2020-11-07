@@ -8,7 +8,7 @@ import HeaderComponent from '../components/HeaderComponent';
 import DiaChiUocLuong from './DiaChiUocLuong';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
-
+import { connect } from 'react-redux';
 class Cart extends Component {
 
     _isMounted = false;
@@ -33,7 +33,7 @@ class Cart extends Component {
         return true;
     }
     async ClickDiaChi() {
-        if (this.state.user.id) {
+        if (this.props.user.id) {
             this.setState({
                 isClick: !this.state.isClick
             })
@@ -58,7 +58,6 @@ class Cart extends Component {
             return (
                 <DiaChiUocLuong
                     navigation={this.props.navigation}
-                    user={this.state.user}
                     close={() => { this.ClickDiaChi() }} />
             );
         else
@@ -147,7 +146,7 @@ class Cart extends Component {
         const results = await Promise.all(promises)
         let shippingCost = 100
         dataPayment = {
-            reciver: this.state.user.HoTen,
+            reciver: this.props.user.HoTen,
             address: this.state.address.TenDiaChi,
             shipping: shippingCost,
             items: items
@@ -158,7 +157,7 @@ class Cart extends Component {
             TongTien: shippingCost + this.state.total,
             GhiChu: "",
             DanhGia: "",
-            NguoiDungId: this.state.user.id,
+            NguoiDungId: this.props.user.id,
             DiaChiId: this.state.address.id
         }
         dataListItems = listitems;
@@ -182,7 +181,7 @@ class Cart extends Component {
         }
     }
     thanhtoanPress() {
-        if (this.state.user.id) {
+        if (this.props.user.id) {
             if (this.state.address.TenDiaChi) {
                 Alert.alert(
                     'Thanh toán',
@@ -459,4 +458,13 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Cart;
+
+const mapStateToProps = (state) => {
+    return {
+        user: state.user
+    };
+};
+
+export default connect(mapStateToProps, null)(Cart);
+
+

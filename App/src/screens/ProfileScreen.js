@@ -7,6 +7,8 @@ import ProfileItem from '../components/ProfileItem';
 
 import React, { Component } from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+
+import store from '../redux/store';
 class ProfileScreen extends Component {
 
   _isMounted = false;
@@ -60,6 +62,9 @@ class ProfileScreen extends Component {
         await this.setState({
           user: []
         });
+        store.dispatch({
+          type: 'LOGOUT',
+        })
       } catch (error) {
         console.error(error)
       }

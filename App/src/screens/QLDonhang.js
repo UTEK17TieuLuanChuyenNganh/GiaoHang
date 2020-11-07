@@ -7,6 +7,10 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Moment from 'moment';
 import Pagination from '../components/Pagination';
 import AsyncStorage from '@react-native-community/async-storage';
+
+//redux 
+import { connect } from 'react-redux';
+
 class QLDonhang extends Component {
     _isMounted = false
     constructor(props) {
@@ -32,7 +36,7 @@ class QLDonhang extends Component {
         this._isMounted = true;
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
         this._subscribe = this.props.navigation.addListener('focus', async () => {
-            await this.checkUser();
+            //await this.checkUser();
             await this.getAmountPage();
             await this.fetchData();
             //this.forceUpdate();
@@ -91,7 +95,7 @@ class QLDonhang extends Component {
 
     //fetchData
     fetchData() {
-        return fetch('https://servertlcn.herokuapp.com/donhang/' + this.state.user.id + '/nguoidung/' + this.state.page + '/page', { method: 'GET' })
+        return fetch('https://servertlcn.herokuapp.com/donhang/' + this.props.user.id + '/nguoidung/' + this.state.page + '/page', { method: 'GET' })
             .then((response) => response.json())
             .then((responseJson) => {
                 if (this._isMounted) {
@@ -108,7 +112,7 @@ class QLDonhang extends Component {
     }
     fetchDataPost() {
         let data = {
-            id: this.state.user.id,
+            id: this.props.user.id,
             date: {
                 dateStart: this.state.dateStart,
                 dateEnd: this.state.dateEnd
@@ -139,7 +143,7 @@ class QLDonhang extends Component {
 
     //Pagination
     getAmountPage() {
-        return fetch('https://servertlcn.herokuapp.com/donhang/' + this.state.user.id + '/nguoidung', { method: 'GET' })
+        return fetch('https://servertlcn.herokuapp.com/donhang/' + this.props.user.id + '/nguoidung', { method: 'GET' })
             .then((response) => response.json())
             .then((responseJson) => {
                 let count = responseJson.length / 10
@@ -164,7 +168,7 @@ class QLDonhang extends Component {
     }
     getAmountPageByDate() {
         let data = {
-            id: this.state.user.id,
+            id: this.props.user.id,
             date: {
                 dateStart: this.state.dateStart,
                 dateEnd: this.state.dateEnd
@@ -428,4 +432,11 @@ const styles = StyleSheet.create({
         borderWidth: 2,
     },
 })
-export default QLDonhang;
+
+const mapStateToProps = (state) => {
+    return {
+        user: state.user
+    };
+};
+
+export default connect(mapStateToProps, null)(QLDonhang);

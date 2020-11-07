@@ -4,6 +4,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-community/async-storage';
+import { connect } from 'react-redux';
 class ProfileItem extends Component {
     constructor(props) {
         super(props);
@@ -15,20 +16,20 @@ class ProfileItem extends Component {
     }
     checkUser = async () => {
         try {
-          const value = await AsyncStorage.getItem('user');
-          if (value !== null) {
-            let data = JSON.parse(value);
-            this.setState({
-              user: data,
-            })
-          }
+            const value = await AsyncStorage.getItem('user');
+            if (value !== null) {
+                let data = JSON.parse(value);
+                this.setState({
+                    user: data,
+                })
+            }
         } catch (error) {
-          console.log(error)
+            console.log(error)
         }
-      }
-    async onclick(name) {    
-        await this.checkUser();
-        if (this.state.user.id) {
+    }
+    async onclick(name) {
+        //await this.checkUser();
+        if (this.props.user.id) {
             switch (name) {
                 case "Quản lý đơn hàng":
                     this.props.navigation.navigate("QLDH"); break;
@@ -67,4 +68,11 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ProfileItem;
+const mapStateToProps = (state) => {
+    return {
+        user: state.user
+    };
+};
+
+
+export default connect(mapStateToProps, null)(ProfileItem);

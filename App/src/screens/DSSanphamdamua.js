@@ -10,6 +10,10 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Moment from 'moment';
 import Pagination from '../components/Pagination';
 import AsyncStorage from '@react-native-community/async-storage';
+
+//redux 
+import { connect } from 'react-redux';
+
 class DSSanphamdamua extends Component {
     _isMounted = false
     constructor(props) {
@@ -31,7 +35,7 @@ class DSSanphamdamua extends Component {
         this._isMounted = true;
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
         this._subscribe = this.props.navigation.addListener('focus', async () => {
-            await this.checkUser();
+            //await this.checkUser();
             await this.getAmountPage();
             await this.fetchData();
             //this.forceUpdate();
@@ -95,7 +99,7 @@ class DSSanphamdamua extends Component {
 
     //fetchData
     fetchData() {
-        return fetch('https://servertlcn.herokuapp.com/dssanpham/' + this.state.user.id + '/nguoidung/' + this.state.page + '/page', { method: 'GET' })
+        return fetch('https://servertlcn.herokuapp.com/dssanpham/' + this.props.user.id + '/nguoidung/' + this.state.page + '/page', { method: 'GET' })
             .then((response) => response.json())
             .then((responseJson) => {
                 if (this._isMounted) {
@@ -112,7 +116,7 @@ class DSSanphamdamua extends Component {
     }
     fetchDataPost() {
         let data = {
-            id: this.state.user.id,
+            id: this.props.user.id,
             date: {
                 dateStart: this.state.dateStart,
                 dateEnd: this.state.dateEnd
@@ -143,7 +147,7 @@ class DSSanphamdamua extends Component {
 
     //Pagination
     getAmountPage() {
-        return fetch('https://servertlcn.herokuapp.com/donhang/' + this.state.user.id + '/nguoidung', { method: 'GET' })
+        return fetch('https://servertlcn.herokuapp.com/donhang/' + this.props.user + '/nguoidung', { method: 'GET' })
             .then((response) => response.json())
             .then((responseJson) => {
                 let count = responseJson.length / 10
@@ -168,7 +172,7 @@ class DSSanphamdamua extends Component {
     }
     getAmountPageByDate() {
         let data = {
-            id: this.state.user.id,
+            id: this.props.user.id,
             date: {
                 dateStart: this.state.dateStart,
                 dateEnd: this.state.dateEnd
@@ -343,7 +347,7 @@ class DSSanphamdamua extends Component {
                         }}
                         key={id.toString()}>
                         <View style={styles.LabelIndfor}>
-                            <Text style={styles.detailaccount}>Người mua: {this.state.user.HoTen}</Text>
+                            <Text style={styles.detailaccount}>Người mua: {this.props.user.HoTen}</Text>
                             <Text style={styles.detailaccount1}>Tên sản phẩm: {e.SanPham.TenSanPham}</Text>
                             <Text style={styles.detailaccount1}>Số lượng: {e.SoLuong}</Text>
                             <Text style={styles.detailaccount1}>Giá: {e.SanPham.Gia}</Text>
@@ -396,7 +400,6 @@ class DSSanphamdamua extends Component {
         );
     }
 }
-
 
 const styles = StyleSheet.create({
     SaveStyle: {
@@ -479,4 +482,10 @@ const styles = StyleSheet.create({
         height: 120,
     },
 })
-export default DSSanphamdamua;
+
+const mapStateToProps = (state) => {
+    return {
+        user: state.user
+    };
+};
+export default connect(mapStateToProps, null)(DSSanphamdamua);

@@ -17,14 +17,17 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 
-
+import { Provider } from 'react-redux';
+import store from './src/redux/store';
 import HomeScreen from './src/screens/HomeScreen';
 
 class App extends Component {
-    
+
   render() {
     return (
-      <HomeScreen/>
+      <Provider store={store}>
+        <HomeScreen />
+      </Provider>
     );
   }
 }

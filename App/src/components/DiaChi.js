@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-community/async-storage';
+import {connect} from 'react-redux'
 class DiaChi extends Component {
     _isMounted = false;
     constructor(props) {
@@ -17,7 +18,7 @@ class DiaChi extends Component {
             isLoading: true,
             dataSource: [],
             navigation: props.params.navigation,
-            user: props.params.user
+            //user: props.params.user
         }
     }
     componentDidMount() {
@@ -26,7 +27,7 @@ class DiaChi extends Component {
     }
 
     fetchData() {
-        return fetch('https://servertlcn.herokuapp.com/diachi/' + this.state.user.id + '/nguoidung', { method: 'GET' })
+        return fetch('https://servertlcn.herokuapp.com/diachi/' + this.props.user.id + '/nguoidung', { method: 'GET' })
             .then((response) => response.json())
             .then((responseJson) => {
                 if (this._isMounted) {
@@ -116,4 +117,11 @@ const styles = StyleSheet.create({
         fontSize: 15
     }
 })
-export default DiaChi;
+
+const mapStateToProps = (state) => {
+    return {
+        user: state.user
+    };
+};
+
+export default connect(mapStateToProps, null)(DiaChi);

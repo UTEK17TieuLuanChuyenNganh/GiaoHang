@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { View, Text, Button, TextInput, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { Base64 } from 'js-base64';
+//redux
+import store from '../redux/store';
+import { connect } from 'react-redux'
 class Login extends Component {
 
     isLoading = false;
@@ -28,7 +31,7 @@ class Login extends Component {
             .then((responseJson) => {
                 if (responseJson.result != "failed") {
                     var decryptedPassword = Base64.decode(responseJson.data.Password);
-                    if (this.isLoading && this.state.password.trim() == decryptedPassword) {                        
+                    if (this.isLoading && this.state.password.trim() == decryptedPassword) {
                         this.setData(responseJson.data)
                         this.props.navigation.goBack();
                     }
@@ -53,11 +56,15 @@ class Login extends Component {
             await AsyncStorage.setItem(
                 'user', JSON.stringify(data)
             );
+            store.dispatch({
+                type: 'LOGIN',
+                payload: data
+            })
         } catch (error) {
             console.log(error);
         }
     }
-    render() {
+    render() {        
         return (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                 <Text style={{ marginBottom: 10, fontSize: 40 }}>Đăng Nhập</Text>

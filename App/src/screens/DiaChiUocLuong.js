@@ -6,13 +6,14 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 LogBox.ignoreAllLogs();
 import Diachi from '../components/DiaChi';
 import AsyncStorage from '@react-native-community/async-storage';
+import { connect } from 'react-redux';
 class DiaChiUocLuong extends Component {
     _isMounted = false;
     constructor(props) {
         super(props);
         this.state = {
             addNewAddressClick: true,
-            user: props.user
+            //user: props.user
         }
     }
     componentDidMount() {
@@ -23,7 +24,7 @@ class DiaChiUocLuong extends Component {
     }
     adressclick() {
         this.props.close();
-        this.props.navigation.navigate('NewAddress', { user: this.state.user });
+        this.props.navigation.navigate('NewAddress');
     }
     addNewAddress() {
         this.setState({
@@ -33,7 +34,6 @@ class DiaChiUocLuong extends Component {
     renderElement() {
         const params = {
             navigation: this.props.navigation,
-            user: this.state.user,
         }
         return (
             <Diachi params={params} close={() => { this.props.close(); }} />
@@ -108,4 +108,11 @@ const styles = StyleSheet.create({
         borderRadius: 20
     }
 })
-export default DiaChiUocLuong;
+
+const mapStateToProps = (state) => {
+    return {
+        user: state.user
+    };
+};
+
+export default connect(mapStateToProps, null)(DiaChiUocLuong);

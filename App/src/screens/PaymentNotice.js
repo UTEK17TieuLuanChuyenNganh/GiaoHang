@@ -20,10 +20,10 @@ class PaymentNotice extends Component {
             dataListItems: props.route.params.dataListItems,
         }
     }
-    async clearCart(){
+    async clearCart() {
         try {
             const keys = await AsyncStorage.getAllKeys();
-            const stores = await AsyncStorage.multiGet(keys)            
+            const stores = await AsyncStorage.multiGet(keys)
             var promises = stores.map(async (result, i, store) => {
                 if (store[i][0] != "user") {
                     await AsyncStorage.removeItem(store[i][0])
@@ -41,10 +41,10 @@ class PaymentNotice extends Component {
     componentWillUnmount() {
         this._isMounted = false
     }
-    fetchDataDssanpham() {        
+    fetchDataDssanpham() {
         let data = {
             "data": this.state.dataListItems
-        }        
+        }
         return fetch('https://servertlcn.herokuapp.com/dssanpham/multi',
             {
                 method: 'POST',
@@ -55,10 +55,10 @@ class PaymentNotice extends Component {
             .then((response) => response.json())
             .then(async (responseJson) => {
                 if (this._isMounted) {
-                    await this.clearCart();   
+                    await this.clearCart();
                     this.setState({
-                        isLoading:false
-                    })                 
+                        isLoading: false
+                    })
                 }
             })
             .catch((error) => {
@@ -76,13 +76,13 @@ class PaymentNotice extends Component {
             })
             .then((response) => response.json())
             .then(async (responseJson) => {
-                let data = this.state.dataListItems 
+                let data = this.state.dataListItems
                 await data.map(e => {
                     e.DonHangId = responseJson.data.id
                 })
                 this.setState({
                     dataListItems: data
-                })                
+                })
                 if (this._isMounted) {
                     this.fetchDataDssanpham();
                 }
@@ -91,9 +91,8 @@ class PaymentNotice extends Component {
                 console.log(error);
             });
     }
-    goBackToHome(){
-        if(!this.state.isLoading)
-        {
+    goBackToHome() {
+        if (!this.state.isLoading) {
             this.props.navigation.navigate("TabHome")
         }
     }

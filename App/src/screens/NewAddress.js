@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, TextInput, Text, BackHandler, TouchableOpacity } from 'react-native';
-
+import { connect } from 'react-redux';
 import Geocoder from 'react-native-geocoder';
 import HeaderComponent from '../components/HeaderComponent';
 class NewAddress extends Component {
@@ -20,7 +20,7 @@ class NewAddress extends Component {
                 lat: "",
                 lng: ""
             },
-            user: props.route.params.user
+            //user: props.route.params.user
         }
         this.handleBackPress = this.handleBackPress.bind(this);
     }
@@ -80,7 +80,7 @@ class NewAddress extends Component {
             TenDiaChi: this.state.formattedAddress,
             KinhDo: this.state.add.lng,
             ViDo: this.state.add.lat,
-            NguoiDungId: this.state.user.id
+            NguoiDungId: this.props.user.id
         };
         return fetch('https://servertlcn.herokuapp.com/diachi',
             {
@@ -209,4 +209,10 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
     }
 })
-export default NewAddress;
+const mapStateToProps = (state) => {
+    return {
+        user: state.user
+    };
+};
+
+export default connect(mapStateToProps, null)(NewAddress);
