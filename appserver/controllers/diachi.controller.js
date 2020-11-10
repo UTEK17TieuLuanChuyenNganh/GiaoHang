@@ -137,7 +137,7 @@ const getAllDiaChi = async (req, res) => {
                 'KinhDo',
                 'ViDo',
                 'ThoiGianBatDau',
-                'ThoiGianKetThuc',                
+                'ThoiGianKetThuc',
                 'laMacDinh',
                 'NguoiDungId',
                 'DonhangId'
@@ -303,9 +303,9 @@ const getDiaChiByNguoiDungId = async (req, res) => {
 // }
 const searchDiachiInTimeRange = async (req, res) => {
     const { id, timerange } = req.body;
-    try {        
+    try {
         let timeStart = Moment.utc(timerange.timeStart).format()
-        let timeEnd = Moment.utc(timerange.timeEnd).format()        
+        let timeEnd = Moment.utc(timerange.timeEnd).format()
         const Diachis = await DiaChi.findAll({
             attributes: [
                 'id',
@@ -321,16 +321,16 @@ const searchDiachiInTimeRange = async (req, res) => {
             where: {
                 laMacDinh: true,
                 [Op.and]: [
-                   Sequelize.literal(`("DiaChi"."ThoiGianBatDau" BETWEEN '${timeStart}' AND '${timeEnd}') `+
-                   `AND (DATE_PART('hour','${timerange.timeEnd}'::timestamp - "DiaChi"."ThoiGianBatDau"::timestamp) BETWEEN 2 AND 4)`+
-                    `OR `+ 
-                   `("DiaChi"."ThoiGianKetThuc" BETWEEN '${timeStart}' AND '${timeEnd}') `+		   
-                   `AND (DATE_PART('hour',"DiaChi"."ThoiGianKetThuc"::timestamp - '${timerange.timeStart}'::timestamp) BETWEEN 2 AND 4) `+
-                   `OR `+
-                   `((DATE_PART('hour','${timerange.timeEnd}'::timestamp - "DiaChi"."ThoiGianBatDau"::timestamp)) = (DATE_PART('hour',"DiaChi"."ThoiGianKetThuc"::timestamp - '${timerange.timeEnd}'::timestamp)))`)
+                    Sequelize.literal(`("DiaChi"."ThoiGianBatDau" BETWEEN '${timeStart}' AND '${timeEnd}') ` +
+                        `AND (DATE_PART('hour','${timerange.timeEnd}'::timestamp - "DiaChi"."ThoiGianBatDau"::timestamp) BETWEEN 2 AND 4)` +
+                        `OR ` +
+                        `("DiaChi"."ThoiGianKetThuc" BETWEEN '${timeStart}' AND '${timeEnd}') ` +
+                        `AND (DATE_PART('hour',"DiaChi"."ThoiGianKetThuc"::timestamp - '${timerange.timeStart}'::timestamp) BETWEEN 2 AND 4) ` +
+                        `OR ` +
+                        `((DATE_PART('hour','${timerange.timeEnd}'::timestamp - "DiaChi"."ThoiGianBatDau"::timestamp)) = (DATE_PART('hour',"DiaChi"."ThoiGianKetThuc"::timestamp - '${timerange.timeEnd}'::timestamp)))`)
                 ],
             },
-            include: [{ all: true }],
+            include: [{ model: models.NguoiDung }],
             order: [['id', 'asc']]
         });
         if (Diachis.length > 0) {
@@ -356,6 +356,46 @@ const searchDiachiInTimeRange = async (req, res) => {
         });
     }
 }
+async function getDiachiInTimeRange(timerange) {
+    try {
+        let timeStart = Moment.utc(timerange.timeStart).format()
+        let timeEnd = Moment.utc(timerange.timeEnd).format()
+        const Diachis = await DiaChi.findAll({
+            attributes: [
+                'id',
+                'TenDiaChi',
+                'KinhDo',
+                'ViDo',
+                'ThoiGianBatDau',
+                'ThoiGianKetThuc',
+                'laMacDinh',
+                'NguoiDungId',
+                'DonhangId',
+            ],
+            where: {
+                laMacDinh: true,
+                [Op.and]: [
+                    Sequelize.literal(`("DiaChi"."ThoiGianBatDau" BETWEEN '${timeStart}' AND '${timeEnd}') ` +
+                        `AND (DATE_PART('hour','${timerange.timeEnd}'::timestamp - "DiaChi"."ThoiGianBatDau"::timestamp) BETWEEN 2 AND 4)` +
+                        `OR ` +
+                        `("DiaChi"."ThoiGianKetThuc" BETWEEN '${timeStart}' AND '${timeEnd}') ` +
+                        `AND (DATE_PART('hour',"DiaChi"."ThoiGianKetThuc"::timestamp - '${timerange.timeStart}'::timestamp) BETWEEN 2 AND 4) ` +
+                        `OR ` +
+                        `((DATE_PART('hour','${timerange.timeEnd}'::timestamp - "DiaChi"."ThoiGianBatDau"::timestamp)) = (DATE_PART('hour',"DiaChi"."ThoiGianKetThuc"::timestamp - '${timerange.timeEnd}'::timestamp)))`)
+                ],
+            },
+            include: [{ model: models.NguoiDung }],
+            order: [['id', 'asc']]
+        });
+        if (Diachis.length > 0) {
+            return Diachis
+        } else {
+            return null
+        }
+    } catch (error) {
+        return null;
+    }
+}
 module.exports = {
     createDiaChi,
     updateDiaChi,
@@ -363,5 +403,6 @@ module.exports = {
     getDiaChiById,
     getDiaChiByNguoiDungId,
     //getDiaChiByDonhangId,
-    searchDiachiInTimeRange
+    searchDiachiInTimeRange,
+    getDiachiInTimeRange
 }
