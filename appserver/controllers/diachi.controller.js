@@ -243,64 +243,7 @@ const getDiaChiByNguoiDungId = async (req, res) => {
     }
 }
 
-// const getDiaChiByDonhangId = async (req, res) => {
-//     const { id } = req.params;
-//     try {
-//         const Donhangs = await Donhang.findAll({
-//             attributes: [
-//                 'id',
-//                 'NguoiDungId',
-//             ],
-//             where: {
-//                 id: id
-//             },
-//         });
-//         if (Donhangs.length > 0) {
-//             const DiaChis = await DiaChi.findAll({
-//                 attributes: [
-//                     'id',
-//                     'TenDiaChi',
-//                     'KinhDo',
-//                     'ViDo',
-//                     'ThoiGianUocLuong',
-//                     'laMacDinh',
-//                     'NguoiDungId',
-//                 ],
-//                 where: {
-//                     NguoiDungId: Donhangs[0].NguoiDungId,
-//                     laMacDinh: true
-//                 },
-//             });
-//             if (DiaChis.length > 0) {
-//                 res.json({
-//                     result: 'ok',
-//                     data: DiaChis,
-//                     message: "List DiaChi successfully"
-//                 });
-//             } else {
-//                 res.json({
-//                     result: 'failed',
-//                     data: {},
-//                     message: `Cannot find list DiaChi to show. Error:${error}`
-//                 });
-//             }
-//         }
-//         else {
-//             res.json({
-//                 result: 'failed',
-//                 data: {},
-//                 message: `Cannot find Donhang. Error:${error}`
-//             });
-//         }
-//     } catch (error) {
-//         res.json({
-//             result: 'failed',
-//             data: [],
-//             length: 0,
-//             message: `Cannot list DiaChi. Error:${error}`
-//         });
-//     }
-// }
+
 const searchDiachiInTimeRange = async (req, res) => {
     const { id, timerange } = req.body;
     try {
@@ -326,9 +269,9 @@ const searchDiachiInTimeRange = async (req, res) => {
                         `OR ` +
                         `("DiaChi"."ThoiGianKetThuc" BETWEEN '${timeStart}' AND '${timeEnd}') ` +
                         `AND (DATE_PART('hour',"DiaChi"."ThoiGianKetThuc"::timestamp - '${timerange.timeStart}'::timestamp) BETWEEN 2 AND 4) ` +
-                        `OR ` +
+                        `OR ("DiaChi"."ThoiGianBatDau" BETWEEN '${timeStart}' AND '${timeEnd}') AND ` +
                         `((DATE_PART('hour','${timerange.timeEnd}'::timestamp - "DiaChi"."ThoiGianBatDau"::timestamp)) = (DATE_PART('hour',"DiaChi"."ThoiGianKetThuc"::timestamp - '${timerange.timeEnd}'::timestamp))) ` +
-                        `OR ` +
+                        `OR ("DiaChi"."ThoiGianBatDau" BETWEEN '${timeStart}' AND '${timeEnd}') AND ` +
                         `((DATE_PART('hour','${timerange.timeStart}'::timestamp - "DiaChi"."ThoiGianBatDau"::timestamp)) >= 0 AND (DATE_PART('hour',"DiaChi"."ThoiGianKetThuc"::timestamp - '${timerange.timeEnd}'::timestamp)) >= 0) `)
                 ],
             },

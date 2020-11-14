@@ -6,38 +6,42 @@ const url = `https://dev.virtualearth.net/REST/v1/Routes/DistanceMatrix?key=${bi
 
 //b1 select don hang theo khung gio
 const getDonhang = async (req, res) => {
-    const { id, timerange } = req.body;
-    let dataPost = {
-        id: id,
-        timerange: {
-            timeStart: timerange.timeStart,
-            timeEnd: timerange.timeEnd
-        }
-    }
-    let settings = {
-        method: "POST",
-        body: JSON.stringify(dataPost),
-        headers: { 'Content-Type': 'application/json' },
-    };
-    let dataFetch = await fetch('https://servertlcn.herokuapp.com/diachi/search', settings)
-    let dataRes = await dataFetch.json();
-    if (dataRes.length > 0) {
-        let matrixData = await getDistance(dataRes.data)
+    var mapData;
+    var timeStart;
+    var resultData = [];
 
-        var startPoint = Object.keys(matrixData)[0];
-        let dataRender = await dijkstra(matrixData, startPoint, "10:00")
-        console.log(dataRender)
+    let settings = {
+        method: "GET",
+        // body: JSON.stringify(dataPost),
+        // headers: { 'Content-Type': 'application/json' },
+    };
+    let dataFetch = await fetch('https://giaohangapi.herokuapp.com/giaohang', settings)
+    let dataReceive = await dataFetch.json();
+
+    mapData = dataReceive.data
+    timeStart = dataReceive.timeStart
+
+    if (mapData.length > 0 && timeStart != "") {
+
+        const promises = mapData.map(async (e) => {
+            let matrixData = await getDistance(e)
+            //let dataRender = dijkstra(matrixData, timeStart)
+            let test = getroute(matrixData, timeStart)
+            resultData.push(test)
+        })
+        const results = await Promise.all(promises)
+
         return new Promise((resolve, reject) => {
             res.json({
                 result: 'ok',
-                data: dataRender,
+                data: resultData,
             })
         })
     } else {
         return new Promise((resolve, reject) => {
             res.json({
                 result: 'fail',
-                data: dataRender,
+                data: resultData,
             })
         })
     }
@@ -95,8 +99,6 @@ async function getDistance(listCoord) {
     return matrixData
 
 };
-
-
 // function timediff(start, end) {
 //     start = start.split(":");
 //     end = end.split(":");
@@ -123,7 +125,6 @@ function addTimes(start, duration) {
     }
     let totalH = 0;
     let totalM = 0;
-
     start = start.split(":");
     duration = duration.split(":");
 
@@ -146,7 +147,8 @@ function checkTime(time, timeRange) {
     }
     return false
 }
-function dijkstra(graph, s, timeStart) {
+function dijkstra(graph, timeStart, destination) {
+    var s = Object.keys(graph)[0];
     var solutions = {};
     solutions[s] = [];
     solutions[s].dist = 0;
@@ -156,18 +158,22 @@ function dijkstra(graph, s, timeStart) {
         var nearest = null;
         var nearestDuration = null;
         var dist = Infinity;
+
         for (var n in solutions) {
             var ndist = solutions[n].dist;
             var ndur = solutions[n].dur;
             var adj = graph[n].route;
+
             for (var a in adj) {
                 if (solutions[a])
                     continue;
                 var d = adj[a].distance + ndist;
-                var t = addTimes(ndur, adj[a].duration+10)
+                var t = addTimes(ndur, adj[a].duration + 10)
+
                 if (!checkTime(t, graph[a].timeRange)) {
                     continue;
                 }
+
                 if (d < dist) {
                     parent = solutions[n];
                     nearest = a;
@@ -181,44 +187,87 @@ function dijkstra(graph, s, timeStart) {
         }
         solutions[nearest] = parent.concat(nearest);
         solutions[nearest].dist = dist;
-        solutions[nearest].dur = nearestDuration
+        solutions[nearest].dur = nearestDuration;
     }
     let data = []
     for (var n in solutions) {
         let temp = {
             dist: solutions[n].dist,
-            estimatedTime: solutions[n].dur,            
-        }                
-        temp[n] = solutions[n];        
+            estimatedTime: solutions[n].dur,
+        }
+        temp[n] = solutions[n];
         data.push(temp);
     }
     return data;
 }
-const getRoute = async (req, res) => {
-    var map = {
-        a: { route: { e: 1, b: 19, g: 3 }, timeRange: { start: "9:00", end: "10:00" } },
-        b: { route: { a: 12, c: 11 }, timeRange: { start: "11:00", end: "13:00" } },
-        c: { route: { b: 14, d: 11 }, timeRange: { start: "9:00", end: "12:00" } },
-        d: { route: { c: 111, e: 123 }, timeRange: { start: "15:00", end: "17:00" } },
-        e: { route: { d: 142, a: 121 }, timeRange: { start: "8:00", end: "11:00" } },
-        f: { route: { g: 41, h: 124 }, timeRange: { start: "7:00", end: "9:00" } },
-        g: { route: { a: 13, f: 15 }, timeRange: { start: "7:00", end: "10:00" } },
-        h: { route: { f: 51 }, timeRange: { start: "9:00", end: "11:00" } },
-    }
-    var timeStart = "8:00";
-    var start = 'a';
-    var solutions = dijkstra(map, start, timeStart);
+function getroute(graph, timeStart) {
+    var s = Object.keys(graph)[0];
+    var solutions = {};
+    solutions[s] = [];
+    solutions[s].dist = 0;
+    solutions[s].dur = timeStart;
 
-    for (var s in solutions) {
-        if (!solutions[s]) continue;
-        solutions[s].push("total distance: " + solutions[s].dist);
+    var currentPoint = s;
+    var currentDist = 0;
+    var currentDur = timeStart;
+    let lastDur = timeStart;
+    while (true) {
+        let adj = graph[currentPoint].route;
+        let distCheck = Infinity
+        for (var subE in adj) {
+            var ndist = adj[subE].distance
+            var ndur = addTimes(lastDur, adj[subE].duration + 10)
+            if (solutions[subE]) {
+                continue;
+            }
+            if (!checkTime(ndur, graph[subE].timeRange)) {
+                continue;
+            }
+            if (ndist < distCheck) {
+                distCheck = ndist;
+                currentPoint = subE;
+                currentDur = ndur
+            }
+        }
+        if (distCheck == Infinity) {
+            break;
+        }
+        solutions[currentPoint] = [];
+        solutions[currentPoint].dist = currentDist;
+        solutions[currentPoint].dur = currentDur;
+        lastDur = currentDur;
     }
-    return new Promise((resolve, reject) => {
-        res.json(solutions)
-    })
-};
+    let dataOutTime = []
+    for (var e in graph) {
+        if (!solutions[e]) {
+            let temp = {
+                diachi: e,
+                outTime: true
+            }
+            dataOutTime.push(temp);
+        }
+        else {
+            continue
+        }
+    }
+    let data = [];
+    for (var n in solutions) {
+        let temp = {
+            diachi: n,
+            //dist: solutions[n].dist,
+            estimatedTime: solutions[n].dur,
+        }
+        data.push(temp);
+    }
+    let result = {
+        dataInTime: data,
+        dataOutTime: dataOutTime
+    }
+    return result;
+}
+
+
 module.exports = {
     getDistance,
     getDonhang,
-    getRoute
 }
