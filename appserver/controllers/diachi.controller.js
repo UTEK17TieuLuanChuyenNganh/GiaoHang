@@ -217,7 +217,8 @@ const getDiaChiByNguoiDungId = async (req, res) => {
                 'DonhangId'
             ],
             where: {
-                NguoiDungId: id
+                NguoiDungId: id,
+                laMacDinh: false
             },
         });
         if (DiaChis.length > 0) {
