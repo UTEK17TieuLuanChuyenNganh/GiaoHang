@@ -9,7 +9,9 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-community/async-storage';
-import {connect} from 'react-redux'
+import { connect } from 'react-redux';
+import Moment from 'moment';
+import store from '../redux/store'
 class DiaChi extends Component {
     _isMounted = false;
     constructor(props) {
@@ -27,7 +29,7 @@ class DiaChi extends Component {
     }
 
     fetchData() {
-        return fetch('https://servertlcn.herokuapp.com/diachi/' + this.props.user.id + '/nguoidung', { method: 'GET' })
+        return fetch('https://servertlcn.herokuapp.com/diachi/' + this.props.user.user.id + '/nguoidung', { method: 'GET' })
             .then((response) => response.json())
             .then((responseJson) => {
                 if (this._isMounted) {
@@ -45,21 +47,63 @@ class DiaChi extends Component {
     componentWillUnmount() {
         this._isMounted = false;
     }
-
+    updateAddressTime(id) {        
+        this.props.close();
+        this.props.params.navigation.navigate("UpdateAddressTime", { id: id })
+    }
     //Chose Address 
     addAddressToAsyncStore = async (data) => {
-        try {                             
+        try {
+            let flag = true
             await AsyncStorage.setItem(
                 'address', JSON.stringify(data)
             );
+            let addressData = this.props.address.address;
+            addressData.forEach(element => {
+                if (element.id == data.id) {
+                    flag = false;
+                    return;
+                }
+            });
+            if (flag == true) {
+                if (addressData.length >= 3) {
+                    Alert.alert(
+                        'Chọn địa chỉ',
+                        'Bạn đã chọn 3 địa chỉ rồi!',
+                        [
+                            {
+                                text: 'Xác nhận',
+                            },
+                        ],
+                    );
+                }
+                else {
+                    addressData.push(data);
+                    store.dispatch({
+                        type: 'CHOSEADDRESS',
+                        payload: addressData
+                    })
+                }
+            }
+            else {
+                Alert.alert(
+                    'Chọn địa chỉ',
+                    'Bạn đã chọn địa này chỉ rồi!',
+                    [                        
+                        {
+                            text: 'Xác nhận',
+                        },                        
+                    ],
+                );
+            }
         } catch (error) {
             console.log(error);
         }
     }
-    async choseAddress(id, TenDiaChi) {        
+    async choseAddress(id, TenDiaChi) {
         let data = {
             id: id,
-            TenDiaChi:TenDiaChi
+            TenDiaChi: TenDiaChi
         }
         await this.addAddressToAsyncStore(data)
         this.props.close();
@@ -77,8 +121,11 @@ class DiaChi extends Component {
                 {
                     text: 'Xác nhận',
                     onPress: () => { this.choseAddress(id, TenDiaChi) },
-
                 },
+                {
+                    text: 'Cập nhật',
+                    onPress: () => { this.updateAddressTime(id) },
+                }
             ],
         );
     }
@@ -89,9 +136,31 @@ class DiaChi extends Component {
                     <View key={id.toString()}>
                         <TouchableOpacity onPress={() => { this.clickMe(e.id, e.TenDiaChi) }}>
                             <View style={styles.Adress}>
-                                <Text style={styles.AdressTitle}>
-                                    {e.TenDiaChi}
-                                </Text>
+                                <View style={styles.adddressContainer}>
+                                    <Text style={styles.title}>
+                                        Tên địa chỉ:
+                                    </Text>
+                                    <Text style={styles.AdressTitle}>
+                                        {e.TenDiaChi}
+                                    </Text>
+                                    <Text style={styles.title}>
+                                        Ngày: {e.ThoiGianBatDau ? e.ThoiGianBatDau.split("T")[0] : null}
+                                    </Text>
+                                    <Text style={styles.title}>
+                                        Khung giờ:
+                                    </Text>
+                                    <View style={{ flexDirection: "row", justifyContent: 'space-evenly' }}>
+                                        <Text style={styles.AdressTitle}>
+                                            {e.ThoiGianBatDau ? e.ThoiGianBatDau.split("T")[1].replace("Z", "").substr(0, 5) : "00:00"}
+                                        </Text>
+                                        <Text style={styles.title}>
+                                            -
+                                        </Text>
+                                        <Text style={styles.AdressTitle}>
+                                            {e.ThoiGianKetThuc ? e.ThoiGianKetThuc.split("T")[1].replace("Z", "").substr(0, 5) : "00:00"}
+                                        </Text>
+                                    </View>
+                                </View>
                                 <Icon name="angle-right" size={20} />
                             </View>
                         </TouchableOpacity>
@@ -107,7 +176,7 @@ const styles = StyleSheet.create({
     Adress: {
         borderBottomColor: 'gray',
         borderBottomWidth: 1,
-        height: 60,
+        height: 120,
         justifyContent: 'space-between',
         alignItems: 'center',
         flexDirection: "row",
@@ -115,12 +184,20 @@ const styles = StyleSheet.create({
     },
     AdressTitle: {
         fontSize: 15
+    },
+    adddressContainer: {
+        flexDirection: 'column',
+    },
+    title: {
+        fontWeight: 'bold',
+        fontSize: 15
     }
 })
 
 const mapStateToProps = (state) => {
     return {
-        user: state.user
+        user: state.user,
+        address: state.address
     };
 };
 

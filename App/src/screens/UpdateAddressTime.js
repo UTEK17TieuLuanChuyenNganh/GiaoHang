@@ -6,23 +6,12 @@ import HeaderComponent from '../components/HeaderComponent';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Moment from 'moment';
-class NewAddress extends Component {
+class UpdateAddressTime extends Component {
     _isMounted = false;
     constructor(props) {
         super(props);
         this.state = {
-            isLoading: true,
-            sonha: "",
-            duong: "",
-            phuong: "",
-            quan: "",
-            thanhpho: "",
-            hintAddress: "",
-            formattedAddress: "",
-            add: {
-                lat: "",
-                lng: ""
-            },
+            id: props.route.params.id,
             Ngay: "",
             ThoiGianBatDau: "",
             ThoiGianKetThuc: "",
@@ -49,7 +38,7 @@ class NewAddress extends Component {
         BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
     }
     //input data
-    getlatlong() {
+    async updateTime() {
         if (this.state.Ngay == "" || this.state.ThoiGianBatDau == "" || this.state.ThoiGianKetThuc == "") {
             Alert.alert(
                 'Khung giờ',
@@ -63,26 +52,9 @@ class NewAddress extends Component {
         } else {
             if (this.timediff(this.state.ThoiGianKetThuc, this.state.ThoiGianBatDau)) {
                 this._isMounted = true;
-                const address = this.state.hintAddress
-                var add = {
-                    lat: "",
-                    lng: ""
-                };
-                Geocoder.geocodeAddress(address).then(res => {
-                    // res is an Array of geocoding object (see below)
-                    add.lat = Math.round(res[0].position.lat * 10000000) / 10000000
-                    add.lng = Math.round(res[0].position.lng * 10000000) / 10000000
-                    if (this._isMounted) {
-                        this.setState({
-                            formattedAddress: res[0].formattedAddress,
-                            add: add
-                        })
-                    }
-                    this.fetchData();
-                    this.props.navigation.navigate("Cart");
-                    this._isMounted = false;
-                })
-                    .catch(err => console.log(err))
+                await this.fetchData();
+                this.props.navigation.navigate("Cart");
+                this._isMounted = false;
             }
             else {
                 Alert.alert(
@@ -96,19 +68,7 @@ class NewAddress extends Component {
                 );
             }
         }
-    }
-    getHintAddress(address) {
-        this._isMounted = true;
-        Geocoder.geocodeAddress(address).then(res => {
-            if (this._isMounted) {
-                this.setState({
-                    hintAddress: res[0].formattedAddress
-                })
-            }
-            this._isMounted = false;
-        })
-            .catch(err => console.log(err))
-    }
+    }    
     timediff(start, end) {
         start = start.split(":");
         end = end.split(":");
@@ -129,18 +89,13 @@ class NewAddress extends Component {
     //fetch
     fetchData() {
         this._isMounted = true;
-
         const data = {
-            TenDiaChi: this.state.formattedAddress,
-            KinhDo: this.state.add.lng,
-            ViDo: this.state.add.lat,
-            NguoiDungId: this.props.user.user.id,
             ThoiGianBatDau: this.state.Ngay + " " + this.state.ThoiGianBatDau + "Z",
             ThoiGianKetThuc: this.state.Ngay + " " + this.state.ThoiGianKetThuc + "Z"
         };
-        return fetch('https://servertlcn.herokuapp.com/diachi',
+        return fetch('https://servertlcn.herokuapp.com/diachi/' + this.state.id,
             {
-                method: 'POST',
+                method: 'PUT',
                 body: JSON.stringify(data),
                 headers: { 'Content-Type': 'application/json' }
 
@@ -157,72 +112,11 @@ class NewAddress extends Component {
             });
 
     }
-    //Hint
-    renderHintAddress() {
-        if (this.state.sonha != null && this.state.duong != null &&
-            this.state.phuong != null) {
-            const address = this.state.sonha + " Đường" + this.state.duong
-                + " Phường" + this.state.phuong + " Quận" + this.state.quan
-                + " " + this.state.thanhpho
-            if (address.length > 25) {
-                this.getHintAddress(address);
-                return (
-                    <View style={styles.hintAddress}>
-                        <Text>Địa chỉ:</Text>
-                        <Text>{this.state.hintAddress}</Text>
-                    </View>
-                )
-            }
-            return null;
-        }
-        return null;
-    }
-    renderLatLng() {
-        if (this.state.add.lat != "" && this.state.add.lng != "") {
-            return (
-                <View>
-                    <Text>lat: {this.state.add.lat}  </Text>
-                    <Text>lng: {this.state.add.lng}  </Text>
-                </View>
-            )
-        }
-    }
     render() {
         return (
             <View>
-                <HeaderComponent title='Thêm địa chỉ' />
+                <HeaderComponent title='Cập nhật khung giờ' />
                 <View style={{ flex: 1 }}>
-                    <View style={styles.AddressStyle}>
-                        <Text style={styles.TextStyle}>Số nhà:</Text>
-                        <TextInput
-                            onChangeText={(text) => this.setState({ sonha: text })}
-                            value={this.state.sonha}
-                            style={styles.TextInputStyle} />
-                    </View>
-                    <View style={styles.AddressStyle}>
-                        <Text style={styles.TextStyle}>Đường:</Text>
-                        <TextInput
-                            onChangeText={(text) => this.setState({ duong: text })}
-                            value={this.state.duong}
-                            style={styles.TextInputStyle} />
-                    </View>
-                    <View style={styles.AddressStyle}>
-                        <Text style={styles.TextStyle}>Phường:</Text>
-                        <TextInput
-                            onChangeText={(text) => this.setState({ phuong: text })}
-                            value={this.state.phuong}
-                            style={styles.TextInputStyle} />
-                    </View>
-                    <View style={styles.AddressStyle}>
-                        <Text style={styles.TextStyle}>Quận:</Text>
-                        <TextInput
-                            onChangeText={(text) => this.setState({ quan: text })}
-                            value={this.state.quan}
-                            style={styles.TextInputStyle} />
-                    </View>
-                    <View style={styles.AddressStyle}>
-                        {this.renderHintAddress()}
-                    </View>
                     <View style={styles.AddressStyle}>
                         <Text style={styles.TextStyle}>Khung giờ:</Text>
                     </View>
@@ -354,7 +248,7 @@ class NewAddress extends Component {
                             /> : null}
                     </View>
                     <TouchableOpacity style={{ paddingTop: 30, justifyContent: 'center', alignItems: 'center' }}
-                        onPress={() => { this.getlatlong() }}>
+                        onPress={() => { this.updateTime() }}>
                         <View style={styles.SaveStyle}>
                             <Text style={{ fontSize: 20, color: 'white' }}>Lưu</Text>
                         </View>
@@ -402,4 +296,4 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps, null)(NewAddress);
+export default connect(mapStateToProps, null)(UpdateAddressTime);
