@@ -8,6 +8,8 @@ import {
 import Header from '../components/HeaderComponent';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import AsyncStorage from '@react-native-community/async-storage';
+import { connect } from 'react-redux';
+import store from '../redux/store';
 class PaymentNotice extends Component {
 
     _isMounted = false;
@@ -30,6 +32,9 @@ class PaymentNotice extends Component {
                 }
             });
             var result = await Promise.all(promises)
+            store.dispatch({
+                type: 'CLEARADDRESS',
+            })
         } catch (error) {
             console.error(error)
         }
@@ -84,12 +89,29 @@ class PaymentNotice extends Component {
                     dataListItems: data
                 })
                 if (this._isMounted) {
-                    this.fetchDataDssanpham();
+                    await this.updateDataDiaChi(responseJson.data.id)
+                    await this.fetchDataDssanpham();
                 }
             })
             .catch((error) => {
                 console.log(error);
             });
+    }
+    async updateDataDiaChi(idDonhang) {
+        let addressData = this.props.address.address
+        const promises = addressData.map(async (e) => {
+            const data = {
+                DonhangId: idDonhang,
+                laMacDinh: true
+            };
+            return fetch('https://servertlcn.herokuapp.com/diachi/' + e.id,
+                {
+                    method: 'PUT',
+                    body: JSON.stringify(data),
+                    headers: { 'Content-Type': 'application/json' }
+                })
+        })
+        const results = await Promise.all(promises)
     }
     goBackToHome() {
         if (!this.state.isLoading) {
@@ -127,5 +149,11 @@ class PaymentNotice extends Component {
         );
     }
 }
+const mapStateToProps = (state) => {
+    return {
+        user: state.user,
+        address: state.address
+    };
+};
 
-export default PaymentNotice;
+export default connect(mapStateToProps, null)(PaymentNotice);

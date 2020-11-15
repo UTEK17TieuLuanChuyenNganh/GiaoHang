@@ -99,7 +99,7 @@ class DSSanphamdamua extends Component {
 
     //fetchData
     fetchData() {
-        return fetch('https://servertlcn.herokuapp.com/dssanpham/' + this.props.user.id + '/nguoidung/' + this.state.page + '/page', { method: 'GET' })
+        return fetch('https://servertlcn.herokuapp.com/dssanpham/' + this.props.user.user.id + '/nguoidung/' + this.state.page + '/page', { method: 'GET' })
             .then((response) => response.json())
             .then((responseJson) => {
                 if (this._isMounted) {
@@ -116,7 +116,7 @@ class DSSanphamdamua extends Component {
     }
     fetchDataPost() {
         let data = {
-            id: this.props.user.id,
+            id: this.props.user.user.id,
             date: {
                 dateStart: this.state.dateStart,
                 dateEnd: this.state.dateEnd
@@ -147,7 +147,7 @@ class DSSanphamdamua extends Component {
 
     //Pagination
     getAmountPage() {
-        return fetch('https://servertlcn.herokuapp.com/donhang/' + this.props.user + '/nguoidung', { method: 'GET' })
+        return fetch('https://servertlcn.herokuapp.com/donhang/' + this.props.user.user.id + '/nguoidung', { method: 'GET' })
             .then((response) => response.json())
             .then((responseJson) => {
                 let count = responseJson.length / 10
@@ -172,7 +172,7 @@ class DSSanphamdamua extends Component {
     }
     getAmountPageByDate() {
         let data = {
-            id: this.props.user.id,
+            id: this.props.user.user.id,
             date: {
                 dateStart: this.state.dateStart,
                 dateEnd: this.state.dateEnd
@@ -347,7 +347,7 @@ class DSSanphamdamua extends Component {
                         }}
                         key={id.toString()}>
                         <View style={styles.LabelIndfor}>
-                            <Text style={styles.detailaccount}>Người mua: {this.props.user.HoTen}</Text>
+                            <Text style={styles.detailaccount}>Người mua: {this.props.user.user.HoTen}</Text>
                             <Text style={styles.detailaccount1}>Tên sản phẩm: {e.SanPham.TenSanPham}</Text>
                             <Text style={styles.detailaccount1}>Số lượng: {e.SoLuong}</Text>
                             <Text style={styles.detailaccount1}>Giá: {e.SanPham.Gia}</Text>

@@ -95,7 +95,7 @@ class QLDonhang extends Component {
 
     //fetchData
     fetchData() {
-        return fetch('https://servertlcn.herokuapp.com/donhang/' + this.props.user.id + '/nguoidung/' + this.state.page + '/page', { method: 'GET' })
+        return fetch('https://servertlcn.herokuapp.com/donhang/' + this.props.user.user.id + '/nguoidung/' + this.state.page + '/page', { method: 'GET' })
             .then((response) => response.json())
             .then((responseJson) => {
                 if (this._isMounted) {
@@ -112,7 +112,7 @@ class QLDonhang extends Component {
     }
     fetchDataPost() {
         let data = {
-            id: this.props.user.id,
+            id: this.props.user.user.id,
             date: {
                 dateStart: this.state.dateStart,
                 dateEnd: this.state.dateEnd
@@ -143,7 +143,7 @@ class QLDonhang extends Component {
 
     //Pagination
     getAmountPage() {
-        return fetch('https://servertlcn.herokuapp.com/donhang/' + this.props.user.id + '/nguoidung', { method: 'GET' })
+        return fetch('https://servertlcn.herokuapp.com/donhang/' + this.props.user.user.id + '/nguoidung', { method: 'GET' })
             .then((response) => response.json())
             .then((responseJson) => {
                 let count = responseJson.length / 10
@@ -168,7 +168,7 @@ class QLDonhang extends Component {
     }
     getAmountPageByDate() {
         let data = {
-            id: this.props.user.id,
+            id: this.props.user.user.id,
             date: {
                 dateStart: this.state.dateStart,
                 dateEnd: this.state.dateEnd

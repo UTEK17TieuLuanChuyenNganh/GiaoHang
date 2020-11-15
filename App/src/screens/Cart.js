@@ -9,6 +9,7 @@ import DiaChiUocLuong from './DiaChiUocLuong';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { connect } from 'react-redux';
+import store from '../redux/store';
 class Cart extends Component {
 
     _isMounted = false;
@@ -33,7 +34,7 @@ class Cart extends Component {
         return true;
     }
     async ClickDiaChi() {
-        if (this.props.user.id) {
+        if (this.props.user.user.id) {
             this.setState({
                 isClick: !this.state.isClick
             })
@@ -63,7 +64,35 @@ class Cart extends Component {
         else
             return null
     }
-
+    editChosenAddress(id) {
+        Alert.alert(
+            'Địa chỉ',
+            'Bạn muốn làm gì?',
+            [
+                {
+                    text: 'Hủy',
+                    onPress: () => { },
+                },
+                {
+                    text: 'Xoá khỏi danh sách',
+                    onPress: () => {this.removeChosenAddress(id)},
+                }
+            ],
+        );
+    }
+    removeChosenAddress(id) {
+        let addressData = this.props.address.address
+        addressData.forEach(element => {
+            if (element.id === id) {
+                addressData.splice(addressData.indexOf(element),1);
+                return;
+            }
+        });
+        store.dispatch({
+            type: 'CHOSEADDRESS',
+            payload: addressData
+        })
+    }
     //Come to new Screen
     showDetailClick(id) {
         this.props.navigation.navigate('ProductDetail', { id });
@@ -146,7 +175,7 @@ class Cart extends Component {
         const results = await Promise.all(promises)
         let shippingCost = 100
         dataPayment = {
-            reciver: this.props.user.HoTen,
+            reciver: this.props.user.user.HoTen,
             address: this.state.address.TenDiaChi,
             shipping: shippingCost,
             items: items
@@ -157,7 +186,7 @@ class Cart extends Component {
             TongTien: shippingCost + this.state.total,
             GhiChu: "",
             DanhGia: "",
-            NguoiDungId: this.props.user.id,
+            NguoiDungId: this.props.user.user.id,
             DiaChiId: this.state.address.id
         }
         dataListItems = listitems;
@@ -168,7 +197,6 @@ class Cart extends Component {
             isLoading: false
         })
     }
-
     async thanhtoanImplement() {
         if (this.state.dataSource.length > 0) {
             await this.thanhtoan();
@@ -181,7 +209,7 @@ class Cart extends Component {
         }
     }
     thanhtoanPress() {
-        if (this.props.user.id) {
+        if (this.props.user.user.id) {
             if (this.state.address.TenDiaChi) {
                 Alert.alert(
                     'Thanh toán',
@@ -267,14 +295,20 @@ class Cart extends Component {
 
     //Render Screen
     renderAddress() {
-        if (this.state.address.TenDiaChi) {
+        if (this.props.address.address.length > 0) {
             return (
-                <TouchableOpacity onPress={() => { }}
-                    style={{ padding: 5, backgroundColor: '#EAEAEA', height: 50 }}>
-                    <View style={{ flex: 1, flexDirection: "row", justifyContent: 'flex-end' }}>
-                        <Text style={styles.checkoutTitle}>Địa chỉ giao hàng: {this.state.address.TenDiaChi}</Text>
-                    </View>
-                </TouchableOpacity>
+                <View>
+                    {this.props.address.address.map((e, id) => (
+                        <View key={id.toString()}>
+                            <TouchableOpacity onPress={() => { this.editChosenAddress(e.id) }}
+                                style={{ padding: 5, backgroundColor: '#EAEAEA', height: 50 }}>
+                                <View style={{ flex: 1, flexDirection: "row", justifyContent: 'flex-end' }}>
+                                    <Text style={styles.checkoutTitle}>Địa chỉ giao hàng: {e.TenDiaChi}</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                    ))}
+                </View>
             );
         }
         return null;
@@ -461,7 +495,8 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
-        user: state.user
+        user: state.user,
+        address: state.address
     };
 };
 

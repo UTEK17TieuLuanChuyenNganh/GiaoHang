@@ -29,7 +29,7 @@ class ProfileItem extends Component {
     }
     async onclick(name) {
         //await this.checkUser();
-        if (this.props.user.id) {
+        if (this.props.user.user.id) {
             switch (name) {
                 case "Quản lý đơn hàng":
                     this.props.navigation.navigate("QLDH"); break;

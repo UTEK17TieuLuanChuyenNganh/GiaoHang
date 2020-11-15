@@ -8,7 +8,8 @@ import {
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import HomeSectionComponents from '../components/HomeSectionComponents';
 import Sanpham from '../components/Sanpham';
-
+import store from '../redux/store';
+import AsyncStorage from '@react-native-community/async-storage'
 const { width } = Dimensions.get('window');
 const section_banner = require('../assets/section_banner.png');
 class HomeScreen extends Component {
@@ -23,6 +24,7 @@ class HomeScreen extends Component {
     this.handleBackPress = this.handleBackPress.bind(this);
   }
   componentDidMount() {
+    this.checkUser();
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
   }
   componentWillUnmount() {
@@ -31,7 +33,7 @@ class HomeScreen extends Component {
   async handleBackPress() {
     await this.setState({
       searchSubmit: false
-    })    
+    })
     return true;
   }
   cartclick() {
@@ -42,6 +44,20 @@ class HomeScreen extends Component {
       searchSubmit: true
     })
     this.forceUpdate()
+  }
+  checkUser = async () => {
+    try {      
+      const value = await AsyncStorage.getItem('user');
+      if (value !== null) {        
+        let data = JSON.parse(value);        
+        store.dispatch({
+          type: 'LOGIN',
+          payload: data
+        })
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
   searched() {
     this.setState({
