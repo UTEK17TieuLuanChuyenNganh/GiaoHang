@@ -243,6 +243,70 @@ const getDiaChiByNguoiDungId = async (req, res) => {
         });
     }
 }
+const updateDiaChiByDonHangId = async (req, res) => {
+    const { id } = req.params;
+    const {
+        TenDiaChi,
+        KinhDo,
+        ViDo,
+        ThoiGianBatDau,
+        ThoiGianKetThuc,
+        laMacDinh,
+        NguoiDungId,
+        DonhangId
+    } = req.body;
+    try {
+        let DiaChis = await DiaChi.findAll({
+            attributes: [
+                'id',
+                'TenDiaChi',
+                'KinhDo',
+                'ViDo',
+                "ThoiGianBatDau",
+                "ThoiGianKetThuc",
+                'laMacDinh',
+                'NguoiDungId',
+                'DonhangId'
+            ],
+            where: {
+                DonhangId: id,
+                laMacDinh: true
+            }
+        });
+        if (DiaChis.length > 0) {
+            DiaChis.forEach(async (DiaChi) => {
+                await DiaChi.update({
+                    TenDiaChi: TenDiaChi ? TenDiaChi : DiaChi.TenDiaChi,
+                    KinhDo: KinhDo ? KinhDo : DiaChi.KinhDo,
+                    ViDo: ViDo ? ViDo : DiaChi.ViDo,
+                    ThoiGianBatDau: ThoiGianBatDau ? ThoiGianBatDau : DiaChi.ThoiGianBatDau,
+                    ThoiGianKetThuc: ThoiGianKetThuc ? ThoiGianKetThuc : DiaChi.ThoiGianKetThuc,
+                    NguoiDungId: NguoiDungId ? NguoiDungId : DiaChi.NguoiDungId,
+                    DonhangId: DonhangId ? DonhangId : DiaChi.DonhangId,
+                    laMacDinh: laMacDinh != DiaChi.laMacDinh ? laMacDinh : DiaChi.laMacDinh,
+                });
+            });
+            res.json({
+                result: 'ok',
+                data: DiaChis,
+                message: "Update DiaChi successfully"
+            });
+        } else {
+            res.json({
+                result: 'failed',
+                data: {},
+                message: "Cannot find the DiaChi to update"
+            });
+        }
+    } catch (error) {
+        res.json({
+            result: 'failed',
+            data: {},
+            message: `Cannot update DiaChi. Error:${error}`
+        });
+    }
+
+}
 
 
 const searchDiachiInTimeRange = async (req, res) => {
@@ -309,7 +373,7 @@ module.exports = {
     getAllDiaChi,
     getDiaChiById,
     getDiaChiByNguoiDungId,
-    //getDiaChiByDonhangId,
+    updateDiaChiByDonHangId,
     searchDiachiInTimeRange,
 
 }

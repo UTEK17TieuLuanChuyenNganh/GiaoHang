@@ -10,6 +10,8 @@ const getDonhang = async (req, res) => {
     var timeStart;
     var resultData = [];
 
+    //fetchData từ server python để lấy được các cụm đơn hàng được chia theo tỉ lệ khoảng cách
+    //Hỗ trợ để tạo thành các đơn hàng chia cho shipper
     let settings = {
         method: "GET",
         // body: JSON.stringify(dataPost),
@@ -18,19 +20,60 @@ const getDonhang = async (req, res) => {
     let dataFetch = await fetch('https://giaohangapi.herokuapp.com/giaohang', settings)
     let dataReceive = await dataFetch.json();
 
-    mapData = dataReceive.data
-    timeStart = dataReceive.timeStart
+    mapData = dataReceive.data //Dữ liệu trả về từ api
+    timeStart = dataReceive.timeStart //Thời điểm bắt đầu của khung giờ xét duyệt đơn hàng
 
     if (mapData.length > 0 && timeStart != "") {
 
+        // Với từng cụm đơn hàng, bắt đầu các bước sau:
         const promises = mapData.map(async (e) => {
+            // Lấy dữ liệu trọng số khoảng cách giữa các địa chỉ trong cụm đơn hàng
             let matrixData = await getDistance(e)
             //let dataRender = dijkstra(matrixData, timeStart)
+
+            //Sử dụng thuật toán NNA để sắp xếp các đơn hàng theo khoảng cách và thời gian 
             let test = getroute(matrixData, timeStart)
             resultData.push(test)
         })
         const results = await Promise.all(promises)
 
+        //Cập nhật là biến check địa chỉ và địa chỉ được chọn cho đơn hàng
+        const promises2 = resultData.map(async (e) => {
+
+            let dataChuoi = {
+                chuoidonhang: []
+            }
+            let dataInTime = e.dataInTime
+            let dataOutTime = e.dataOutTime
+
+            const inTime = dataInTime.map(async (e) => {
+                let dataDonhang = await getDataDonhang(e.donhang)
+                let temp = {
+                    reciver: e.reciver,
+                    address: e.address,
+                    donhang: {
+                        id: e.donhang,
+                        TongTien: dataDonhang.data.TongTien,
+                        TinhTrangDon: dataDonhang.data.TinhTrangDon,
+                    }
+                }
+                dataChuoi.chuoidonhang.push(temp)
+            })
+            const promisesInTime = await Promise.all(inTime)
+
+            const outTime = dataOutTime.map(async (e) => {
+                //console.log(e)
+            })
+            const promisesOutTime = await Promise.all(outTime)
+
+            let dataPostChuoi = {
+                Chuoi: JSON.stringify(dataChuoi),
+                SoLuong: dataChuoi.chuoidonhang.length
+            }
+            await createChuoi(dataPostChuoi);
+        })
+        const results2 = await Promise.all(promises2)
+        //Trả dữ liệu về 
         return new Promise((resolve, reject) => {
             res.json({
                 result: 'ok',
@@ -48,6 +91,8 @@ const getDonhang = async (req, res) => {
 }
 
 async function getDistance(listCoord) {
+
+    //Request Data Format
     const listCoordRequest = {
         "origins": [],
         "destinations": [],
@@ -71,6 +116,8 @@ async function getDistance(listCoord) {
     //lap bang trong so 
     let checkrow = 0;
     let dataperRow = {};
+
+    //Format dữ liệu trọng số để phù hợp với bài toán
     for (let i of listCoord) {
         let timeStart = i.ThoiGianBatDau.split("T")[1].replace("Z", "").substr(0, 5);
         let timeEnd = i.ThoiGianKetThuc.split("T")[1].replace("Z", "").substr(0, 5);
@@ -93,6 +140,17 @@ async function getDistance(listCoord) {
             timeRange: {
                 start: timeStart,
                 end: timeEnd
+            },
+            donhang: i.DonhangId,
+            reciver: {
+                id: i.NguoiDung.id,
+                name: i.NguoiDung.HoTen
+            },
+            address: {
+                id: i.id,
+                TenDiaChi: i.TenDiaChi,
+                KinhDo: i.KinhDo,
+                ViDo: i.ViDo
             }
         };
     }
@@ -114,6 +172,8 @@ async function getDistance(listCoord) {
 
 //     return (hours <= 9 ? "0" : "") + hours + ":" + (minutes <= 9 ? "0" : "") + minutes;
 // }
+
+//Cộng thời gian, trả về chuỗi
 function addTimes(start, duration) {
     if (duration >= 60) {
         var hours = Math.floor(duration / 60);
@@ -137,6 +197,7 @@ function addTimes(start, duration) {
     }
     return totalH + ":" + totalM;
 }
+//Kiểm tra thời gian có nằm trong khung giờ hay không
 function checkTime(time, timeRange) {
     var y = new Date('01/01/2001 ' + time).getTime();
 
@@ -201,48 +262,83 @@ function dijkstra(graph, timeStart, destination) {
     return data;
 }
 function getroute(graph, timeStart) {
+
+    //Xác định điểm khởi đầu và khởi tạo
     var s = Object.keys(graph)[0];
     var solutions = {};
     solutions[s] = [];
     solutions[s].dist = 0;
     solutions[s].dur = timeStart;
-
+    solutions[s].ord = graph[s].donhang;
+    solutions[s].reciver = graph[s].reciver;
+    solutions[s].address = graph[s].address;
+    //Lưu trữ điểm hiện tại và thời gian đã đi
     var currentPoint = s;
     var currentDist = 0;
     var currentDur = timeStart;
     let lastDur = timeStart;
+
+
+    //Tạo vòng lặp duyệt mảng trọng số
     while (true) {
+
+        //Lấy ra dữ liệu trọng số của điểm hiện tại từ ma trận trọng số
         let adj = graph[currentPoint].route;
+        //Khởi tạo biến kiểm tra khoảng cách ( tìm min )
         let distCheck = Infinity
+        //Duyệt từng khoảng cách so với cái điểm còn lại tìm khoảng cách ngắn nhất
         for (var subE in adj) {
+            //Lấy giá trị khoảng cách
             var ndist = adj[subE].distance
+            //Tạo biến thời gian ước lượng để tới được điểm tiếp theo 
+            //( dùng để kiểm tra có phù hợp khung giờ đưa ra hay không)
             var ndur = addTimes(lastDur, adj[subE].duration + 10)
+            //Kiểm tra nếu đã tồn tại điểm đó trong mảng thì duyệt điểm tiếp theo
+            //Kiểm tra đánh dấu đã đi qua
             if (solutions[subE]) {
                 continue;
             }
+
+            //Kiểm tra nếu thời điểm đến điểm tiếp theo nằm trong khung giờ đã đưa ra
+            //Nếu không nằm trong khung giờ đã đưa ra thì duyệt điểm tiếp theo
             if (!checkTime(ndur, graph[subE].timeRange)) {
                 continue;
             }
+
+            //Kiểm tra khoảng cách ngắn nhất trong tất cả các điểm 
+            //Chọn làm điểm tiếp theo
             if (ndist < distCheck) {
                 distCheck = ndist;
                 currentPoint = subE;
                 currentDur = ndur
             }
         }
+        //Nếu không tìm thấy điểm tiếp theo thì break vòng lặp, trả về mảng được sắp xếp
         if (distCheck == Infinity) {
             break;
         }
+
+        //Lưu trữ điểm hiện tại, cập nhật lại các biến số và tiếp tục vòng lặp nếu chưa kết thúc
         solutions[currentPoint] = [];
         solutions[currentPoint].dist = currentDist;
         solutions[currentPoint].dur = currentDur;
+        solutions[currentPoint].ord = graph[currentPoint].donhang;
+        solutions[currentPoint].reciver = graph[currentPoint].reciver;
+        solutions[currentPoint].address = graph[currentPoint].address;
         lastDur = currentDur;
     }
+
+    //Những điểm không thỏa điều kiện về thời gian và chưa được sắp xếp
+    //Sẽ được lưu vào 1 chuỗi và được đánh dấu là outtime và được tạo thành 1 chuỗi đơn hàng riêng    
     let dataOutTime = []
     for (var e in graph) {
         if (!solutions[e]) {
             let temp = {
                 diachi: e,
-                outTime: true
+                outTime: true,
+                donhang: graph[e].donhang,
+                reciver: graph[e].reciver,
+                address: graph[e].address,
             }
             dataOutTime.push(temp);
         }
@@ -250,12 +346,15 @@ function getroute(graph, timeStart) {
             continue
         }
     }
+    //Format lại data để response
     let data = [];
     for (var n in solutions) {
         let temp = {
             diachi: n,
-            //dist: solutions[n].dist,
             estimatedTime: solutions[n].dur,
+            donhang: solutions[n].ord,
+            reciver: solutions[n].reciver,
+            address: solutions[n].address,
         }
         data.push(temp);
     }
@@ -266,7 +365,45 @@ function getroute(graph, timeStart) {
     return result;
 }
 
-
+function updateStatus(iddonhang) {
+    let dataPut = {
+        laMacDinh: false
+    }
+    let settings = {
+        method: "PUT",
+        body: JSON.stringify(dataPut),
+        headers: { 'Content-Type': 'application/json' },
+    };
+    return fetch('https://servertlcn.herokuapp.com/diachi/' + iddonhang + '/update', settings);
+}
+function updateDonhang(iddonhang, iddiachi) {
+    let dataPut = {
+        DiaChiId: iddiachi
+    }
+    let settings = {
+        method: "PUT",
+        body: JSON.stringify(dataPut),
+        headers: { 'Content-Type': 'application/json' },
+    };
+    return fetch('https://servertlcn.herokuapp.com/donhang/' + iddonhang, settings);
+}
+function createChuoi(data) {
+    let dataPost = data;
+    let settings = {
+        method: "POST",
+        body: JSON.stringify(dataPost),
+        headers: { 'Content-Type': 'application/json' },
+    };
+    return fetch('https://servertlcn.herokuapp.com/chuoigiaohang', settings)
+}
+async function getDataDonhang(iddonhang) {
+    let settings = {
+        method: "GET",
+    };
+    let dataFetch = await fetch('https://servertlcn.herokuapp.com/donhang/' + iddonhang, settings)
+    dataFetch = await dataFetch.json();
+    return dataFetch;
+}
 module.exports = {
     getDistance,
     getDonhang,
