@@ -1,6 +1,7 @@
 const models = require('../models/index')
 const fetch = require('node-fetch');
-const Moment = require('moment')
+const Moment = require('moment');
+const e = require('express');
 const bingKey = 'AsM4wGyTSNX5s9JyVa62Kwrd8Yuis4IsMMfbnjNIX3J6ol8ldiLIUHWW9DXYuQNa';
 const url = `https://dev.virtualearth.net/REST/v1/Routes/DistanceMatrix?key=${bingKey}`;
 
@@ -40,37 +41,61 @@ const getDonhang = async (req, res) => {
         //Cập nhật là biến check địa chỉ và địa chỉ được chọn cho đơn hàng
         const promises2 = resultData.map(async (e) => {
 
-            let dataChuoi = {
-                chuoidonhang: []
-            }
             let dataInTime = e.dataInTime
             let dataOutTime = e.dataOutTime
 
-            const inTime = dataInTime.map(async (e) => {
-                let dataDonhang = await getDataDonhang(e.donhang)
-                let temp = {
-                    reciver: e.reciver,
-                    address: e.address,
-                    donhang: {
-                        id: e.donhang,
-                        TongTien: dataDonhang.data.TongTien,
-                        TinhTrangDon: dataDonhang.data.TinhTrangDon,
-                    }
-                }
-                dataChuoi.chuoidonhang.push(temp)
-            })
-            const promisesInTime = await Promise.all(inTime)
-
-            const outTime = dataOutTime.map(async (e) => {
-                //console.log(e)
-            })
-            const promisesOutTime = await Promise.all(outTime)
-
-            let dataPostChuoi = {
-                Chuoi: JSON.stringify(dataChuoi),
-                SoLuong: dataChuoi.chuoidonhang.length
+            let dataPostChuoiInTime = {
+                Chuoi: JSON.stringify({ chuoidonhang: dataInTime }),
+                SoLuong: dataInTime.length
             }
-            await createChuoi(dataPostChuoi);
+            let chuoiData = await createChuoi(dataPostChuoiInTime);
+            chuoiData = await chuoiData.json();
+
+
+            //Tao thong bao
+            //Tao chuoi intime
+            const inTime = dataInTime.map(async (e) => {
+                let dataThongbao = {
+                    NoiDung: 'Đơn hàng ' + e.donhang.id + ' sẽ được giao đến địa chỉ: ' +
+                        e.address.TenDiaChi + ' vào khung giờ (' + e.address.TimeRange + ')',
+                    Type: 'giao hang',
+                    NguoiDungId: e.reciver.id
+                }
+                await createThongBao(dataThongbao);
+                await updateDonhang(e.donhang.id, e.address.id, chuoiData.data.id);
+                await updateStatus(e.donhang.id);
+            })
+            const inTimePromises = await Promise.all(inTime);
+
+            //Tao chuoi outtime
+            const outTimeCheck = dataOutTime.map(async (e) => {
+                let check = await checkOthersAddress(e.donhang.id, e.address.id)
+                if (check) {
+                    let index = dataOutTime.indexOf(e)
+                    dataOutTime.splice(index, 1);
+                }
+            })
+            const outTimeCheckPromises = await Promise.all(outTimeCheck);
+            if (dataOutTime.length > 0) {
+                let dataPostChuoiOutTime = {
+                    Chuoi: JSON.stringify({ chuoidonhang: dataPostChuoiOutTime }),
+                    SoLuong: dataOutTime.length
+                }
+                let chuoiDataOutTime = await createChuoi(dataPostChuoiOutTime);
+                chuoiDataOutTime = await chuoiData.json();
+                const outTime = dataInTime.map(async (e) => {
+                    let dataThongbao = {
+                        NoiDung: 'Đơn hàng ' + e.donhang.id + ' sẽ được giao đến địa chỉ: ' +
+                            e.address.TenDiaChi + ' vào khung giờ (' + e.address.TimeRange + ')',
+                        Type: 'giao hang',
+                        NguoiDungId: e.reciver.id
+                    }
+                    await createThongBao(dataThongbao);
+                    await updateDonhang(e.donhang.id, e.address.id, chuoiDataOutTime.data.id);
+                    await updateStatus(e.donhang.id);
+                })
+                const outTimePromises = await Promise.all(outTime);
+            }
         })
         const results2 = await Promise.all(promises2)
         //Trả dữ liệu về 
@@ -117,7 +142,7 @@ async function getDistance(listCoord) {
     let checkrow = 0;
     let dataperRow = {};
 
-    //Format dữ liệu trọng số để phù hợp với bài toán
+    //Format dữ liệu trọng số để phù hợp với bài toán    
     for (let i of listCoord) {
         let timeStart = i.ThoiGianBatDau.split("T")[1].replace("Z", "").substr(0, 5);
         let timeEnd = i.ThoiGianKetThuc.split("T")[1].replace("Z", "").substr(0, 5);
@@ -135,13 +160,18 @@ async function getDistance(listCoord) {
             }
         }
         checkrow++;
+        let dataDonhang = await getDataDonhang(i.DonhangId);
         matrixData['iddiachi' + i.id] = {
             route: dataperRow,
             timeRange: {
                 start: timeStart,
                 end: timeEnd
             },
-            donhang: i.DonhangId,
+            donhang: {
+                id: dataDonhang.data.id,
+                TongTien: dataDonhang.data.TongTien,
+                TinhTrangDon: dataDonhang.data.TinhTrangDon,
+            },
             reciver: {
                 id: i.NguoiDung.id,
                 name: i.NguoiDung.HoTen
@@ -150,28 +180,22 @@ async function getDistance(listCoord) {
                 id: i.id,
                 TenDiaChi: i.TenDiaChi,
                 KinhDo: i.KinhDo,
-                ViDo: i.ViDo
+                ViDo: i.ViDo,
+                TimeRange: timeStart + ' - ' + timeEnd
             }
         };
     }
     return matrixData
 
 };
-// function timediff(start, end) {
-//     start = start.split(":");
-//     end = end.split(":");
-//     var startDate = new Date(0, 0, 0, start[0], start[1], 0);
-//     var endDate = new Date(0, 0, 0, end[0], end[1], 0);
-//     var diff = endDate.getTime() - startDate.getTime();
-//     var hours = Math.floor(diff / 1000 / 60 / 60);
-//     diff -= hours * 1000 * 60 * 60;
-//     var minutes = Math.floor(diff / 1000 / 60);
-
-//     if (hours < 0)
-//         hours = hours + 24;
-
-//     return (hours <= 9 ? "0" : "") + hours + ":" + (minutes <= 9 ? "0" : "") + minutes;
-// }
+function timediff(start, end) {
+    start = start.split(":");
+    end = end.split(":");
+    if (parseInt(start[0]) < parseInt(end[0]))
+        return true
+    else
+        return false
+}
 
 //Cộng thời gian, trả về chuỗi
 function addTimes(start, duration) {
@@ -376,9 +400,10 @@ function updateStatus(iddonhang) {
     };
     return fetch('https://servertlcn.herokuapp.com/diachi/' + iddonhang + '/update', settings);
 }
-function updateDonhang(iddonhang, iddiachi) {
+function updateDonhang(iddonhang, iddiachi, idchuoi) {
     let dataPut = {
-        DiaChiId: iddiachi
+        DiaChiId: iddiachi,
+        ChuoiGiaoHangId: idchuoi,
     }
     let settings = {
         method: "PUT",
@@ -394,7 +419,7 @@ function createChuoi(data) {
         body: JSON.stringify(dataPost),
         headers: { 'Content-Type': 'application/json' },
     };
-    return fetch('https://servertlcn.herokuapp.com/chuoigiaohang', settings)
+    return fetch('https://servertlcn.herokuapp.com/chuoigiaohang', settings);
 }
 async function getDataDonhang(iddonhang) {
     let settings = {
@@ -403,6 +428,44 @@ async function getDataDonhang(iddonhang) {
     let dataFetch = await fetch('https://servertlcn.herokuapp.com/donhang/' + iddonhang, settings)
     dataFetch = await dataFetch.json();
     return dataFetch;
+}
+async function checkOthersAddress(iddonhang, iddiachi) {
+    let settings = {
+        method: "GET",
+    };
+    let dataFetch = await fetch('https://servertlcn.herokuapp.com/diachi/' + iddonhang + '/donhang', settings)
+    dataFetch = await dataFetch.json();
+    var date1;
+    var date2;
+    var time1;
+    var time2;
+    var flag = false;
+    if (dataFetch.data.length > 1) {
+        for (var e in dataFetch.data) {
+            if (dataFetch.data[e].id == iddiachi) {
+                date1 = new Date(dataFetch.data[e].ThoiGianKetThuc).getDate()
+                time1 = dataFetch.data[e].ThoiGianKetThuc.split("T")[1].replace("Z", "").substr(0, 5);
+            }
+            date2 = new Date(dataFetch.data[e].ThoiGianBatDau).getDate()
+            time2 = dataFetch.data[e].ThoiGianBatDau.split("T")[1].replace("Z", "").substr(0, 5);
+            if (date2 - date1 > 0) {
+                flag = true; break;
+            }
+            if (timediff(time1, time2)) {
+                flag = true; break;
+            }
+        }
+    }
+    return flag;
+}
+async function createThongBao(data) {
+    let dataPost = data;
+    let settings = {
+        method: "POST",
+        body: JSON.stringify(dataPost),
+        headers: { 'Content-Type': 'application/json' },
+    };
+    return fetch('https://servertlcn.herokuapp.com/thongbao', settings);
 }
 module.exports = {
     getDistance,

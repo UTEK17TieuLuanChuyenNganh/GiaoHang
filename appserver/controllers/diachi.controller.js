@@ -63,7 +63,6 @@ const createDiaChi = async (req, res) => {
         });
     }
 }
-
 const updateDiaChi = async (req, res) => {
     const { id } = req.params;
     const {
@@ -127,7 +126,6 @@ const updateDiaChi = async (req, res) => {
     }
 
 }
-
 const getAllDiaChi = async (req, res) => {
     try {
         const DiaChis = await DiaChi.findAll({
@@ -158,7 +156,6 @@ const getAllDiaChi = async (req, res) => {
         });
     }
 }
-
 const getDiaChiById = async (req, res) => {
     const { id } = req.params;
     try {
@@ -219,6 +216,48 @@ const getDiaChiByNguoiDungId = async (req, res) => {
             where: {
                 NguoiDungId: id,
                 laMacDinh: false
+            },
+        });
+        if (DiaChis.length > 0) {
+            res.json({
+                result: 'ok',
+                data: DiaChis,
+                message: "List DiaChi successfully"
+            });
+        } else {
+            res.json({
+                result: 'failed',
+                data: {},
+                message: `Cannot find list DiaChi to show. Error:${error}`
+            });
+        }
+    } catch (error) {
+        res.json({
+            result: 'failed',
+            data: [],
+            length: 0,
+            message: `Cannot list DiaChi. Error:${error}`
+        });
+    }
+}
+const getDiaChiByDonHangId = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const DiaChis = await DiaChi.findAll({
+            attributes: [
+                'id',
+                'TenDiaChi',
+                'KinhDo',
+                'ViDo',
+                'ThoiGianBatDau',
+                'ThoiGianKetThuc',
+                'laMacDinh',
+                'NguoiDungId',
+                'DonhangId'
+            ],
+            where: {
+                DonhangId: id,
+                laMacDinh: true
             },
         });
         if (DiaChis.length > 0) {
@@ -307,13 +346,11 @@ const updateDiaChiByDonHangId = async (req, res) => {
     }
 
 }
-
-
 const searchDiachiInTimeRange = async (req, res) => {
     const { id, timerange } = req.body;
     try {
         let timeStart = Moment.utc(timerange.timeStart).format()
-        let timeEnd = Moment.utc(timerange.timeEnd).format()
+        let timeEnd = Moment.utc(timerange.timeEnd).format()                
         const Diachis = await DiaChi.findAll({
             attributes: [
                 'id',
@@ -329,15 +366,15 @@ const searchDiachiInTimeRange = async (req, res) => {
             where: {
                 laMacDinh: true,
                 [Op.and]: [
-                    Sequelize.literal(`("DiaChi"."ThoiGianBatDau" BETWEEN '${timeStart}' AND '${timeEnd}') ` +
-                        `AND (DATE_PART('hour','${timerange.timeEnd}'::timestamp - "DiaChi"."ThoiGianBatDau"::timestamp) BETWEEN 2 AND 4)` +
+                    Sequelize.literal(`(("DiaChi"."ThoiGianBatDau" BETWEEN '${timeStart}' AND '${timeEnd}') ` +
+                        `AND (DATE_PART('hour','${timerange.timeEnd}'::timestamp - "DiaChi"."ThoiGianBatDau"::timestamp) BETWEEN 1 AND 3))` +
                         `OR ` +
-                        `("DiaChi"."ThoiGianKetThuc" BETWEEN '${timeStart}' AND '${timeEnd}') ` +
-                        `AND (DATE_PART('hour',"DiaChi"."ThoiGianKetThuc"::timestamp - '${timerange.timeStart}'::timestamp) BETWEEN 2 AND 4) ` +
-                        `OR ("DiaChi"."ThoiGianBatDau" BETWEEN '${timeStart}' AND '${timeEnd}') AND ` +
-                        `((DATE_PART('hour','${timerange.timeEnd}'::timestamp - "DiaChi"."ThoiGianBatDau"::timestamp)) = (DATE_PART('hour',"DiaChi"."ThoiGianKetThuc"::timestamp - '${timerange.timeEnd}'::timestamp))) ` +
-                        `OR ("DiaChi"."ThoiGianBatDau" BETWEEN '${timeStart}' AND '${timeEnd}') AND ` +
-                        `((DATE_PART('hour','${timerange.timeStart}'::timestamp - "DiaChi"."ThoiGianBatDau"::timestamp)) >= 0 AND (DATE_PART('hour',"DiaChi"."ThoiGianKetThuc"::timestamp - '${timerange.timeEnd}'::timestamp)) >= 0) `)
+                        `(("DiaChi"."ThoiGianKetThuc" BETWEEN '${timeStart}' AND '${timeEnd}') ` +
+                        `AND (DATE_PART('hour',"DiaChi"."ThoiGianKetThuc"::timestamp - '${timerange.timeStart}'::timestamp) BETWEEN 1 AND 3)) ` +
+                        `OR (("DiaChi"."ThoiGianBatDau" BETWEEN '${timeStart}' AND '${timeEnd}') AND ` +
+                        `((DATE_PART('hour','${timerange.timeEnd}'::timestamp - "DiaChi"."ThoiGianBatDau"::timestamp)) = (DATE_PART('hour',"DiaChi"."ThoiGianKetThuc"::timestamp - '${timerange.timeEnd}'::timestamp)))) ` +
+                        `OR ((DATE_PART('day','${timerange.timeStart}' - "DiaChi"."ThoiGianBatDau") = 0 AND ` +
+                        `((DATE_PART('hour','${timerange.timeStart}'::timestamp - "DiaChi"."ThoiGianBatDau"::timestamp)) >= 0 AND (DATE_PART('hour',"DiaChi"."ThoiGianKetThuc"::timestamp - '${timerange.timeEnd}'::timestamp)) >= 0))) `)
                 ],
             },
             include: [{ model: models.NguoiDung }],
@@ -373,6 +410,7 @@ module.exports = {
     getAllDiaChi,
     getDiaChiById,
     getDiaChiByNguoiDungId,
+    getDiaChiByDonHangId,
     updateDiaChiByDonHangId,
     searchDiachiInTimeRange,
 

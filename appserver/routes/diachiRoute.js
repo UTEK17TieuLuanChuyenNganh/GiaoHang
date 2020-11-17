@@ -7,6 +7,7 @@ const { updateDiaChi } = require('../controllers/diachi.controller')
 const { getAllDiaChi } = require('../controllers/diachi.controller')
 const { getDiaChiById } = require('../controllers/diachi.controller')
 const { getDiaChiByNguoiDungId } = require('../controllers/diachi.controller')
+const { getDiaChiByDonHangId } = require('../controllers/diachi.controller')
 const { searchDiachiInTimeRange } = require('../controllers/diachi.controller')
 const { updateDiaChiByDonHangId } = require('../controllers/diachi.controller')
 
@@ -28,7 +29,10 @@ router.get('/:id', getDiaChiById)
 
 router.get('/:id/nguoidung', getDiaChiByNguoiDungId)
 
+router.get('/:id/donhang', getDiaChiByDonHangId)
+
 router.post('/search', searchDiachiInTimeRange)
 
 router.put('/:id/update', updateDiaChiByDonHangId)
+
 module.exports = router;

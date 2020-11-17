@@ -19,16 +19,17 @@ const sanphamRoute = require('./routes/sanphamRoute');
 const shipperRoute = require('./routes/shipperRoute');
 const lapchuoidonhangRoute = require('./routes/lapchuoidonhangRoute');
 const thanhtoanRoute = require('./routes/thanhtoanRoute');
+const thongbaoRoute = require('./routes/thongbaoRoute');
 app.get('/sync', (req, res) => {
-    let models = require('./models') 
+    let models = require('./models')
     models.sequelize.sync()
         .then((
             res.send('database sync completed')
         ));
 });
 
-app.use(bodyParser.json({limit: '50mb'})) // for parsing application/json
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true }))
+app.use(bodyParser.json({ limit: '50mb' })) // for parsing application/json
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
 
 
 app.use('/nguoidung', nguoidungRoute);
@@ -40,11 +41,11 @@ app.use('/dssanpham', dssanphamRoute);
 app.use('/loaisanpham', loaisanphamRoute);
 app.use('/sanpham', sanphamRoute);
 app.use('/shipper', shipperRoute);
-app.use('/lapchuoidonhang',lapchuoidonhangRoute);
-app.use('/thanhtoan',thanhtoanRoute);
-
+app.use('/lapchuoidonhang', lapchuoidonhangRoute);
+app.use('/thanhtoan', thanhtoanRoute);
+app.use('/thongbao', thongbaoRoute);
 // Add headers
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
 
     // Website you wish to allow to connect
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -77,12 +78,12 @@ app.use('/', indexRouter);
 
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};

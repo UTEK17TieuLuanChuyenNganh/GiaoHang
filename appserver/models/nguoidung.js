@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
     NguoiDung.hasMany(models.DonHang, { as: 'nguoidung_donhang' });
     NguoiDung.hasMany(models.Shipper,  {as: 'nguoidung_shipper'});
     NguoiDung.hasMany(models.DiaChi,  {as: 'nguoidung_diachi'});         
+    NguoiDung.hasMany(models.ThongBao,  {as: 'nguoidung_thongbao'});         
   };
   return NguoiDung;
 };
