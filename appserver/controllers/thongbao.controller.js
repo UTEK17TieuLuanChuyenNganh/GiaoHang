@@ -43,6 +43,7 @@ const updateThongBao = async (req, res) => {
     const {
         NoiDung,
         Type,
+        isNew
     } = req.body;
     try {
         let ThongBaos = await ThongBao.findAll({
@@ -62,8 +63,7 @@ const updateThongBao = async (req, res) => {
                 await ThongBao.update({
                     NoiDung: NoiDung ? NoiDung : ThongBao.NoiDung,
                     Type: Type ? Type : ThongBao.Type,
-                    isNew: isNew != ThongBao.isNew ? isNew : ThongBao.isNew,
-                    NguoiDungId: NguoiDungId ? NguoiDungId : ThongBao.NguoiDungId,
+                    isNew: isNew != ThongBao.isNew ? isNew : ThongBao.isNew,                    
                 });
             });
             res.json({
@@ -192,11 +192,43 @@ const getThongBaoByNguoiDungId = async (req, res) => {
         });
     }
 }
+const getAllNewThongBao = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const ThongBaos = await ThongBao.findAll({
+            attributes: [
+                'id',
+                'NoiDung',
+                'Type',
+                'isNew',
+                'NguoiDungId'
+            ],
+            where: {
+                NguoiDungId: id,
+                isNew: true
+            }
+        });
+        res.json({
+            result: 'ok',
+            data: ThongBaos,
+            length: ThongBaos.length,
+            message: "List ThongBao successfully"
+        });
+    } catch (error) {
+        res.json({
+            result: 'failed',
+            data: [],
+            length: 0,
+            message: `Cannot list ThongBao. Error:${error}`
+        });
+    }
+}
 
 module.exports = {
     createThongBao,
     updateThongBao,
     getAllThongBao,
     getThongBaoById,
-    getThongBaoByNguoiDungId
+    getThongBaoByNguoiDungId,
+    getAllNewThongBao
 }

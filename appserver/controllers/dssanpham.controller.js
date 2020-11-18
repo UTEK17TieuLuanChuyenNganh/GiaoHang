@@ -286,9 +286,8 @@ const getDSSanPhamById = async (req, res) => {
 }
 
 const getDSSanPhamByDonHangId = async (req, res) => {
-    const { id, page } = req.params;
-    try {
-        const pageIndex = (page - 1) * 10;
+    const { id } = req.params;
+    try {        
         const DSSanPhams = await DSSanPham.findAll({
             attributes: [
                 'id',
@@ -299,8 +298,6 @@ const getDSSanPhamByDonHangId = async (req, res) => {
             where: {
                 DonHangId: id,
             },
-            offset: pageIndex,
-            limit: 10,
             include: [{ all: true }],
             order: [['id', 'asc']]
         });

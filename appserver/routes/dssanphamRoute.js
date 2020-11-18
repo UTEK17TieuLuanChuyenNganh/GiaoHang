@@ -30,7 +30,7 @@ router.get('/', getAllDSSanPham)
 //Get by Id?
 router.get('/:id', getDSSanPhamById)
 
-router.get('/:id/donhang/:page/page', getDSSanPhamByDonHangId)
+router.get('/:id/donhang', getDSSanPhamByDonHangId)
 
 router.get('/:id/nguoidung/:page/page', getDSSanPhamByNguoiDungId)
 

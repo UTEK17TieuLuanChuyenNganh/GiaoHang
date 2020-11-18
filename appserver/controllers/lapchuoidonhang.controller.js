@@ -62,7 +62,7 @@ const getDonhang = async (req, res) => {
                     NguoiDungId: e.reciver.id
                 }
                 await createThongBao(dataThongbao);
-                await updateDonhang(e.donhang.id, e.address.id, chuoiData.data.id);
+                await updateDonhang(e.donhang.id, e.address.id, chuoiData.data.id, e.price);
                 await updateStatus(e.donhang.id);
             })
             const inTimePromises = await Promise.all(inTime);
@@ -291,7 +291,7 @@ function getroute(graph, timeStart) {
     var s = Object.keys(graph)[0];
     var solutions = {};
     solutions[s] = [];
-    solutions[s].dist = 0;
+    solutions[s].price = 0;
     solutions[s].dur = timeStart;
     solutions[s].ord = graph[s].donhang;
     solutions[s].reciver = graph[s].reciver;
@@ -344,7 +344,7 @@ function getroute(graph, timeStart) {
 
         //Lưu trữ điểm hiện tại, cập nhật lại các biến số và tiếp tục vòng lặp nếu chưa kết thúc
         solutions[currentPoint] = [];
-        solutions[currentPoint].dist = currentDist;
+        solutions[currentPoint].price = distCheck * 5000;
         solutions[currentPoint].dur = currentDur;
         solutions[currentPoint].ord = graph[currentPoint].donhang;
         solutions[currentPoint].reciver = graph[currentPoint].reciver;
@@ -376,6 +376,7 @@ function getroute(graph, timeStart) {
         let temp = {
             diachi: n,
             estimatedTime: solutions[n].dur,
+            price: solutions[n].price,
             donhang: solutions[n].ord,
             reciver: solutions[n].reciver,
             address: solutions[n].address,
@@ -400,8 +401,9 @@ function updateStatus(iddonhang) {
     };
     return fetch('https://servertlcn.herokuapp.com/diachi/' + iddonhang + '/update', settings);
 }
-function updateDonhang(iddonhang, iddiachi, idchuoi) {
+function updateDonhang(iddonhang, iddiachi, idchuoi, price) {
     let dataPut = {
+        TongTien: TongTien + price,
         DiaChiId: iddiachi,
         ChuoiGiaoHangId: idchuoi,
     }
