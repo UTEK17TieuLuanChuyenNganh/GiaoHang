@@ -1,39 +1,100 @@
 import React, { Component } from 'react';
-import {StyleSheet, View, StatusBar, FlatList, Text} from 'react-native';
+import {
+  StyleSheet, View, StatusBar, FlatList,
+  Text, ActivityIndicator, TouchableOpacity
+} from 'react-native';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import HeaderComponent from '../components/HeaderComponent';
-
+import { connect } from 'react-redux';
 
 class NotificationScreen extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoading: true,
+      dataSource: []
+    }
+  }
+  componentDidMount() {
+    this.fetchData()
+    this._subscribe = this.props.navigation.addListener('focus', () => {
+      this.fetchData();
+    });
+  }
+  componentWillUnmount() {
+    this.props.navigation.removeListener(this._subscribe);
+  }
+  fetchData() {
+    return fetch('https://servertlcn.herokuapp.com/thongbao/' + this.props.user.user.id + '/nguoidung', { method: 'GET' })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState(
+          {
+            isLoading: false,
+            dataSource: responseJson.data
+          })
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+  clickNotice(item) {
+    let data = {
+      isNew: false
+    }
+    return fetch('https://servertlcn.herokuapp.com/thongbao/' + item.id,
+      {
+        method: 'PUT',
+        body: JSON.stringify(data),
+        headers: { 'Content-Type': 'application/json' }
+
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.fetchData();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
   NotificationItem = (item) => (
-    <View style={styles.itemContainer}>
-      <View style={styles.itemTopContainer}>
-        <View
-          style={[
-            styles.itemTypeContainer,
-            {
-              backgroundColor: item.type === 1 ? '#fc820a' : '#dc3988',
-            },
-          ]}>
-          <MaterialCommunityIcons
-            name={item.type === 1 ? 'sale' : 'backup-restore'}
-            color="#fff"
-            size={22}
-          />
-        </View>
-        <View style={styles.itemTopTextContainer}>
-          <Text style={styles.itemName}>{item.name}</Text>
-          <Text style={styles.itemDate}>{item.date}</Text>
+    <TouchableOpacity onPress={() => { this.clickNotice(item) }}>
+      <View style={[styles.itemContainer, {
+        backgroundColor: item.isNew ? '#ADC3F0' : '#fff'
+      }]}>
+        <View style={styles.itemTopContainer}>
+          <View
+            style={[
+              styles.itemTypeContainer,
+              {
+                backgroundColor: '#fc820a'
+              },
+            ]}>
+            <MaterialCommunityIcons
+              name={item.Type === 'giao hang' ? 'van-utility' : 'backup-restore'}
+              color="#fff"
+              size={22}
+            />
+          </View>
+          <View style={styles.itemTopTextContainer}>
+            <Text style={styles.itemName}>{item.NoiDung}</Text>
+          </View>
         </View>
       </View>
-      <View>
-        <Text style={styles.itemDetail}>{item.detail}</Text>
-      </View>
-    </View>
+    </TouchableOpacity>
   );
   render() {
+    if (this.state.isLoading) {
+      return (
+        <View style={styles.screenContainer}>
+          <StatusBar barStyle="light-content" />
+          <HeaderComponent title="Thông báo" />
+          <ActivityIndicator animating={true} size="large" color="#0000ff" />
+        </View>);
+    }
     return (
       <View style={styles.screenContainer}>
         <StatusBar barStyle="light-content" />
@@ -62,58 +123,9 @@ class NotificationScreen extends Component {
           </View>
           <View style={styles.listContainer}>
             <FlatList
-              data={[
-                {
-                  id: 1,
-                  type: 1,
-                  name: 'Anker Giảm Khủng 40% Duy Nhất Hôm Nay 13/11',
-                  date: '13/11/2018',
-                  detail:
-                    'Anker Giảm Khủng 40% Duy Nhất Hôm Nay 13/11 - Số Lượng Có Hạn',
-                },
-                {
-                  id: 2,
-                  type: 2,
-                  name: 'GỢI Ý QUÀ TẶNG 20.10',
-                  date: '02/11/2018',
-                  detail:
-                    'NHẬP MÃ UUDAIT11 GIẢM 50K CHO ĐƠN HÀNG 700K. Áp dụng cho sản phẩm ngành Điện Gia Dụng. XEM NGAY!',
-                },
-                {
-                  id: 3,
-                  type: 1,
-                  name: 'Anker Giảm Khủng 40% Duy Nhất Hôm Nay 13/11',
-                  date: '13/11/2018',
-                  detail:
-                    'Anker Giảm Khủng 40% Duy Nhất Hôm Nay 13/11 - Số Lượng Có Hạn',
-                },
-                {
-                  id: 4,
-                  type: 2,
-                  name: 'GỢI Ý QUÀ TẶNG 20.10',
-                  date: '02/11/2018',
-                  detail:
-                    'NHẬP MÃ UUDAIT11 GIẢM 50K CHO ĐƠN HÀNG 700K. Áp dụng cho sản phẩm ngành Điện Gia Dụng. XEM NGAY!',
-                },
-                {
-                  id: 5,
-                  type: 1,
-                  name: 'Anker Giảm Khủng 40% Duy Nhất Hôm Nay 13/11',
-                  date: '13/11/2018',
-                  detail:
-                    'Anker Giảm Khủng 40% Duy Nhất Hôm Nay 13/11 - Số Lượng Có Hạn',
-                },
-                {
-                  id: 6,
-                  type: 2,
-                  name: 'GỢI Ý QUÀ TẶNG 20.10',
-                  date: '02/11/2018',
-                  detail:
-                    'NHẬP MÃ UUDAIT11 GIẢM 50K CHO ĐƠN HÀNG 700K. Áp dụng cho sản phẩm ngành Điện Gia Dụng. XEM NGAY!',
-                },
-              ]}
+              data={this.state.dataSource}
               keyExtractor={(item) => item.id.toString()}
-              renderItem={({item}) =>this.NotificationItem(item)}
+              renderItem={({ item }) => this.NotificationItem(item)}
             />
           </View>
         </View>
@@ -159,7 +171,6 @@ const styles = StyleSheet.create({
   },
   //
   itemContainer: {
-    backgroundColor: '#fff',
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderBottomColor: '#ededed',
@@ -194,5 +205,10 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
 });
+const mapStateToProps = (state) => {
+  return {
+    user: state.user,
+  };
+};
 
-export default NotificationScreen;
+export default connect(mapStateToProps, null)(NotificationScreen);

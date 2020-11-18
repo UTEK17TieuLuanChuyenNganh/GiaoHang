@@ -1,5 +1,5 @@
-import {combineReducers} from 'redux';
+import { combineReducers } from 'redux';
 import user from './user';
 import address from './address';
-
-export default combineReducers({user,address});
+import notice from './notification'
+export default combineReducers({ user, address, notice });

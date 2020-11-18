@@ -334,6 +334,15 @@ class DSSanphamdamua extends Component {
             </ScrollView>
         );
     }
+    renderTinhTrang(tinhtrang){
+        switch(tinhtrang)
+        {
+            case undefined:
+                return <Icon name="info-circle" size={30} color="blue" />
+            case 'dagiao':
+                return <Icon name="check-circle" size={30} color="green" />
+        }
+    }
     renderListSanPham(element) {
         return (
             <ScrollView>
@@ -359,7 +368,7 @@ class DSSanphamdamua extends Component {
                             <Image source={{ uri: `data:image/jpg;base64,${e.SanPham.Hinh}` }} style={styles.itemImage} />
                             <View style={{ flexDirection: "row" }}>
                                 <Text style={styles.detailaccount1} >Tình trạng: </Text>
-                                <Icon name="check-circle" size={30} color="green" />
+                                {this.renderTinhTrang(e.TinhTrangDon)}
                             </View>
                         </View>
                     </View>

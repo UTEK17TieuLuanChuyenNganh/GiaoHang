@@ -309,6 +309,22 @@ class QLDonhang extends Component {
             );
         } return null;
     }
+    renderTinhTrang(tinhtrang) {
+        switch (tinhtrang) {
+            case null:
+                return (
+                    <View style={{flexDirection:"row"}}>
+                        <Text style={styles.detailaccount1}>Đang chờ   </Text>
+                        <Icon name="info-circle" size={30} color="blue" />
+                    </View>);
+            case 'dagiao':
+                return (
+                    <View style={{flexDirection:"row"}}>
+                        <Text style={styles.detailaccount1}>Đã giao</Text>
+                        <Icon name="check-circle" size={30} color="green" />
+                    </View>);                
+        }
+    }
     render() {
         if (this.state.isLoading) {
             return (
@@ -335,11 +351,12 @@ class QLDonhang extends Component {
                                     <View style={styles.LabelIndfor}>
                                         <View style={styles.detailaccount}>
                                             <Text style={styles.detailaccount1}>{e.NguoiDung.HoTen}</Text>
-                                            <Text style={styles.detailaccount1}>{e.DiaChi.TenDiaChi}</Text>
+                                            <Text style={styles.detailaccount1}>Địa chỉ:{e.DiaChi.TenDiaChi}</Text>
                                             <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
-                                                <Text style={styles.detailaccount1}>{e.TongTien} VND</Text>
-                                                <Icon name="check-circle" size={30} color="green" />
+                                                <Text style={styles.detailaccount1}>Tổng tiền: {e.TongTien} VND</Text>
                                             </View>
+                                            <Text style={styles.detailaccount1}>Tình trạng đơn:</Text>
+                                            {this.renderTinhTrang(e.TinhTrangDon)}
                                         </View>
                                     </View>
                                 </View>

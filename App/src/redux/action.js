@@ -1,4 +1,4 @@
-import {LOGIN, LOGOUT,CHOSEADDRESS,CLEARADDRESS} from './actionTypes';
+import {LOGIN, LOGOUT,CHOSEADDRESS,CLEARADDRESS,ADDNEWNOTICE,CLEARNOTICE} from './actionTypes';
 
 export const login = (user) => ({
   type: LOGIN,
@@ -12,4 +12,10 @@ export const choseAddress = () => ({
 });
 export const clearAddress = () => ({
   type: CLEARADDRESS,
+});
+export const addNewNotice = () => ({
+  type: ADDNEWNOTICE,
+});
+export const clearNotice = () => ({
+  type: CLEARNOTICE,
 });

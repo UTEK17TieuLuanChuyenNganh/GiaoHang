@@ -10,6 +10,7 @@ import HomeSectionComponents from '../components/HomeSectionComponents';
 import Sanpham from '../components/Sanpham';
 import store from '../redux/store';
 import AsyncStorage from '@react-native-community/async-storage'
+import { connect } from 'react-redux';
 const { width } = Dimensions.get('window');
 const section_banner = require('../assets/section_banner.png');
 class HomeScreen extends Component {
@@ -24,17 +25,34 @@ class HomeScreen extends Component {
     this.handleBackPress = this.handleBackPress.bind(this);
   }
   componentDidMount() {
-    this.checkUser();
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+    this._subscribe = this.props.navigation.addListener('focus', async () => {
+      await this.fetchNewNotification();
+    });
   }
   componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
+    this.props.navigation.removeListener(this._subscribe);
   }
   async handleBackPress() {
     await this.setState({
       searchSubmit: false
     })
     return true;
+  }
+  fetchNewNotification() {
+    console.log
+    return fetch('https://servertlcn.herokuapp.com/thongbao/' + this.props.user.user.id + '/new', { method: 'GET' })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        store.dispatch({
+          type: 'ADDNEWNOTICE',
+          payload: responseJson.data
+        })
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
   cartclick() {
     this.props.navigation.navigate('Cart', { isClick: false });
@@ -45,20 +63,7 @@ class HomeScreen extends Component {
     })
     this.forceUpdate()
   }
-  checkUser = async () => {
-    try {      
-      const value = await AsyncStorage.getItem('user');
-      if (value !== null) {        
-        let data = JSON.parse(value);        
-        store.dispatch({
-          type: 'LOGIN',
-          payload: data
-        })
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
+
   searched() {
     this.setState({
       searchSubmit: false
@@ -240,5 +245,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
 });
+const mapStateToProps = (state) => {
+  return {
+    user: state.user,
+    notice: state.notice
+  };
+};
 
-export default HomeScreen;
+export default connect(mapStateToProps, null)(HomeScreen);
