@@ -8,11 +8,10 @@ const url = `https://dev.virtualearth.net/REST/v1/Routes/DistanceMatrix?key=${bi
 //b1 select don hang theo khung gio
 const getDonhang = async (req, res) => {
     let {
-        data
+        data, timeStart, plus
     } = req.body;
-    var mapData = data.data;
-    var timeStart = data.timeStart;
-    var resultData = [];
+    var mapData = data;    
+    var resultData = [];    
     //fetchData từ server python để lấy được các cụm đơn hàng được chia theo tỉ lệ khoảng cách
     //Hỗ trợ để tạo thành các đơn hàng chia cho shipper
     // let settings = {
