@@ -7,22 +7,24 @@ const url = `https://dev.virtualearth.net/REST/v1/Routes/DistanceMatrix?key=${bi
 
 //b1 select don hang theo khung gio
 const getDonhang = async (req, res) => {
-    var mapData;
-    var timeStart;
+    let {
+        data
+    } = req.body;
+    var mapData = data.data;
+    var timeStart = data.timeStart;
     var resultData = [];
-
     //fetchData từ server python để lấy được các cụm đơn hàng được chia theo tỉ lệ khoảng cách
     //Hỗ trợ để tạo thành các đơn hàng chia cho shipper
-    let settings = {
-        method: "GET",
-        // body: JSON.stringify(dataPost),
-        // headers: { 'Content-Type': 'application/json' },
-    };
-    let dataFetch = await fetch('https://giaohangapi.herokuapp.com/giaohang', settings)
-    let dataReceive = await dataFetch.json();
+    // let settings = {
+    //     method: "GET",
+    //     // body: JSON.stringify(dataPost),
+    //     // headers: { 'Content-Type': 'application/json' },
+    // };
+    // let dataFetch = await fetch('https://giaohangapi.herokuapp.com/giaohang', settings)
+    // let dataReceive = await dataFetch.json();
 
-    mapData = dataReceive.data //Dữ liệu trả về từ api
-    timeStart = dataReceive.timeStart //Thời điểm bắt đầu của khung giờ xét duyệt đơn hàng
+    // mapData = dataReceive.data //Dữ liệu trả về từ api
+    // timeStart = dataReceive.timeStart //Thời điểm bắt đầu của khung giờ xét duyệt đơn hàng
 
     if (mapData.length > 0 && timeStart != "") {
 

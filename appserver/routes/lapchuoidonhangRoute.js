@@ -7,6 +7,6 @@ const { getDonhang } = require('../controllers/lapchuoidonhang.controller')
 
 router.get('/', getDistance)
 
-router.get('/donhang', getDonhang)
+router.post('/donhang', getDonhang)
 
 module.exports = router;
