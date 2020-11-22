@@ -8,6 +8,7 @@ import {
     Platform,
     PermissionsAndroid,
     Alert,
+    unstable_enableLogBox,
 } from 'react-native';
 import Logo from '../Component/Logo';
 import { WebView } from 'react-native-webview';
@@ -35,7 +36,7 @@ class MapScreens extends Component {
             chuoiId: '',
             user: [],
             index: 0,
-            status:''
+            status: false
         }
     }
     async demo() {
@@ -67,16 +68,27 @@ class MapScreens extends Component {
             { method: 'GET' })
             .then(async (responseJson) => {
                 responseJson = await responseJson.json()
-
-                let data = responseJson.data.Chuoi
-                data = await JSON.parse(data)
-                if (this._isMounted) {
-                    this.setState(
-                        {
-                            //isLoading: false,
-                            dataSource: data.chuoidonhang,
-                            chuoiId: responseJson.data.id,
-                        })
+                if (responseJson.data.length != 0) {
+                    let data = responseJson.data.Chuoi
+                    data = await JSON.parse(data)
+                    if (this._isMounted) {
+                        this.setState(
+                            {
+                                //isLoading: false,
+                                dataSource: data.chuoidonhang,
+                                chuoiId: responseJson.data.id,
+                                status=true
+                            })
+                    }
+                }
+                else {
+                    if (this._isMounted) {
+                        this.setState(
+                            {
+                                //isLoading: false,
+                                status=false
+                            })
+                    }
                 }
             })
             .catch((error) => {
@@ -88,13 +100,15 @@ class MapScreens extends Component {
         this.props.navigation.openDrawer();
     }
     makeCall = () => {
-        let phoneNumber = '';
-        if (Platform.OS === 'android') {
-            phoneNumber = 'tel:${' + this.state.dataSource[this.state.index].reciver.sdt + '}';
-        } else {
-            phoneNumber = 'telprompt:${' + this.state.dataSource[this.state.index].reciver.sdt + '}';
+        if (this.state.status == true) {
+            let phoneNumber = '';
+            if (Platform.OS === 'android') {
+                phoneNumber = 'tel:${' + this.state.dataSource[this.state.index].reciver.sdt + '}';
+            } else {
+                phoneNumber = 'telprompt:${' + this.state.dataSource[this.state.index].reciver.sdt + '}';
+            }
+            Linking.openURL(phoneNumber);
         }
-        Linking.openURL(phoneNumber);
     };
     async requestLocationPermission() {
         try {
@@ -144,72 +158,83 @@ class MapScreens extends Component {
         Linking.openURL(this.linkDirect);
     }
     createLinkAddress() {
-        try {
-            for (i = 0; i < this.state.dataSource.length; i++) {
-                this.addressOrder = this.addressOrder + '/' + this.state.dataSource[i].address.KinhDo + ',' + this.state.dataSource[i].address.ViDo
+        if (this.state.status == true) {
+            try {
+                for (i = 0; i < this.state.dataSource.length; i++) {
+                    this.addressOrder = this.addressOrder + '/' + this.state.dataSource[i].address.KinhDo + ',' + this.state.dataSource[i].address.ViDo
+                }
+                this.link += this.addressOrder;
+                this.linkDirect += this.addressOrder + ',11z/data%3D!4m2!4m1!3e0!11m1!6b1?entry%3Dml&apn=com.google.android.apps.maps&amv=914018424&isi=585027354&ibi=com.google.Maps&ius=comgooglemapsurl&utm_campaign=ml_promo&ct=ml-nav-nopromo-dr-nlu&mt=8&pt=9008&efr=1'
+                this.setState({
+                    isLoading: false
+                })
+            } catch (error) {
+                console.log(error)
             }
-            this.link += this.addressOrder;
-            this.linkDirect += this.addressOrder + ',11z/data%3D!4m2!4m1!3e0!11m1!6b1?entry%3Dml&apn=com.google.android.apps.maps&amv=914018424&isi=585027354&ibi=com.google.Maps&ius=comgooglemapsurl&utm_campaign=ml_promo&ct=ml-nav-nopromo-dr-nlu&mt=8&pt=9008&efr=1'
-            this.setState({
-                isLoading: false
-            })
-        } catch (error) {
-            console.log(error)
         }
 
     }
-     Xacnhan(){
+    Xacnhan() {
         Alert.alert(
             'Giao Hang',
             'Xac Nhan',
             [
                 {
                     text: 'Thanh Cong',
-                    onPress:  () => { this.PutJson('thanh cong') },
+                    onPress: () => { this.PutJson('thanh cong') },
 
                 },
                 {
                     text: 'That Bai',
-                    onPress:  () => { this.PutJson('that bai')},
+                    onPress: () => { this.PutJson('that bai') },
 
                 },
             ],
         );
-     }
+    }
     async PutJson(str) {
-        let temp = { chuoidonhang: this.state.dataSource }
-        temp.chuoidonhang[this.state.index].donhang.TinhTrangDon = str
-        let a = await JSON.stringify(temp)
-        let data = {
-            Chuoi: a
-        }
-        fetch('https://servertlcn.herokuapp.com/chuoigiaohang/' + this.state.chuoiId,
-            {
-                method: 'PUT',
-                body: JSON.stringify(data),
-                headers: { 'Content-Type': 'application/json' }
+        if (this.state.status == true) {
+            let temp = { chuoidonhang: this.state.dataSource }
+            temp.chuoidonhang[this.state.index].donhang.TinhTrangDon = str
+            let a = await JSON.stringify(temp)
+            let data = {
+                Chuoi: a
+            }
+            fetch('https://servertlcn.herokuapp.com/chuoigiaohang/' + this.state.chuoiId,
+                {
+                    method: 'PUT',
+                    body: JSON.stringify(data),
+                    headers: { 'Content-Type': 'application/json' }
 
-            })
-            .then((response) => response.json())
-            .then((responseJson) => {
-                this.forceUpdate();
-                console.log(responseJson)
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+                })
+                .then((response) => response.json())
+                .then((responseJson) => {
+                    this.forceUpdate();
+                    console.log(responseJson)
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
     }
     renderElement() {
-        if (this.state.dataSource.length > 0) {
-            return (
-                <View style={styles.ThongTin}>
-                    <Text style={{ fontSize: 25 }}>{this.state.dataSource[this.state.index].reciver.name}</Text>
-                    <Text style={{ fontSize: 20 }}> {this.state.dataSource[this.state.index].reciver.sdt}</Text>
-                    <Text style={{ fontSize: 20 }}> {this.state.dataSource[this.state.index].donhang.TongTien} VND</Text>
-                </View>
-            )
+        if (this.state.status == true) {
+            if (this.state.dataSource.length > 0) {
+                return (
+                    <View style={styles.ThongTin}>
+                        <Text style={{ fontSize: 25 }}>{this.state.dataSource[this.state.index].reciver.name}</Text>
+                        <Text style={{ fontSize: 20 }}> {this.state.dataSource[this.state.index].reciver.sdt}</Text>
+                        <Text style={{ fontSize: 20 }}> {this.state.dataSource[this.state.index].donhang.TongTien} VND</Text>
+                    </View>
+                )
+            }
         }
         return null;
+    }
+    renderdiachi(){
+        if(this.state.status==true){
+            <Text style={{ fontSize: 15, marginLeft: 2, marginRight: 2 }}> {this.state.dataSource[this.state.index].address.TenDiaChi}</Text>
+        }
     }
     render() {
         if (!this.state.isLoading) {
@@ -227,7 +252,7 @@ class MapScreens extends Component {
                     {this.renderElement()}
 
                     <View style={styles.buttonaccess}>
-                        <Text style={{ fontSize: 15, marginLeft: 2, marginRight: 2 }}> {this.state.dataSource[this.state.index].address.TenDiaChi}</Text>
+                        {this.renderdiachi()}
                         <View style={styles.direc}>
                             <Slider
                                 onEndReached={() => {
