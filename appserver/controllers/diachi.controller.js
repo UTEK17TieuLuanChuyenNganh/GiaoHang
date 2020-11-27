@@ -350,7 +350,7 @@ const searchDiachiInTimeRange = async (req, res) => {
     const { id, timerange } = req.body;
     try {
         let timeStart = Moment.utc(timerange.timeStart).format()
-        let timeEnd = Moment.utc(timerange.timeEnd).format()                
+        let timeEnd = Moment.utc(timerange.timeEnd).format()
         const Diachis = await DiaChi.findAll({
             attributes: [
                 'id',
@@ -373,6 +373,8 @@ const searchDiachiInTimeRange = async (req, res) => {
                         `AND (DATE_PART('hour',"DiaChi"."ThoiGianKetThuc"::timestamp - '${timerange.timeStart}'::timestamp) BETWEEN 1 AND 3)) ` +
                         `OR (("DiaChi"."ThoiGianBatDau" BETWEEN '${timeStart}' AND '${timeEnd}') AND ` +
                         `((DATE_PART('hour','${timerange.timeEnd}'::timestamp - "DiaChi"."ThoiGianBatDau"::timestamp)) = (DATE_PART('hour',"DiaChi"."ThoiGianKetThuc"::timestamp - '${timerange.timeEnd}'::timestamp)))) ` +
+                        `OR (("DiaChi"."ThoiGianBatDau" BETWEEN '${timeStart}' AND '${timeEnd}') AND ` +
+                        `("DiaChi"."ThoiGianKetThuc" BETWEEN '${timeStart}' AND '${timeEnd}')) ` +
                         `OR ((DATE_PART('day','${timerange.timeStart}' - "DiaChi"."ThoiGianBatDau") = 0 AND ` +
                         `((DATE_PART('hour','${timerange.timeStart}'::timestamp - "DiaChi"."ThoiGianBatDau"::timestamp)) >= 0 AND (DATE_PART('hour',"DiaChi"."ThoiGianKetThuc"::timestamp - '${timerange.timeEnd}'::timestamp)) >= 0))) `)
                 ],
