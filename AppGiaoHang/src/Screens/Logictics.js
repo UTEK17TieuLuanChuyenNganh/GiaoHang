@@ -6,19 +6,21 @@ import Icon1 from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-community/async-storage';
 import MapScreens from './MapScreens';
 import DeprecatedViewPropTypes from 'react-native/Libraries/DeprecatedPropTypes/DeprecatedViewPropTypes';
-
+import { connect } from 'react-redux';
+import store from '../redux/store';
 class Logictics extends Component {
     _isMounted = true;
     constructor(props) {
         super(props)
         this.state = {
             isLoading: true,
-            //dataSource: [],
-            user:[],
+            dataSource: [],
+            user: [],
             soluong: 0,
+            order: []
         }
     }
-    
+
     checkUser = async () => {
         try {
             const value = await AsyncStorage.getItem('user');
@@ -47,18 +49,23 @@ class Logictics extends Component {
             { method: 'GET' })
             .then(async (responseJson) => {
                 responseJson = await responseJson.json()
-                //console.log(responseJson.data.Chuoi)
-                let data = responseJson.data.Chuoi
-
-                data = await JSON.parse(data)
-                if (this._isMounted) {
+                if (responseJson.result != "failed") {
+                    let data = responseJson.data.Chuoi
+                    data = await JSON.parse(data)
+                    if (this._isMounted) {
+                        this.setState(
+                            {
+                                isLoading: false,
+                                dataSource: data.chuoidonhang,
+                                soluong: responseJson.data.SoLuong
+                            })
+                    }
+                }
+                else {
                     this.setState(
                         {
                             isLoading: false,
-                            dataSource: data.chuoidonhang,
-                            soluong: responseJson.data.SoLuong
                         })
-                    //console.log(this.state.dataSource)
                 }
             })
             .catch((error) => {
@@ -66,7 +73,7 @@ class Logictics extends Component {
             });
     }
     componentDidMount() {
-       this.checkUser()
+        this.checkUser()
     }
     renderSoLuong() {
         return (
@@ -98,7 +105,32 @@ class Logictics extends Component {
             </ScrollView>
         )
     }
-    
+    renderElement1() {
+        if (this.props.order.order.length>0) {
+            return (
+                <ScrollView>
+                    {
+
+                        this.props.order.order.map((e, id) => (
+                            <View key={id.toString()}>
+                                <TouchableOpacity onPress={() => { }}>
+                                    <Text style={styles.detailaccount}>{e.reciver.name}</Text>
+                                    <Text style={styles.detailaccount1}>{e.address.TenDiaChi}</Text>
+                                    <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
+                                        <Text style={styles.detailaccount1}>{e.donhang.TongTien}</Text>
+                                        <Icon name="check-circle" size={30} color="green" />
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
+                        ))
+
+                    }
+                </ScrollView>
+            )
+        }
+        return null
+    }
+
     render() {
         //console.log(this.state.dataSource);
         if (this.state.isLoading) {
@@ -120,7 +152,7 @@ class Logictics extends Component {
                     <Icon1.Button
                         name='retweet'
                         backgroundColor="rgba(0.0, 0.0, 0.0, 0.0)"
-                        onPress={()=>{}}
+                        onPress={() => { }}
                         size={25}
                     />
                 </View>
@@ -128,7 +160,7 @@ class Logictics extends Component {
                     <View style={styles.top}>
 
                         {this.renderSoLuong()}
-                        {this.renderElement()}
+                        {this.renderElement1()}
                         {/* <View style={styles.LabelIndfor}>
                             <Text style={styles.detailaccount}>Trần Cao Quyền</Text>
                             <Text style={styles.detailaccount1}>Địa chỉ:07, đường N8, KDC:Đông An, P. Tân Đông Hiệp, Dĩ An, Bình Dương</Text>
@@ -223,4 +255,11 @@ const styles = StyleSheet.create({
         padding: 10
     }
 })
-export default Logictics;
+
+const mapStateToProps = (state) => {
+    return {
+        order: state.order
+    };
+};
+
+export default connect(mapStateToProps, null)(Logictics);

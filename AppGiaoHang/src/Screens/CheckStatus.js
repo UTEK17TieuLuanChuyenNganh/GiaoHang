@@ -3,7 +3,15 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Logo from '../Component/Logo';
+import { connect } from 'react-redux';
+import store from '../redux/store';
 class CheckStatus extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            order: []
+        }
+    }
     showmenu = () => {
         this.props.navigation.openDrawer();
     }
@@ -11,12 +19,14 @@ class CheckStatus extends Component {
     render() {
         return (
             <View style={styles.BackgroundScreens}>
-                <Logo openDrawerclick={()=>{this.showmenu()}}/>
+                <Logo openDrawerclick={() => { this.showmenu() }} />
                 <View style={{ flex: 1 }}>
                     <View style={styles.top}>
                         <View>
                             <View style={styles.BoxCheck}>
-                                <Text style={styles.detailaccount}>Tiếp Nhận Chuỗi</Text>
+                                {this.props.order.order.length>0?
+                                <Text style={styles.detailaccount}>{this.props.order.order[0].address.TenDiaChi}</Text>:
+                                <Text style={styles.detailaccount}>Tiếp nhận chuỗi:</Text>}
                                 <Icon name="check-circle"
                                     size={30}
                                     color="green"
@@ -64,7 +74,7 @@ const styles = StyleSheet.create({
     BoxCheck: {
         justifyContent: 'space-between',
         flexDirection: "row",
-        margin:5
+        margin: 5
     },
     Buttonstyle: {
         width: 200,
@@ -84,10 +94,17 @@ const styles = StyleSheet.create({
     },
     top: {
         flex: 1,
-        backgroundColor:"#EEEBEB",
+        backgroundColor: "#EEEBEB",
         borderWidth: 2,
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-      }
+    }
 })
-export default CheckStatus;
+
+const mapStateToProps = (state) => {
+    return {
+        order: state.order
+    };
+};
+
+export default connect(mapStateToProps, null)(CheckStatus);

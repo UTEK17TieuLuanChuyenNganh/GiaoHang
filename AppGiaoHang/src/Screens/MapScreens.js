@@ -9,6 +9,8 @@ import {
     PermissionsAndroid,
     Alert,
     unstable_enableLogBox,
+    Image, 
+    ImageBackground 
 } from 'react-native';
 import Logo from '../Component/Logo';
 import { WebView } from 'react-native-webview';
@@ -16,7 +18,8 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import CheckInternet from '../Component/CheckInternet';
 import Slider from 'react-native-slide-to-unlock';
 import AsyncStorage from '@react-native-community/async-storage';
-import Logictics from './Logictics';
+import { parse } from '@babel/core';
+
 navigator.geolocation = require('@react-native-community/geolocation');
 const adrr1 = '10.889919, 106.775659'
 const adrr2 = '10.850114, 106.765102'
@@ -74,10 +77,10 @@ class MapScreens extends Component {
                     if (this._isMounted) {
                         this.setState(
                             {
-                                //isLoading: false,
+                                isLoading: false,
                                 dataSource: data.chuoidonhang,
                                 chuoiId: responseJson.data.id,
-                                status=true
+                                status: true
                             })
                     }
                 }
@@ -85,8 +88,8 @@ class MapScreens extends Component {
                     if (this._isMounted) {
                         this.setState(
                             {
-                                //isLoading: false,
-                                status=false
+                                isLoading: false,
+                                status: false
                             })
                     }
                 }
@@ -144,6 +147,7 @@ class MapScreens extends Component {
         // this.fetchData(this.state.user.id)
         this.demo()
         this.requestLocationPermission();
+        this.getcurrentlocal()
     }
     componentWillUnmount() {
         this._isMounted = false;
@@ -192,6 +196,13 @@ class MapScreens extends Component {
             ],
         );
     }
+    getcurrentlocal(){
+        // navigator.geolocation.getCurrentPosition((position)=>{
+        //     var lat = parseFloat(position.coords.latitude)
+        //     var long = parseFloat(position.coords.longitude)
+        //     console.log(lat,long)
+        // })
+    }
     async PutJson(str) {
         if (this.state.status == true) {
             let temp = { chuoidonhang: this.state.dataSource }
@@ -231,73 +242,85 @@ class MapScreens extends Component {
         }
         return null;
     }
-    renderdiachi(){
-        if(this.state.status==true){
+    renderdiachi() {
+        if (this.state.status == true) {
             <Text style={{ fontSize: 15, marginLeft: 2, marginRight: 2 }}> {this.state.dataSource[this.state.index].address.TenDiaChi}</Text>
         }
     }
+    
     render() {
-        if (!this.state.isLoading) {
-            return (
-                <View style={{ flex: 1 }}>
-                    <WebView
-                        ref={ref => { }}
-                        source={{ uri: this.link }}
-                        style={styles.Webview}
-                        geolocationEnabled={true}
-                    />
-                    <View style={styles.logost}>
-                        <Logo openDrawerclick={() => { this.showmenu() }} />
-                    </View>
-                    {this.renderElement()}
+        if (this.state.status == true) {
+            if (!this.state.isLoading) {
+                return (
+                    <View style={{ flex: 1 }}>
+                        <WebView
+                            ref={ref => { }}
+                            source={{ uri: this.link }}
+                            style={styles.Webview}
+                            geolocationEnabled={true}
+                        />
+                        <View style={styles.logost}>
+                            <Logo openDrawerclick={() => { this.showmenu() }} />
+                        </View>
+                        {this.renderElement()}
 
-                    <View style={styles.buttonaccess}>
-                        {this.renderdiachi()}
-                        <View style={styles.direc}>
-                            <Slider
-                                onEndReached={() => {
-                                    this.getggmap()
-                                }}
-                                containerStyle={{
-                                    backgroundColor: '#E0E1DF',
-                                    borderRadius: 20,
-                                    overflow: 'hidden',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    width: "80%"
-                                }}
-                                sliderElement={
-                                    <View style={{ backgroundColor: 'red', borderRadius: 20, margin: 2 }}>
-                                        <Icon
-                                            name='directions'
-                                            size={50}
-                                            color='black'
-                                        />
+                        <View style={styles.buttonaccess}>
+                            {this.renderdiachi()}
+                            <View style={styles.direc}>
+                                <Slider
+                                    onEndReached={() => {
+                                        this.getggmap()
+                                    }}
+                                    containerStyle={{
+                                        backgroundColor: '#E0E1DF',
+                                        borderRadius: 20,
+                                        overflow: 'hidden',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        width: "80%"
+                                    }}
+                                    sliderElement={
+                                        <View style={{ backgroundColor: 'red', borderRadius: 20, margin: 2 }}>
+                                            <Icon
+                                                name='directions'
+                                                size={50}
+                                                color='black'
+                                            />
+                                        </View>
+                                    }
+                                >
+                                    <Text style={{ fontSize: 30 }}>  {'>>'} Chỉ Đường {'>>'}</Text>
+                                </Slider>
+                            </View>
+                            <View style={styles.control}>
+                                <TouchableOpacity onPress={() => { this.Xacnhan() }} >
+                                    <View style={styles.Buttonstyle}>
+                                        <Text style={{ fontSize: 15, color: 'white' }}>Xác Nhận Giao Hàng</Text>
                                     </View>
-                                }
-                            >
-                                <Text style={{ fontSize: 30 }}>  {'>>'} Chỉ Đường {'>>'}</Text>
-                            </Slider>
-                        </View>
-                        <View style={styles.control}>
-                            <TouchableOpacity onPress={() => { this.Xacnhan() }} >
-                                <View style={styles.Buttonstyle}>
-                                    <Text style={{ fontSize: 15, color: 'white' }}>Xác Nhận Giao Hàng</Text>
-                                </View>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => this.makeCall()} activeOpacity={0.7} style={styles.touchableButton}>
-                                <View style={styles.Buttonstyle}>
-                                    <Text style={{ fontSize: 15, color: 'white' }}>Liên Hệ</Text>
-                                </View>
-                            </TouchableOpacity>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => this.makeCall()} activeOpacity={0.7} style={styles.touchableButton}>
+                                    <View style={styles.Buttonstyle}>
+                                        <Text style={{ fontSize: 15, color: 'white' }}>Liên Hệ</Text>
+                                    </View>
+                                </TouchableOpacity>
 
+                            </View>
                         </View>
+
+                        <CheckInternet />
                     </View>
-
-                    <CheckInternet />
+                );
+            }
+        }
+        return (
+            
+            <View style={{ flex: 1 ,justifyContent: "center",alignItems:"center" }}>
+                <View style={styles.logost}>
+                            <Logo openDrawerclick={() => { this.showmenu() }} />
                 </View>
-            );
-        } return null;
+                <Image source={require('../../Image/Image/NotFound.png')} style={styles.circleImageLayout}/>
+            </View>
+        );
     }
 
 }
@@ -343,6 +366,12 @@ const styles = StyleSheet.create({
         right: 0,
         bottom: 0,
         paddingLeft: 0
+    },
+    circleImageLayout: {
+        position: "absolute",
+        height:300,
+        width:300
+ 
     },
     ThongTin: {
         flexDirection: "column",
@@ -390,5 +419,6 @@ const styles = StyleSheet.create({
         padding: 10
     }
 })
+
 
 export default MapScreens;

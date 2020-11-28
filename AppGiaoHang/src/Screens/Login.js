@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import { Base64 } from 'js-base64';
 import AsyncStorage from '@react-native-community/async-storage';
+import { connect } from 'react-redux';
+import store from '../redux/store';
 class Login extends Component {
     isLoading = false;
     constructor(props) {
@@ -27,7 +29,6 @@ class Login extends Component {
 
     loginclick() {
         this.isLoading = true;
-        console.log(this.state.username)
         return fetch('https://servertlcn.herokuapp.com/shipper/'+this.state.username+'/username',
              { method: 'GET' })
             .then(async (response) => {
@@ -36,6 +37,7 @@ class Login extends Component {
                    var decryptedPassword = Base64.decode(data.data.NguoiDung.Password);
                     if (this.isLoading && this.state.password.trim() == decryptedPassword) {
                         this.setData(data.data)
+                        this.addid(data.data.id)
                         this.props.navigation.replace('MyDrawer');
                     }
                     else {
@@ -59,7 +61,12 @@ class Login extends Component {
             console.log(error);
         }
     }
-   
+    addid(data) {
+        store.dispatch({
+            type: 'ADDUSER',
+            payload: data
+        })
+    }
     render() {
         
         return (

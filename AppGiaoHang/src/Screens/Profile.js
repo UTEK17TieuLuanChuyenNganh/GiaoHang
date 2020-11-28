@@ -2,43 +2,26 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, Image, ImageBackground, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 import AsyncStorage from '@react-native-community/async-storage';
+import { connect } from 'react-redux';
+import store from '../redux/store';
 class Profile extends Component {
     _isMounted = false;
     constructor(props) {
         super(props);
         this.state = {
             isLoading: true,
-            user: [],
-            dataSource: []
+            
+            dataSource: [],
+            user:0
         }
     }
-    checkUser = async () => {
-        try {
-            const value = await AsyncStorage.getItem('user');
-            if (value !== null) {
-                let data = JSON.parse(value);
-                this.setState({
-                    user: data,
-                    //isLoading: false
-                })
-                this.fetchData(this.state.user.id);
-            }
-            else {
-                this.setState({
-                    isLoading: false
-                })
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    
     fetchData(id) {
         //console.log(this.state.user.Username)
         return fetch('https://servertlcn.herokuapp.com/shipper/'+id,
             { method: 'GET' })
             .then(async (response) => {
                 let data = await response.json()
-                console.log(data)
                 if (data.result != "failed") {
                     if (this._isMounted) {
                         this.setState({
@@ -55,7 +38,7 @@ class Profile extends Component {
 
     componentDidMount() {
         this._isMounted = true;
-        this.checkUser();
+        this.fetchData(this.props.user.user);
     }
     componentWillUnmount() {
         this._isMounted = false;
@@ -180,5 +163,10 @@ const styles = StyleSheet.create({
 })
 
 
+const mapStateToProps = (state) => {
+    return {
+        user: state.user
+    };
+};
 
-export default Profile;
+export default connect(mapStateToProps, null)(Profile);
