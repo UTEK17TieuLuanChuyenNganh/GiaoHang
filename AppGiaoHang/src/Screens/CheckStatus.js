@@ -15,6 +15,64 @@ class CheckStatus extends Component {
     showmenu = () => {
         this.props.navigation.openDrawer();
     }
+    isTiepNhan() {
+        if (this.props.order.order.length > 0)
+            return (<Icon name="check-circle"
+                size={30}
+                color="green"
+                style={{ margin: 13 }} />)
+        else
+            return (<Icon name="times-circle"
+                size={30}
+                color="red"
+                style={{ margin: 13 }} />)
+    }
+    
+    componentDidMount() {
+        this.fetchData()
+    }
+    fetchData() {
+        //Kiem tra cai redux o day    
+        if (this.props.order.order.length > 0) {
+            this.setState(
+                {
+                    isLoading: false,
+                    //dataSource: this.props.order.order,
+                })
+        }
+        else {
+            return fetch('https://servertlcn.herokuapp.com/chuoigiaohang/' + this.state.user.id + '/shipper',
+                { method: 'GET' })
+                .then(async (responseJson) => {
+                    responseJson = await responseJson.json()
+                    if (responseJson.result != "failed") {
+                        let data = responseJson.data.Chuoi
+                        data = await JSON.parse(data)
+                        if (this._isMounted) {
+                            this.setState(
+                                {
+                                    isLoading: false,
+                                    //dataSource: data.chuoidonhang,
+                                    soluong: responseJson.data.SoLuong
+                                })
+                            store.dispatch({
+                                type: 'ADDORDER',
+                                payload: data.chuoidonhang
+                            })
+                        }
+                    }
+                    else {
+                        this.setState(
+                            {
+                                isLoading: false,
+                            })
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
+    }
 
     render() {
         return (
@@ -24,13 +82,10 @@ class CheckStatus extends Component {
                     <View style={styles.top}>
                         <View>
                             <View style={styles.BoxCheck}>
-                                {this.props.order.order.length>0?
-                                <Text style={styles.detailaccount}>{this.props.order.order[0].address.TenDiaChi}</Text>:
-                                <Text style={styles.detailaccount}>Tiếp nhận chuỗi:</Text>}
-                                <Icon name="check-circle"
-                                    size={30}
-                                    color="green"
-                                    style={{ margin: 13 }} />
+                                {/* {this.props.order.order.length>0?
+                                <Text style={styles.detailaccount}>{this.props.order.order[0].address.TenDiaChi}</Text>: */}
+                                <Text style={styles.detailaccount}>Tiếp nhận chuỗi:</Text>
+                                {this.isTiepNhan()}
                             </View>
                             <View style={styles.BoxCheck}>
                                 <Text style={styles.detailaccount}>Đang Thực Hiện</Text>

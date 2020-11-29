@@ -45,32 +45,46 @@ class Logictics extends Component {
         this.props.navigation.openDrawer();
     }
     fetchData() {
-        return fetch('https://servertlcn.herokuapp.com/chuoigiaohang/' + this.state.user.id + '/shipper',
-            { method: 'GET' })
-            .then(async (responseJson) => {
-                responseJson = await responseJson.json()
-                if (responseJson.result != "failed") {
-                    let data = responseJson.data.Chuoi
-                    data = await JSON.parse(data)
-                    if (this._isMounted) {
+        //Kiem tra cai redux o day    
+        if (this.props.order.order.length > 0) {
+            this.setState(
+                {
+                    isLoading: false,
+                    //dataSource: this.props.order.order,
+                })
+        }
+        else {
+            return fetch('https://servertlcn.herokuapp.com/chuoigiaohang/' + this.state.user.id + '/shipper',
+                { method: 'GET' })
+                .then(async (responseJson) => {
+                    responseJson = await responseJson.json()
+                    if (responseJson.result != "failed") {
+                        let data = responseJson.data.Chuoi
+                        data = await JSON.parse(data)
+                        if (this._isMounted) {
+                            this.setState(
+                                {
+                                    isLoading: false,
+                                    //dataSource: data.chuoidonhang,
+                                    soluong: responseJson.data.SoLuong
+                                })
+                            store.dispatch({
+                                type: 'ADDORDER',
+                                payload: data.chuoidonhang
+                            })
+                        }
+                    }
+                    else {
                         this.setState(
                             {
                                 isLoading: false,
-                                dataSource: data.chuoidonhang,
-                                soluong: responseJson.data.SoLuong
                             })
                     }
-                }
-                else {
-                    this.setState(
-                        {
-                            isLoading: false,
-                        })
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
     }
     componentDidMount() {
         this.checkUser()
@@ -80,37 +94,26 @@ class Logictics extends Component {
             <View style={styles.ViewSoLuong}>
 
                 <Text style={{ fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}>Số Lượng:  </Text>
-                <Text style={{ fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}>{this.state.soluong}</Text>
+                <Text style={{ fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}>{this.props.order.order.length}</Text>
 
             </View>
         )
     }
-    renderElement() {
-        return (
-            <ScrollView>
-                {
-                    this.state.dataSource.map((e, id) => (
-                        <View key={id.toString()}>
-                            <TouchableOpacity onPress={() => { }}>
-                                <Text style={styles.detailaccount}>{e.reciver.name}</Text>
-                                <Text style={styles.detailaccount1}>{e.address.TenDiaChi}</Text>
-                                <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
-                                    <Text style={styles.detailaccount1}>{e.donhang.TongTien}</Text>
-                                    <Icon name="check-circle" size={30} color="green" />
-                                </View>
-                            </TouchableOpacity>
-                        </View>
-                    ))
-                }
-            </ScrollView>
-        )
+    routeIcon(str){
+        switch(str){
+            case 'thanh cong': return(<Icon name="check-circle" size={30} color="green" />)
+            case 'that bai': return(<Icon name="times-circle" size={30} color="red" />)
+            case 'dang giao': return(<Icon name="truck" size={30} color="#581BB2" />)
+            case 'chuan bi giao': return(<Icon name="angle-double-right" size={30} color="blue" />)
+            default: return null
+        }
     }
-    renderElement1() {
-        if (this.props.order.order.length>0) {
+    renderElement() {
+        //isLoading day nay
+        if (this.props.order.order.length > 0 && !this.state.isLoading) {
             return (
                 <ScrollView>
                     {
-
                         this.props.order.order.map((e, id) => (
                             <View key={id.toString()}>
                                 <TouchableOpacity onPress={() => { }}>
@@ -118,7 +121,7 @@ class Logictics extends Component {
                                     <Text style={styles.detailaccount1}>{e.address.TenDiaChi}</Text>
                                     <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
                                         <Text style={styles.detailaccount1}>{e.donhang.TongTien}</Text>
-                                        <Icon name="check-circle" size={30} color="green" />
+                                        {this.routeIcon(e.donhang.TinhTrangDon)}
                                     </View>
                                 </TouchableOpacity>
                             </View>
@@ -133,6 +136,7 @@ class Logictics extends Component {
 
     render() {
         //console.log(this.state.dataSource);
+        //day nua nay
         if (this.state.isLoading) {
             return (
                 <View style={[styles.container, styles.horizontal]}>
@@ -160,7 +164,7 @@ class Logictics extends Component {
                     <View style={styles.top}>
 
                         {this.renderSoLuong()}
-                        {this.renderElement1()}
+                        {this.renderElement()}
                         {/* <View style={styles.LabelIndfor}>
                             <Text style={styles.detailaccount}>Trần Cao Quyền</Text>
                             <Text style={styles.detailaccount1}>Địa chỉ:07, đường N8, KDC:Đông An, P. Tân Đông Hiệp, Dĩ An, Bình Dương</Text>

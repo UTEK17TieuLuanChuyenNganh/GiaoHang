@@ -9,8 +9,8 @@ import {
     PermissionsAndroid,
     Alert,
     unstable_enableLogBox,
-    Image, 
-    ImageBackground 
+    Image,
+    ImageBackground
 } from 'react-native';
 import Logo from '../Component/Logo';
 import { WebView } from 'react-native-webview';
@@ -18,10 +18,10 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import CheckInternet from '../Component/CheckInternet';
 import Slider from 'react-native-slide-to-unlock';
 import AsyncStorage from '@react-native-community/async-storage';
-import { parse } from '@babel/core';
-
+import { connect } from 'react-redux';
+import store from '../redux/store';
 navigator.geolocation = require('@react-native-community/geolocation');
-const adrr1 = '10.889919, 106.775659'
+var adrr1 = '10.889919,106.775659'
 const adrr2 = '10.850114, 106.765102'
 const adrr3 = '10.850732, 106.771305'
 const adrr4 = '10.857018, 106.756880'
@@ -36,79 +36,69 @@ class MapScreens extends Component {
         this.state = {
             isLoading: true,
             dataSource: [],
-            chuoiId: '',
-            user: [],
+            chuoiid: 0,
+            user: 0,
+            order: [],
             index: 0,
-            status: false
+            status: false,
+            stt: 0
         }
     }
     async demo() {
-        await this.checkUser()
         await this.fetchData()
         await this.createLinkAddress()
     }
-    checkUser = async () => {
-        try {
-            const value = await AsyncStorage.getItem('user');
-            if (value !== null) {
-                let data = JSON.parse(value);
-                this.setState({
-                    user: data,
-                    //isLoading: false
+    fetchData() {        
+        if (this.props.order.order.length > 0) {
+            this.setState(
+                {
+                    isLoading: false,
+                    status: true
                 })
-            }
-            else {
-                this.setState({
-                    isLoading: false
-                })
-            }
-        } catch (error) {
-            console.log(error)
         }
-    }
-    fetchData() {
-        return fetch('https://servertlcn.herokuapp.com/chuoigiaohang/' + this.state.user.id + '/shipper',
-            { method: 'GET' })
-            .then(async (responseJson) => {
-                responseJson = await responseJson.json()
-                if (responseJson.data.length != 0) {
+        else {            
+            return fetch('https://servertlcn.herokuapp.com/chuoigiaohang/' + this.props.user.user + '/shipper',
+                { method: 'GET' })
+                .then(async (responseJson) => {
+                    responseJson = await responseJson.json()
+                    //console.log(responseJson.data )
+
                     let data = responseJson.data.Chuoi
                     data = await JSON.parse(data)
                     if (this._isMounted) {
                         this.setState(
                             {
                                 isLoading: false,
-                                dataSource: data.chuoidonhang,
-                                chuoiId: responseJson.data.id,
                                 status: true
                             })
+                        store.dispatch({
+                            type: 'ADDORDER',
+                            payload: data.chuoidonhang
+                        })
+                        console.log(this.props.order.order)
+                        store.dispatch({
+                            type: 'ADDCHUOI',
+                            payload: responseJson.data.id
+                        })
                     }
-                }
-                else {
-                    if (this._isMounted) {
-                        this.setState(
-                            {
-                                isLoading: false,
-                                status: false
-                            })
-                    }
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
     }
 
     showmenu = () => {
         this.props.navigation.openDrawer();
     }
     makeCall = () => {
-        if (this.state.status == true) {
+        if (this.state.status == true && !this.state.isLoading && this.props.order.order.length > 0) {
             let phoneNumber = '';
             if (Platform.OS === 'android') {
-                phoneNumber = 'tel:${' + this.state.dataSource[this.state.index].reciver.sdt + '}';
+                phoneNumber = 'tel:${' + this.props.order.order[this.props.stt.stt].reciver.sdt + '}';
             } else {
-                phoneNumber = 'telprompt:${' + this.state.dataSource[this.state.index].reciver.sdt + '}';
+                phoneNumber = 'telprompt:${' + this.props.order.order[this.props.stt.stt].reciver.sdt + '}';
             }
             Linking.openURL(phoneNumber);
         }
@@ -127,10 +117,10 @@ class MapScreens extends Component {
                 console.log("You can use the location");
                 await navigator.geolocation.getCurrentPosition(
                     (position) => {
-                        //Alert.alert('latitiude:  ',position.coords.latitude.toFixed(2));
+                        adrr1 = position.coords.longitude.toFixed(7) + "," + position.coords.latitude.toFixed(7);
                     },
                     (error) => console.log(error),
-                    { enableHighAccuracy: true, timeout: 10000 }
+                    { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
                 );
             }
             else {
@@ -143,11 +133,9 @@ class MapScreens extends Component {
 
     componentDidMount() {
         this._isMounted = true;
-        // this.checkUser();
-        // this.fetchData(this.state.user.id)
         this.demo()
         this.requestLocationPermission();
-        this.getcurrentlocal()
+
     }
     componentWillUnmount() {
         this._isMounted = false;
@@ -162,18 +150,32 @@ class MapScreens extends Component {
         Linking.openURL(this.linkDirect);
     }
     createLinkAddress() {
-        if (this.state.status == true) {
-            try {
-                for (i = 0; i < this.state.dataSource.length; i++) {
-                    this.addressOrder = this.addressOrder + '/' + this.state.dataSource[i].address.KinhDo + ',' + this.state.dataSource[i].address.ViDo
+        if (this.state.status == true && !this.state.isLoading && this.props.order.order.length > 0) {
+            if (this.props.order.order.length < 2) {
+                try {
+                    this.link += "/" + adrr1 + "/" + this.props.order.order[0].address.ViDo + ',' + this.props.order.order[0].address.KinhDo
+                    this.setState({
+                        isLoading: false
+                    })
+                } catch (error) {
+                    console.log(error)
                 }
-                this.link += this.addressOrder;
-                this.linkDirect += this.addressOrder + ',11z/data%3D!4m2!4m1!3e0!11m1!6b1?entry%3Dml&apn=com.google.android.apps.maps&amv=914018424&isi=585027354&ibi=com.google.Maps&ius=comgooglemapsurl&utm_campaign=ml_promo&ct=ml-nav-nopromo-dr-nlu&mt=8&pt=9008&efr=1'
-                this.setState({
-                    isLoading: false
-                })
-            } catch (error) {
-                console.log(error)
+            }
+            else {
+                try {
+                    for (var i = 0; i < this.props.order.order.length; i += 1) {
+                        this.addressOrder = this.addressOrder + '/' + this.props.order.order[i].address.ViDo + ',' + this.props.order.order[i].address.KinhDo
+                    }
+
+                    this.link += this.addressOrder;
+                    console.log(this.link)
+                    this.linkDirect += this.addressOrder + ',11z/data%3D!4m2!4m1!3e0!11m1!6b1?entry%3Dml&apn=com.google.android.apps.maps&amv=914018424&isi=585027354&ibi=com.google.Maps&ius=comgooglemapsurl&utm_campaign=ml_promo&ct=ml-nav-nopromo-dr-nlu&mt=8&pt=9008&efr=1'
+                    this.setState({
+                        isLoading: false
+                    })
+                } catch (error) {
+                    console.log(error)
+                }
             }
         }
 
@@ -196,22 +198,16 @@ class MapScreens extends Component {
             ],
         );
     }
-    getcurrentlocal(){
-        // navigator.geolocation.getCurrentPosition((position)=>{
-        //     var lat = parseFloat(position.coords.latitude)
-        //     var long = parseFloat(position.coords.longitude)
-        //     console.log(lat,long)
-        // })
-    }
+    //Nó chạy render trước, m đã check cái redux đâu, nó vào nó tìm không thấy cái phần tử thứ tự nó ra lỗi đúng r
     async PutJson(str) {
         if (this.state.status == true) {
             let temp = { chuoidonhang: this.state.dataSource }
-            temp.chuoidonhang[this.state.index].donhang.TinhTrangDon = str
+            temp.chuoidonhang[this.props.stt.stt].donhang.TinhTrangDon = str
             let a = await JSON.stringify(temp)
             let data = {
                 Chuoi: a
             }
-            fetch('https://servertlcn.herokuapp.com/chuoigiaohang/' + this.state.chuoiId,
+            fetch('https://servertlcn.herokuapp.com/chuoigiaohang/' + this.props.chuoiid.chuoiid,
                 {
                     method: 'PUT',
                     body: JSON.stringify(data),
@@ -229,28 +225,36 @@ class MapScreens extends Component {
         }
     }
     renderElement() {
-        if (this.state.status == true) {
-            if (this.state.dataSource.length > 0) {
+        if (this.state.status == true && !this.state.isLoading && this.props.order.order.length > 0) {
+            if (this.props.order.order.length > 0) {
                 return (
                     <View style={styles.ThongTin}>
-                        <Text style={{ fontSize: 25 }}>{this.state.dataSource[this.state.index].reciver.name}</Text>
-                        <Text style={{ fontSize: 20 }}> {this.state.dataSource[this.state.index].reciver.sdt}</Text>
-                        <Text style={{ fontSize: 20 }}> {this.state.dataSource[this.state.index].donhang.TongTien} VND</Text>
+                        <Text style={{ fontSize: 25 }}>{this.props.order.order[this.props.stt.stt].reciver.name}</Text>
+                        <Text style={{ fontSize: 20 }}> {this.props.order.order[this.props.stt.stt].reciver.sdt}</Text>
+                        <Text style={{ fontSize: 20 }}> {this.props.order.order[this.props.stt.stt].donhang.TongTien} VND</Text>
                     </View>
                 )
             }
         }
         return null;
     }
+    //la phai check het ha qua t thay dau check
+    // hom qua check ben logictic dung r mak may reder dau thaycheck
+    //moi vao redux da co cai gi dau, no dang la cai mang rong, phai qua ben logictic no mới check rồi thêm data vào redux
     renderdiachi() {
-        if (this.state.status == true) {
-            <Text style={{ fontSize: 15, marginLeft: 2, marginRight: 2 }}> {this.state.dataSource[this.state.index].address.TenDiaChi}</Text>
+        console.log(store.getState())
+        if (this.state.status == true && !this.state.isLoading && this.props.order.order.length > 0) {
+            return (
+
+                <Text style={{ fontSize: 15, marginLeft: 2, marginRight: 2 }}> {this.props.order.order[this.props.stt.stt].address.TenDiaChi}</Text>
+            )
+
         }
     }
-    
+
     render() {
         if (this.state.status == true) {
-            if (!this.state.isLoading) {
+            if (this.state.isLoading == false) {
                 return (
                     <View style={{ flex: 1 }}>
                         <WebView
@@ -313,12 +317,12 @@ class MapScreens extends Component {
             }
         }
         return (
-            
-            <View style={{ flex: 1 ,justifyContent: "center",alignItems:"center" }}>
+
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
                 <View style={styles.logost}>
-                            <Logo openDrawerclick={() => { this.showmenu() }} />
+                    <Logo openDrawerclick={() => { this.showmenu() }} />
                 </View>
-                <Image source={require('../../Image/Image/NotFound.png')} style={styles.circleImageLayout}/>
+                <Image source={require('../../Image/Image/NotFound.png')} style={styles.circleImageLayout} />
             </View>
         );
     }
@@ -369,9 +373,9 @@ const styles = StyleSheet.create({
     },
     circleImageLayout: {
         position: "absolute",
-        height:300,
-        width:300
- 
+        height: 300,
+        width: 300
+
     },
     ThongTin: {
         flexDirection: "column",
@@ -420,5 +424,13 @@ const styles = StyleSheet.create({
     }
 })
 
+const mapStateToProps = (state) => {
+    return {
+        order: state.order,
+        chuoiid: state.chuoiid,
+        user: state.user,
+        stt: state.stt
+    };
+};
 
-export default MapScreens;
+export default connect(mapStateToProps, null)(MapScreens);

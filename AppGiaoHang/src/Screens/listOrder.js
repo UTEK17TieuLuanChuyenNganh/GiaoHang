@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Logo from '../Component/Logo';
@@ -9,6 +9,8 @@ import Icon1 from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-community/async-storage';
 import * as Animatable from 'react-native-animatable';
 import Accordion from 'react-native-collapsible/Accordion';
+
+let idShipper = 0
 class listOrder extends Component {
     _isMounted = true;
     constructor(props) {
@@ -17,7 +19,7 @@ class listOrder extends Component {
             dataSource: [],
             isLoading: true,
             soluong: 0,
-            user: [],
+            user: 0,
             content: [],
             activeSections: [],
             collapsed: true,
@@ -77,28 +79,49 @@ class listOrder extends Component {
                     {chuoitemp}
                 </Animatable.Text>
                 <TouchableOpacity onPress={() => {
-                    store.dispatch({
-                        type: 'ADDORDER',
-                        payload: chuoi
-                    })
-                     let data = {
-                         ShipperId : null
-                     }
-                     console.log(data)
-                     fetch('https://servertlcn.herokuapp.com/chuoigiaohang/'+ section.id,
-                         {
-                             method: 'PUT',
-                             body: JSON.stringify(data),
-                             headers: { 'Content-Type': 'application/json' }
-         
-                         })
-                         .then((response) => response.json())
-                         .then((responseJson) => {
-                             console.log(responseJson)
-                         })
-                         .catch((error) => {
-                             console.log(error);
-                         });
+
+                    let data = {
+                        ShipperId: idShipper
+                    }
+                    fetch('https://servertlcn.herokuapp.com/chuoigiaohang/' + idShipper + '/shipper',
+                        { method: 'GET' })
+                        .then(async (responseJson) => {
+                            responseJson = await responseJson.json()
+                            let a = responseJson.data
+                            if (responseJson.result != "failed") {
+                                Alert.alert("Bạn Đã Đăng Ký Chuỗi Trước Đó")
+                            }
+                            else {
+                                fetch('https://servertlcn.herokuapp.com/chuoigiaohang/' + section.id,
+                                    {
+                                        method: 'PUT',
+                                        body: JSON.stringify(data),
+                                        headers: { 'Content-Type': 'application/json' }
+                                    })
+                                    .then((response) => response.json())
+                                    .then((responseJson) => {
+                                        console.log(responseJson)
+                                        store.dispatch({
+                                            type: 'ADDORDER',
+                                            payload: chuoi
+
+                                        })
+                                        store.dispatch({
+                                            type: 'ADDCHUOI',
+                                            payload: section.id
+                                        })
+                                    })
+                                    .catch((error) => {
+                                        console.log(error);
+                                    });
+                            }
+
+
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        });
+
                 }} >
                     <View style={{ width: 60, height: 30, borderRadius: 100, backgroundColor: 'green', justifyContent: 'center', alignItems: 'center', margin: 5 }}>
                         <Text style={{ fontSize: 12, color: 'white' }}>Chọn</Text>
@@ -123,7 +146,7 @@ class listOrder extends Component {
     componentDidMount() {
         this.fetchData()
         this.checkUser()
-
+        idShipper = this.props.user.user
     }
     checkUser = async () => {
         try {
@@ -360,4 +383,11 @@ const styles = StyleSheet.create({
 
 
 })
-export default listOrder;
+
+const mapStateToProps = (state) => {
+    return {
+        user: state.user
+    };
+};
+
+export default connect(mapStateToProps, null)(listOrder);
