@@ -48,7 +48,7 @@ class MapScreens extends Component {
         await this.fetchData()
         await this.createLinkAddress()
     }
-    fetchData() {        
+    fetchData() {
         if (this.props.order.order.length > 0) {
             this.setState(
                 {
@@ -56,7 +56,7 @@ class MapScreens extends Component {
                     status: true
                 })
         }
-        else {            
+        else {
             return fetch('https://servertlcn.herokuapp.com/chuoigiaohang/' + this.props.user.user + '/shipper',
                 { method: 'GET' })
                 .then(async (responseJson) => {
@@ -75,7 +75,6 @@ class MapScreens extends Component {
                             type: 'ADDORDER',
                             payload: data.chuoidonhang
                         })
-                        console.log(this.props.order.order)
                         store.dispatch({
                             type: 'ADDCHUOI',
                             payload: responseJson.data.id
@@ -130,11 +129,24 @@ class MapScreens extends Component {
             console.warn(err)
         }
     }
-
+    checkIndex() {
+        if (this.state.status == true && !this.state.isLoading && this.props.order.order.length > 0) {
+            for (var i = 0; i < this.props.order.order.length; i++) {
+                if (this.props.order.order[i].donhang.TinhTrangDon == 'dang giao') {
+                    store.dispatch({
+                        type: 'ADDSTT',
+                        payload: i
+                    })
+                    break;
+                }
+            }
+        }
+    }
     componentDidMount() {
         this._isMounted = true;
         this.demo()
         this.requestLocationPermission();
+        this.checkIndex()
 
     }
     componentWillUnmount() {
@@ -168,7 +180,6 @@ class MapScreens extends Component {
                     }
 
                     this.link += this.addressOrder;
-                    console.log(this.link)
                     this.linkDirect += this.addressOrder + ',11z/data%3D!4m2!4m1!3e0!11m1!6b1?entry%3Dml&apn=com.google.android.apps.maps&amv=914018424&isi=585027354&ibi=com.google.Maps&ius=comgooglemapsurl&utm_campaign=ml_promo&ct=ml-nav-nopromo-dr-nlu&mt=8&pt=9008&efr=1'
                     this.setState({
                         isLoading: false
@@ -180,6 +191,30 @@ class MapScreens extends Component {
         }
 
     }
+    async nextOrder(){
+        var so=this.props.stt.stt
+        so+=1
+        var data=this.props.order.order
+        
+        if(this.props.order.order.length-so>=2){
+            data[so].donhang.TinhTrangDon = 'dang giao'
+            data[so+1].donhang.TinhTrangDon = 'chuan bi giao'}
+        else if(this.props.order.order.length-so>=1){
+            data[so].donhang.TinhTrangDon = 'dang giao'
+        }
+        else{
+            so-=1
+        }
+        await store.dispatch({
+                        type: 'ADDSTT',
+                        payload: so
+                    })
+            await store.dispatch({
+                      type: 'ADDORDER',
+                        payload: data
+                    })
+         
+    }
     Xacnhan() {
         Alert.alert(
             'Giao Hang',
@@ -187,12 +222,12 @@ class MapScreens extends Component {
             [
                 {
                     text: 'Thanh Cong',
-                    onPress: () => { this.PutJson('thanh cong') },
+                    onPress: () => { this.PutJson('thanh cong'), this.nextOrder() },
 
                 },
                 {
                     text: 'That Bai',
-                    onPress: () => { this.PutJson('that bai') },
+                    onPress: () => { this.PutJson('that bai'), this.nextOrder() },
 
                 },
             ],
@@ -201,7 +236,7 @@ class MapScreens extends Component {
     //Nó chạy render trước, m đã check cái redux đâu, nó vào nó tìm không thấy cái phần tử thứ tự nó ra lỗi đúng r
     async PutJson(str) {
         if (this.state.status == true) {
-            let temp = { chuoidonhang: this.state.dataSource }
+            let temp = { chuoidonhang: this.props.order.order }
             temp.chuoidonhang[this.props.stt.stt].donhang.TinhTrangDon = str
             let a = await JSON.stringify(temp)
             let data = {
@@ -217,7 +252,6 @@ class MapScreens extends Component {
                 .then((response) => response.json())
                 .then((responseJson) => {
                     this.forceUpdate();
-                    console.log(responseJson)
                 })
                 .catch((error) => {
                     console.log(error);
@@ -238,11 +272,8 @@ class MapScreens extends Component {
         }
         return null;
     }
-    //la phai check het ha qua t thay dau check
-    // hom qua check ben logictic dung r mak may reder dau thaycheck
-    //moi vao redux da co cai gi dau, no dang la cai mang rong, phai qua ben logictic no mới check rồi thêm data vào redux
+
     renderdiachi() {
-        console.log(store.getState())
         if (this.state.status == true && !this.state.isLoading && this.props.order.order.length > 0) {
             return (
 

@@ -1,15 +1,18 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Logo from '../Component/Logo';
 import { connect } from 'react-redux';
 import store from '../redux/store';
+
 class CheckStatus extends Component {
+    
     constructor(props) {
         super(props);
         this.state = {
-            order: []
+            order: [],
+            _isHoanTat:false
         }
     }
     showmenu = () => {
@@ -27,7 +30,28 @@ class CheckStatus extends Component {
                 color="red"
                 style={{ margin: 13 }} />)
     }
-    
+    CheckHoanTat(){
+        if(this.props.stt.stt==this.props.order.order.length-1){
+            this.setState({
+                _isHoanTat:true
+            })
+            Alert.alert("Xác Nhận Thành Công")
+        }
+        else Alert.alert("Đảm bảo rằng bạn đã giao hết đơn")
+    }
+    isHoanTat(){
+        if(this.state._isHoanTat){
+            return(<Icon name="check-circle"
+            size={30}
+            color="green"
+            style={{ margin: 13 }} />)
+        }
+        else
+            return (<Icon name="times-circle"
+                size={30}
+                color="red"
+                style={{ margin: 13 }} />)
+    }
     componentDidMount() {
         this.fetchData()
     }
@@ -84,7 +108,7 @@ class CheckStatus extends Component {
                             <View style={styles.BoxCheck}>
                                 {/* {this.props.order.order.length>0?
                                 <Text style={styles.detailaccount}>{this.props.order.order[0].address.TenDiaChi}</Text>: */}
-                                <Text style={styles.detailaccount}>Tiếp nhận chuỗi:</Text>
+                                <Text style={styles.detailaccount}>Tiếp nhận chuỗi</Text>
                                 {this.isTiepNhan()}
                             </View>
                             <View style={styles.BoxCheck}>
@@ -96,18 +120,15 @@ class CheckStatus extends Component {
                             </View>
                             <View style={styles.BoxCheck}>
                                 <Text style={styles.detailaccount}>Hoàn Tất</Text>
-                                <Icon name="times-circle"
-                                    size={30}
-                                    color="red"
-                                    style={{ margin: 13 }} />
+                                {this.isHoanTat()}
                             </View>
                         </View>
                         <TouchableOpacity style={{
                             justifyContent: 'center',
                             alignItems: 'center'
-                        }} >
+                        }} onPress={()=>{this.CheckHoanTat()}}>
                             <View style={styles.Buttonstyle}>
-                                <Text style={{ fontSize: 20, color: 'white' }}>Xác Nhận</Text>
+                                <Text style={{ fontSize: 20, color: 'white' }}>Xác Nhận Hoàn Tắt</Text>
                                 <Icon name="angle-double-right" size={25} color="white" />
                             </View>
                         </TouchableOpacity>
@@ -132,7 +153,7 @@ const styles = StyleSheet.create({
         margin: 5
     },
     Buttonstyle: {
-        width: 200,
+        width: 250,
         height: 40,
         borderRadius: 50,
         backgroundColor: 'blue',
@@ -158,7 +179,8 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
-        order: state.order
+        order: state.order,
+        stt:state.stt
     };
 };
 

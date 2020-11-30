@@ -1,21 +1,21 @@
-import {ADDUSER, CLEARUSER} from '../actionTypes';
+import {ADDCHUOI,CLEARCHUOI} from '../actionTypes';
 
 const initialState = {
-  user: 0,
+  chuoiid: 0
 };
 
 export default function (state = initialState, action) {
   switch (action.type) {
-    case ADDUSER: {
+    case ADDCHUOI: {
       return {
         ...state,
-        user: action.payload,
+        chuoiid: action.payload,
       };
     }
-    case CLEARUSER: {
+    case CLEARCHUOI: {
       return {
         ...state,
-        user: 0
+        chuoiid: 0
       };
     }
     default:

@@ -79,10 +79,15 @@ class listOrder extends Component {
                     {chuoitemp}
                 </Animatable.Text>
                 <TouchableOpacity onPress={() => {
-
+                    let temp = { chuoidonhang: chuoi }
+                    temp.chuoidonhang[0].donhang.TinhTrangDon = 'dang giao'
+                    temp.chuoidonhang[1].donhang.TinhTrangDon = 'chuan bi giao'
+                    let a =  JSON.stringify(temp)
                     let data = {
+                        Chuoi:a,
                         ShipperId: idShipper
                     }
+
                     fetch('https://servertlcn.herokuapp.com/chuoigiaohang/' + idShipper + '/shipper',
                         { method: 'GET' })
                         .then(async (responseJson) => {
@@ -103,7 +108,7 @@ class listOrder extends Component {
                                         console.log(responseJson)
                                         store.dispatch({
                                             type: 'ADDORDER',
-                                            payload: chuoi
+                                            payload: temp.chuoidonhang
 
                                         })
                                         store.dispatch({
