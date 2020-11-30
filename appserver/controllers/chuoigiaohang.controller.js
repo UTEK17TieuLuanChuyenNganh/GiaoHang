@@ -5,6 +5,8 @@ const createChuoiGiaoHang = async (req, res) => {
     let {
         Chuoi,
         SoLuong,
+        ThoiGianBatDau,
+        isShipped,
         ShipperId,
         BuuCucId,
     } = req.body;
@@ -12,12 +14,16 @@ const createChuoiGiaoHang = async (req, res) => {
         let newChuoiGiaoHang = await ChuoiGiaoHang.create({
             Chuoi,
             SoLuong,
+            ThoiGianBatDau,
+            isShipped,
             ShipperId,
             BuuCucId,
         }, {
             fields: [
                 "Chuoi",
                 "SoLuong",
+                "ThoiGianBatDau",
+                "isShipped",
                 "ShipperId",
                 "BuuCucId",]
         });
@@ -47,6 +53,8 @@ const updateChuoiGiaoHang = async (req, res) => {
     const {
         Chuoi,
         SoLuong,
+        ThoiGianBatDau,
+        isShipped,
         BuuCucId,
         ShipperId,
     } = req.body;
@@ -56,6 +64,8 @@ const updateChuoiGiaoHang = async (req, res) => {
                 'id',
                 'Chuoi',
                 'SoLuong',
+                'ThoiGianBatDau',
+                'isShipped',
                 'BuuCucId',
                 'ShipperId',
             ],
@@ -68,8 +78,10 @@ const updateChuoiGiaoHang = async (req, res) => {
                 await ChuoiGiaoHang.update({
                     Chuoi: Chuoi ? Chuoi : ChuoiGiaoHang.Chuoi,
                     SoLuong: SoLuong ? SoLuong : ChuoiGiaoHang.SoLuong,
+                    ThoiGianBatDau: ThoiGianBatDau ? ThoiGianBatDau : ChuoiGiaoHang.ThoiGianBatDau,
+                    isShipped: isShipped != ChuoiGiaoHang.isShipped ? isShipped : ChuoiGiaoHang.isShipped,
                     BuuCucId: BuuCucId ? BuuCucId : ChuoiGiaoHang.BuuCucId,
-                    ShipperId: ShipperId ? ShipperId : ChuoiGiaoHang.ShipperId,
+                    ShipperId: ShipperId ? ShipperId : null,
                 });
             });
             res.json({
@@ -199,6 +211,8 @@ const getAllChuoiGiaoHang = async (req, res) => {
                 'id',
                 'Chuoi',
                 'SoLuong',
+                'ThoiGianBatDau',
+                'isShipped',
                 'BuuCucId',
                 'ShipperId',
             ],
@@ -230,6 +244,8 @@ const getChuoiGiaoHangById = async (req, res) => {
                 'id',
                 'Chuoi',
                 'SoLuong',
+                'ThoiGianBatDau',
+                'isShipped',
                 'BuuCucId',
                 'ShipperId',
             ],
@@ -268,18 +284,21 @@ const getChuoiGiaoHangByIdShipper = async (req, res) => {
                 'id',
                 'Chuoi',
                 'SoLuong',
+                'ThoiGianBatDau',
+                'isShipped',
                 'BuuCucId',
                 'ShipperId',
             ],
             where: {
                 ShipperId: id,
+                isShipped: false
             },
             include: [{ all: true }],
         });
         if (ChuoiGiaoHangs.length > 0) {
             res.json({
                 result: 'ok',
-                data: ChuoiGiaoHangs[0],
+                data: ChuoiGiaoHangs,
                 message: "List ChuoiGiaoHang successfully"
             });
         } else {

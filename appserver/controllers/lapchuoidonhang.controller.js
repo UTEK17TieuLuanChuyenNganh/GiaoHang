@@ -10,8 +10,8 @@ const getDonhang = async (req, res) => {
     let {
         data, timeStart, plus
     } = req.body;
-    var mapData = data;    
-    var resultData = [];    
+    var mapData = data;
+    var resultData = [];
     //fetchData từ server python để lấy được các cụm đơn hàng được chia theo tỉ lệ khoảng cách
     //Hỗ trợ để tạo thành các đơn hàng chia cho shipper
     // let settings = {
@@ -47,7 +47,9 @@ const getDonhang = async (req, res) => {
 
             let dataPostChuoiInTime = {
                 Chuoi: JSON.stringify({ chuoidonhang: dataInTime }),
-                SoLuong: dataInTime.length
+                SoLuong: dataInTime.length,
+                ThoiGianBatDau: timeStart,
+                isShipped: false,
             }
             let chuoiData = await createChuoi(dataPostChuoiInTime);
             chuoiData = await chuoiData.json();
@@ -175,7 +177,8 @@ async function getDistance(listCoord) {
             },
             reciver: {
                 id: i.NguoiDung.id,
-                name: i.NguoiDung.HoTen
+                name: i.NguoiDung.HoTen,
+                SDT: i.NguoiDung.SDT
             },
             address: {
                 id: i.id,
