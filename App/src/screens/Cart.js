@@ -179,7 +179,7 @@ class Cart extends Component {
             address: this.state.address.TenDiaChi,
             shipping: shippingCost,
             items: items
-        }
+        }        
         dataOrder = {
             NgayDatHang: Date.now(),
             TienVanChuyen: shippingCost,
@@ -189,7 +189,7 @@ class Cart extends Component {
             NguoiDungId: this.props.user.user.id,
             DiaChiId: this.state.address.id
         }
-        dataListItems = listitems;
+        dataListItems = listitems;        
         this.setState({
             dataPayment: dataPayment,
             dataOrder: dataOrder,
@@ -197,11 +197,11 @@ class Cart extends Component {
             isLoading: false
         })
     }
-    async thanhtoanImplement() {
+    async thanhtoanImplement() {        
         if (this.state.dataSource.length > 0) {
             await this.thanhtoan();
-            if (this.state.dataPayment.items) {
-                this.props.navigation.navigate("Payment", { dataPayment: this.state.dataPayment, dataOrder: this.state.dataOrder, dataListItems: this.state.dataListItems });
+            if (this.state.dataPayment.items) {                
+                this.props.navigation.navigate("PaymentNotice", { dataPayment: this.state.dataPayment, dataOrder: this.state.dataOrder, dataListItems: this.state.dataListItems });
             }
             else {
                 console.log(this.state.dataPayment)
@@ -370,7 +370,7 @@ class Cart extends Component {
                             </View>
                             <TouchableOpacity onPress={() => { this.thanhtoanPress() }} >
                                 <View style={styles.checkoutButton}>
-                                    <Text style={styles.checkoutTitle}>Thanh Toán</Text>
+                                    <Text style={styles.checkoutTitle}>Đặt hàng</Text>
                                 </View>
                             </TouchableOpacity>
                         </View>
