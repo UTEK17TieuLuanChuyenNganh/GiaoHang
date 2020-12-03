@@ -10,15 +10,15 @@ class Profile extends Component {
         super(props);
         this.state = {
             isLoading: true,
-            
+
             dataSource: [],
-            user:0
+            user: 0
         }
     }
-    
+
     fetchData(id) {
         //console.log(this.state.user.Username)
-        return fetch('https://servertlcn.herokuapp.com/shipper/'+id,
+        return fetch('https://servertlcn.herokuapp.com/shipper/' + id,
             { method: 'GET' })
             .then(async (response) => {
                 let data = await response.json()
@@ -49,15 +49,15 @@ class Profile extends Component {
     renderElement() {
         let acc = this.state.dataSource
         return (
-                <View style={styles.Information}>
-                    <Text style={styles.detailaccount}>{(acc.NguoiDung.SinhNhat !== {}) ? acc.NguoiDung.SinhNhat.split('T')[0].trim() : ''}</Text>
-                    <Text style={styles.detailaccount}>{acc.NguoiDung.GioiTinh}</Text>
-                    <Text style={styles.detailaccount}>{acc.NguoiDung.Email}</Text>
-                    <Text style={styles.detailaccount}>{acc.NguoiDung.SDT}</Text>
-                    <Text style={styles.detailaccount}>{acc.CMND}</Text>
-                    <Text style={styles.detailaccount}>{acc.STK}</Text>
-                    <Text style={styles.detailaccount}>{acc.PhuongTienVanChuyen}</Text>
-                </View>
+            <View style={styles.Information}>
+                <Text style={styles.detailaccount}>{(acc.NguoiDung.SinhNhat !== {}) ? acc.NguoiDung.SinhNhat.split('T')[0].trim() : ''}</Text>
+                <Text style={styles.detailaccount}>{acc.NguoiDung.GioiTinh}</Text>
+                <Text style={styles.detailaccount}>{acc.NguoiDung.Email}</Text>
+                <Text style={styles.detailaccount}>{acc.NguoiDung.SDT}</Text>
+                <Text style={styles.detailaccount}>{acc.CMND}</Text>
+                <Text style={styles.detailaccount}>{acc.STK}</Text>
+                <Text style={styles.detailaccount}>{acc.PhuongTienVanChuyen}</Text>
+            </View>
         )
     }
     render() {
@@ -84,8 +84,9 @@ class Profile extends Component {
 
                             />
                         </View>
-                        <Image source={require('../../Image/Image/avaPro.jpg')}
-                            style={styles.circleImageLayout} />
+                        {/* <Image source={require('../../Image/Image/avaPro.jpg')}
+                            style={styles.circleImageLayout} /> */}
+                        <Image source={{ uri: `data:image/jpg;base64,${this.state.dataSource.NguoiDung.Avatar}` }} style={styles.circleImageLayout} />
                         <View style={styles.nameShipper}>
                             <Text style={{ fontSize: 30, fontWeight: 'bold', fontStyle: 'italic' }}>{this.state.dataSource.NguoiDung.HoTen}</Text>
                         </View>
@@ -151,7 +152,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginBottom: 10,
         fontWeight: 'bold'
-    },container: {
+    }, container: {
         flex: 1,
         justifyContent: "center"
     },

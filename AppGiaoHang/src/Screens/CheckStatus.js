@@ -65,7 +65,7 @@ class CheckStatus extends Component {
                 })
         }
         else {
-            return fetch('https://servertlcn.herokuapp.com/chuoigiaohang/' + this.state.user.id + '/shipper',
+            return fetch('https://servertlcn.herokuapp.com/chuoigiaohang/' + this.props.user.user + '/shipper',
                 { method: 'GET' })
                 .then(async (responseJson) => {
                     responseJson = await responseJson.json()
@@ -101,7 +101,7 @@ class CheckStatus extends Component {
     render() {
         return (
             <View style={styles.BackgroundScreens}>
-                <Logo openDrawerclick={() => { this.showmenu() }} />
+                <Logo openDrawerclick={() => { this.showmenu() }} title="Tình Trạng Giao Hàng" />
                 <View style={{ flex: 1 }}>
                     <View style={styles.top}>
                         <View>
@@ -113,10 +113,7 @@ class CheckStatus extends Component {
                             </View>
                             <View style={styles.BoxCheck}>
                                 <Text style={styles.detailaccount}>Đang Thực Hiện</Text>
-                                <Icon name="check-circle"
-                                    size={30}
-                                    color="green"
-                                    style={{ margin: 13 }} />
+                                {this.isTiepNhan()}
                             </View>
                             <View style={styles.BoxCheck}>
                                 <Text style={styles.detailaccount}>Hoàn Tất</Text>
@@ -180,7 +177,8 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
     return {
         order: state.order,
-        stt:state.stt
+        stt:state.stt,
+        user:state.user
     };
 };
 

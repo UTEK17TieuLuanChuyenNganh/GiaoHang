@@ -8,6 +8,7 @@ import MapScreens from './MapScreens';
 import DeprecatedViewPropTypes from 'react-native/Libraries/DeprecatedPropTypes/DeprecatedViewPropTypes';
 import { connect } from 'react-redux';
 import store from '../redux/store';
+import Logo from '../Component/Logo';
 class Logictics extends Component {
     _isMounted = true;
     constructor(props) {
@@ -21,26 +22,7 @@ class Logictics extends Component {
         }
     }
 
-    checkUser = async () => {
-        try {
-            const value = await AsyncStorage.getItem('user');
-            if (value !== null) {
-                let data = JSON.parse(value);
-                this.setState({
-                    user: data,
-                    //isLoading: false
-                })
-                this.fetchData()
-            }
-            else {
-                this.setState({
-                    isLoading: false
-                })
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    
     showmenu = () => {
         this.props.navigation.openDrawer();
     }
@@ -54,7 +36,7 @@ class Logictics extends Component {
                 })
         }
         else {
-            return fetch('https://servertlcn.herokuapp.com/chuoigiaohang/' + this.state.user.id + '/shipper',
+            return fetch('https://servertlcn.herokuapp.com/chuoigiaohang/' + this.props.user.user + '/shipper',
                 { method: 'GET' })
                 .then(async (responseJson) => {
                     responseJson = await responseJson.json()
@@ -87,7 +69,7 @@ class Logictics extends Component {
         }
     }
     componentDidMount() {
-        this.checkUser()
+        this.fetchData()
     }
     renderSoLuong() {
         return (
@@ -146,20 +128,7 @@ class Logictics extends Component {
         }
         return (
             <View style={styles.BackgroundScreens}>
-                <View style={styles.logo}>
-                    <Icon.Button name='bars'
-                        backgroundColor="rgba(0.0, 0.0, 0.0, 0.0)"
-                        onPress={this.showmenu}
-                        size={25}
-                    >
-                    </Icon.Button>
-                    <Icon1.Button
-                        name='retweet'
-                        backgroundColor="rgba(0.0, 0.0, 0.0, 0.0)"
-                        onPress={() => { }}
-                        size={25}
-                    />
-                </View>
+                <Logo openDrawerclick={() => { this.showmenu() }} title="Chuỗi Đơn Hàng"/>
                 <View style={{ flex: 1 }}>
                     <View style={styles.top}>
 
@@ -262,7 +231,8 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
-        order: state.order
+        order: state.order,
+        user:state.user
     };
 };
 

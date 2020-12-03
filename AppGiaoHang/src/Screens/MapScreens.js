@@ -41,12 +41,13 @@ class MapScreens extends Component {
             order: [],
             index: 0,
             status: false,
-            stt: 0
+            stt: 0,
+            beginaddr: ""
         }
     }
     async demo() {
         await this.fetchData()
-        await this.createLinkAddress()
+        await this.requestLocationPermission()
     }
     fetchData() {
         if (this.props.order.order.length > 0) {
@@ -62,7 +63,6 @@ class MapScreens extends Component {
                 .then(async (responseJson) => {
                     responseJson = await responseJson.json()
                     //console.log(responseJson.data )
-
                     let data = responseJson.data.Chuoi
                     data = await JSON.parse(data)
                     if (this._isMounted) {
@@ -116,7 +116,10 @@ class MapScreens extends Component {
                 console.log("You can use the location");
                 await navigator.geolocation.getCurrentPosition(
                     (position) => {
-                        adrr1 = position.coords.longitude.toFixed(7) + "," + position.coords.latitude.toFixed(7);
+                        this.setState({
+                            beginaddr: position.coords.longitude.toFixed(7) + "," + position.coords.latitude.toFixed(7)
+                        })
+                        this.createLinkAddress()
                     },
                     (error) => console.log(error),
                     { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
@@ -144,13 +147,14 @@ class MapScreens extends Component {
     }
     componentDidMount() {
         this._isMounted = true;
-        this.demo()
-        this.requestLocationPermission();
-        this.checkIndex()
-
+        this._subscribe = this.props.navigation.addListener('focus', () => {
+            this.demo();
+            this.checkIndex()
+        });
     }
     componentWillUnmount() {
         this._isMounted = false;
+        this.props.navigation.removeListener(this._subscribe);
     }
     addressOrder = ''
     link = 'https://www.google.com/maps/dir'
@@ -165,7 +169,7 @@ class MapScreens extends Component {
         if (this.state.status == true && !this.state.isLoading && this.props.order.order.length > 0) {
             if (this.props.order.order.length < 2) {
                 try {
-                    this.link += "/" + adrr1 + "/" + this.props.order.order[0].address.ViDo + ',' + this.props.order.order[0].address.KinhDo
+                    this.link += "/" + this.state.beginaddr + "/" + this.props.order.order[0].address.ViDo + ',' + this.props.order.order[0].address.KinhDo
                     this.setState({
                         isLoading: false
                     })
@@ -191,29 +195,30 @@ class MapScreens extends Component {
         }
 
     }
-    async nextOrder(){
-        var so=this.props.stt.stt
-        so+=1
-        var data=this.props.order.order
-        
-        if(this.props.order.order.length-so>=2){
+    async nextOrder() {
+        var so = this.props.stt.stt
+        so += 1
+        var data = this.props.order.order
+
+        if (this.props.order.order.length - so >= 2) {
             data[so].donhang.TinhTrangDon = 'dang giao'
-            data[so+1].donhang.TinhTrangDon = 'chuan bi giao'}
-        else if(this.props.order.order.length-so>=1){
+            data[so + 1].donhang.TinhTrangDon = 'chuan bi giao'
+        }
+        else if (this.props.order.order.length - so >= 1) {
             data[so].donhang.TinhTrangDon = 'dang giao'
         }
-        else{
-            so-=1
+        else {
+            so -= 1
         }
         await store.dispatch({
-                        type: 'ADDSTT',
-                        payload: so
-                    })
-            await store.dispatch({
-                      type: 'ADDORDER',
-                        payload: data
-                    })
-         
+            type: 'ADDSTT',
+            payload: so
+        })
+        await store.dispatch({
+            type: 'ADDORDER',
+            payload: data
+        })
+
     }
     Xacnhan() {
         Alert.alert(
@@ -233,11 +238,31 @@ class MapScreens extends Component {
             ],
         );
     }
-    //Nó chạy render trước, m đã check cái redux đâu, nó vào nó tìm không thấy cái phần tử thứ tự nó ra lỗi đúng r
     async PutJson(str) {
         if (this.state.status == true) {
             let temp = { chuoidonhang: this.props.order.order }
             temp.chuoidonhang[this.props.stt.stt].donhang.TinhTrangDon = str
+
+            var so = this.props.stt.stt
+            so += 1
+            if (this.props.order.order.length - so >= 2) {
+                temp.chuoidonhang[so].donhang.TinhTrangDon = 'dang giao'
+                temp.chuoidonhang[so + 1].donhang.TinhTrangDon = 'chuan bi giao'
+            }
+            else if (this.props.order.order.length - so >= 1) {
+                temp.chuoidonhang[so].donhang.TinhTrangDon = 'dang giao'
+            }
+            else {
+                so -= 1
+            }
+            await store.dispatch({
+                type: 'ADDSTT',
+                payload: so
+            })
+            await store.dispatch({
+                type: 'ADDORDER',
+                payload: temp.chuoidonhang
+            })
             let a = await JSON.stringify(temp)
             let data = {
                 Chuoi: a
@@ -256,6 +281,7 @@ class MapScreens extends Component {
                 .catch((error) => {
                     console.log(error);
                 });
+            
         }
     }
     renderElement() {
@@ -351,7 +377,7 @@ class MapScreens extends Component {
 
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
                 <View style={styles.logost}>
-                    <Logo openDrawerclick={() => { this.showmenu() }} />
+                    <Logo openDrawerclick={() => { this.showmenu() }} title="Bản Đồ" />
                 </View>
                 <Image source={require('../../Image/Image/NotFound.png')} style={styles.circleImageLayout} />
             </View>
