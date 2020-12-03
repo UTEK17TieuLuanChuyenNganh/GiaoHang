@@ -6,7 +6,8 @@ import {
     TouchableOpacity,
     StyleSheet,
     Alert,
-    ActivityIndicator
+    ActivityIndicator,
+    Image
 } from 'react-native';
 import { Base64 } from 'js-base64';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -71,7 +72,10 @@ class Login extends Component {
         
         return (
             <View style={styles.BackgroundScreens}>
-                <View style={{ flex: 1 / 4 }}></View>
+                <View style={{ flex: 1 / 4,justifyContent: "center",alignItems: "center", }}>
+                <Image source={require('../../Image/Image/Logo2.png')}
+          style={styles.ImageLayout}/>
+                </View>
                 <View style={styles.top}>
                     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                         <Text style={{ marginBottom: 10, fontSize: 40 }}>Đăng Nhập</Text>
@@ -126,6 +130,11 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 20,
         flex: 1,
         justifyContent: 'flex-end'
-    }
+    },
+    ImageLayout: {
+        width: 100,
+        height: 100,
+        
+    },
 })
 export default Login;

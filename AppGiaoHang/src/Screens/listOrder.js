@@ -9,7 +9,6 @@ import Icon1 from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-community/async-storage';
 import * as Animatable from 'react-native-animatable';
 import Accordion from 'react-native-collapsible/Accordion';
-
 let idShipper = 0
 class listOrder extends Component {
     _isMounted = true;
@@ -272,20 +271,7 @@ class listOrder extends Component {
         }
         return (
             <View style={styles.BackgroundScreens}>
-                <View style={styles.logo}>
-                    <Icon.Button name='bars'
-                        backgroundColor="rgba(0.0, 0.0, 0.0, 0.0)"
-                        onPress={this.showmenu}
-                        size={25}
-                    >
-                    </Icon.Button>
-                    <Icon1.Button
-                        name='retweet'
-                        backgroundColor="rgba(0.0, 0.0, 0.0, 0.0)"
-                        onPress={() => { }}
-                        size={25}
-                    />
-                </View>
+                <Logo openDrawerclick={() => { this.showmenu() }} title="Đăng Ký Giao Hàng"/>
                 <View style={{ flex: 1 }}>
                     <View style={styles.top}>
                         {this.renderSoLuong()}
