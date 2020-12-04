@@ -216,9 +216,10 @@ const getAllChuoiGiaoHang = async (req, res) => {
                 'BuuCucId',
                 'ShipperId',
             ],
-            // where: {
-            //     isDisable: false
-            // }
+            where: {
+                ShipperId: null,
+                isShipped: false
+            }
         });
         res.json({
             result: 'ok',
