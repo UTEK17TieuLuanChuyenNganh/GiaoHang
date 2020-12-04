@@ -63,22 +63,38 @@ class MapScreens extends Component {
                 .then(async (responseJson) => {
                     responseJson = await responseJson.json()
                     //console.log(responseJson.data )
-                    let data = responseJson.data.Chuoi
-                    data = await JSON.parse(data)
                     if (this._isMounted) {
+                        if (responseJson.data.length > 0) {
+                            let data = responseJson.data[0].Chuoi
+                            data = await JSON.parse(data)
+                            this.setState(
+                                {
+                                    isLoading: false,
+                                    status: true
+                                })
+                            store.dispatch({
+                                type: 'ADDORDER',
+                                payload: data.chuoidonhang
+                            })
+                            store.dispatch({
+                                type: 'ADDCHUOI',
+                                payload: responseJson.data.id
+                            })
+                        }
+                        else {
+                            this.setState(
+                                {
+                                    isLoading: true,
+                                    status: false
+                                })
+                        }
+                    }
+                    else {
                         this.setState(
                             {
-                                isLoading: false,
-                                status: true
+                                isLoading: true,
+                                status: false
                             })
-                        store.dispatch({
-                            type: 'ADDORDER',
-                            payload: data.chuoidonhang
-                        })
-                        store.dispatch({
-                            type: 'ADDCHUOI',
-                            payload: responseJson.data.id
-                        })
                     }
 
                 })
@@ -227,12 +243,12 @@ class MapScreens extends Component {
             [
                 {
                     text: 'Thanh Cong',
-                    onPress: () => { this.PutJson('thanh cong'), this.nextOrder() },
+                    onPress: () => { this.PutJson('thanh cong') },
 
                 },
                 {
                     text: 'That Bai',
-                    onPress: () => { this.PutJson('that bai'), this.nextOrder() },
+                    onPress: () => { this.PutJson('that bai') },
 
                 },
             ],
@@ -265,7 +281,8 @@ class MapScreens extends Component {
             })
             let a = await JSON.stringify(temp)
             let data = {
-                Chuoi: a
+                Chuoi: a,
+                ShipperId: this.props.user.user
             }
             fetch('https://servertlcn.herokuapp.com/chuoigiaohang/' + this.props.chuoiid.chuoiid,
                 {
@@ -281,7 +298,7 @@ class MapScreens extends Component {
                 .catch((error) => {
                     console.log(error);
                 });
-            
+
         }
     }
     renderElement() {
@@ -290,7 +307,7 @@ class MapScreens extends Component {
                 return (
                     <View style={styles.ThongTin}>
                         <Text style={{ fontSize: 25 }}>{this.props.order.order[this.props.stt.stt].reciver.name}</Text>
-                        <Text style={{ fontSize: 20 }}> {this.props.order.order[this.props.stt.stt].reciver.sdt}</Text>
+                        <Text style={{ fontSize: 20 }}> {this.props.order.order[this.props.stt.stt].reciver.SDT}</Text>
                         <Text style={{ fontSize: 20 }}> {this.props.order.order[this.props.stt.stt].donhang.TongTien} VND</Text>
                     </View>
                 )
@@ -373,15 +390,17 @@ class MapScreens extends Component {
                 );
             }
         }
-        return (
+        else {
+            return (
 
-            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                <View style={styles.logost}>
-                    <Logo openDrawerclick={() => { this.showmenu() }} title="Bản Đồ" />
+                <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                    <View style={styles.logost}>
+                        <Logo openDrawerclick={() => { this.showmenu() }} title="Bản Đồ" />
+                    </View>
+                    <Image source={require('../../Image/Image/NotFound.png')} style={styles.circleImageLayout} />
                 </View>
-                <Image source={require('../../Image/Image/NotFound.png')} style={styles.circleImageLayout} />
-            </View>
-        );
+            );
+        }
     }
 
 }
