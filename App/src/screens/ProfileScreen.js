@@ -82,7 +82,7 @@ class ProfileScreen extends Component {
             </View>
             <View style={styles.textContainer}>
               <Text style={styles.welcomeText}>Chào mừng bạn đến với TLCN</Text>
-              <Text style={styles.authText}>{this.state.user.Username}</Text>
+              <Text style={styles.authText}>{this.state.user.HoTen}</Text>
             </View>
             <FontAwesome name="angle-right" size={26} color="#1e88e5" />
           </View>
@@ -108,19 +108,22 @@ class ProfileScreen extends Component {
   render() {
     if (this.state.isLoading) {
       return (
-        <ActivityIndicator animating={true} size="large" color="#0000ff" />
+        <View style={styles.screenContainer}>
+          <StatusBar barStyle="light-content" />
+          <HeaderComponent title="Cá nhân" />
+          <View style={{ marginTop: 200, flexDirection: "column", alignItems: "center" }}>
+            <ActivityIndicator size={70} color="#0000ff" />
+            <Text style={{ fontSize: 20, color: "#0000ff" }}>Loading...</Text>
+          </View>
+        </View>
       );
     }
     return (
       <View style={styles.screenContainer}>
         <StatusBar barStyle="light-content" />
-        {/*  */}
         <HeaderComponent title="Cá nhân" />
-        {/*  */}
-        {/* <TouchableOpacity> */}
         <View style={styles.bodyContainer}>
           {this.renderUser()}
-          {/*  */}
           <View style={styles.divider} />
           <ProfileItem
             user={this.state.user}
@@ -147,11 +150,8 @@ class ProfileScreen extends Component {
             navigation={this.props.navigation}
             icon="heart-outline"
             name="Sản phẩm yêu thích" />
-          {/*  */}
           <View style={styles.divider} />
           <ProfileItem navigation={this.props.navigation} user={this.state.user} name="Ưu đãi" />
-          {/* <ProfileItem navigation={this.props.navigation} name="Cài đặt" /> */}
-          {/*  */}
           <View style={styles.divider} />
           <ProfileItem navigation={this.props.navigation} user={this.state.user} icon="headphones" name="Hỗ trợ" />
           <TouchableOpacity onPress={() => { this.logoutPress() }}>

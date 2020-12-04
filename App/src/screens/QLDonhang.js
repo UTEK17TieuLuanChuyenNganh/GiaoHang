@@ -313,22 +313,28 @@ class QLDonhang extends Component {
         switch (tinhtrang) {
             case null:
                 return (
-                    <View style={{flexDirection:"row"}}>
+                    <View style={{ flexDirection: "row" }}>
                         <Text style={styles.detailaccount1}>Đang chờ   </Text>
                         <Icon name="info-circle" size={30} color="blue" />
                     </View>);
             case 'dagiao':
                 return (
-                    <View style={{flexDirection:"row"}}>
+                    <View style={{ flexDirection: "row" }}>
                         <Text style={styles.detailaccount1}>Đã giao</Text>
                         <Icon name="check-circle" size={30} color="green" />
-                    </View>);                
+                    </View>);
         }
     }
     render() {
         if (this.state.isLoading) {
             return (
-                <ActivityIndicator animating={true} size="large" color="#0000ff" />
+                <View style={styles.BackgroundScreens}>
+                    <Header title="Quản lý đơn hàng" />
+                    <View style={{ marginTop: 200, flexDirection: "column", alignItems: "center" }}>
+                        <ActivityIndicator size={70} color="#0000ff" />
+                        <Text style={{ fontSize: 20, color: "#0000ff" }}>Loading...</Text>
+                    </View>
+                </View>
             );
         }
         return (

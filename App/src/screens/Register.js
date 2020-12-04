@@ -15,6 +15,7 @@ class Register extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            isLoading: false,
             HoTen: "",
             SinhNhat: "",
             GioiTinh: "",
@@ -25,7 +26,6 @@ class Register extends Component {
             Email: "",
             SDT: "",
             isVisible: false,
-            // displayCalendar: "flex",
             styleContent: "center"
         }
     }
@@ -50,56 +50,82 @@ class Register extends Component {
                         },
                     ],
                 );
+                this.setState({
+                    isLoading: false
+                })
             })
             .catch((error) => {
                 console.log(error);
             });
     }
-    fetchData() {
-        if (this.state.Password.trim() != "" && this.state.HoTen != ""
-            && this.state.Username != "" && this.state.Password == this.state.ConfirmPassword) {
-            let encryptedPassword = Base64.encode(this.state.Password);;
-            let data = {
-                HoTen: this.state.HoTen,
-                SinhNhat: this.state.SinhNhat,
-                GioiTinh: this.state.GioiTinh,
-                Username: this.state.Username,
-                Password: encryptedPassword,
-                Avatar: this.state.Avatar,
-                Email: this.state.Email,
-                SDT: this.state.SDT,
-            }
-            fetch('https://servertlcn.herokuapp.com/nguoidung/' + this.state.Username + '/username',
-                {
-                    method: 'GET',
-                })
-                .then((response) => response.json())
-                .then((responseJson) => {
-                    if (responseJson.result == "ok") {
-                        Alert.alert(
-                            'Đăng Ký',
-                            'Username đã tồn tại!',
-                            [
-                                {
-                                    text: 'OK',
-                                    onPress: () => { },
+    async fetchData() {
+        await this.setState({
+            isLoading: true
+        })
+        if (this.state.Password == this.state.ConfirmPassword) {
+            if (this.state.Password.trim() != "" && this.state.HoTen != ""
+                && this.state.Username != "") {
+                let encryptedPassword = Base64.encode(this.state.Password);;
+                let data = {
+                    HoTen: this.state.HoTen,
+                    SinhNhat: this.state.SinhNhat,
+                    GioiTinh: this.state.GioiTinh,
+                    Username: this.state.Username,
+                    Password: encryptedPassword,
+                    Avatar: this.state.Avatar,
+                    Email: this.state.Email,
+                    SDT: this.state.SDT,
+                }
+                fetch('https://servertlcn.herokuapp.com/nguoidung/' + this.state.Username + '/username',
+                    {
+                        method: 'GET',
+                    })
+                    .then((response) => response.json())
+                    .then((responseJson) => {
+                        if (responseJson.result == "ok") {
+                            Alert.alert(
+                                'Đăng Ký',
+                                'Username đã tồn tại!',
+                                [
+                                    {
+                                        text: 'OK',
+                                        onPress: () => { },
 
-                                },
-                            ],
-                        );
-                    }
-                    else {
-                        this.regist(data)
-                    }
+                                    },
+                                ],
+                            );
+                            this.setState({
+                                isLoading: false
+                            })
+                        }
+                        else {
+                            this.regist(data)
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            }
+            else {
+                Alert.alert(
+                    'Đăng Ký',
+                    'Thiếu thông tin!',
+                    [
+                        {
+                            text: 'OK',
+                            onPress: () => { },
+
+                        },
+                    ],
+                );
+                this.setState({
+                    isLoading: false
                 })
-                .catch((error) => {
-                    console.log(error);
-                });
-        }
-        else {
+            }
+        } else {
             Alert.alert(
                 'Đăng Ký',
-                'Thiếu thông tin!',
+                'Mật khẩu xác nhận không chính xác!',
                 [
                     {
                         text: 'OK',
@@ -108,6 +134,9 @@ class Register extends Component {
                     },
                 ],
             );
+            this.setState({
+                isLoading: false
+            })
         }
     }
     setData = async (data) => {
@@ -260,12 +289,14 @@ class Register extends Component {
                         </View>
                     </View>
                 </ScrollView>
-                <TouchableOpacity style={{ marginBottom: 10, justifyContent: 'center', alignItems: 'center' }}
-                    onPress={() => { this.fetchData() }}>
-                    <View style={styles.SaveStyle}>
-                        <Text style={{ fontSize: 35, color: 'white' }}>Đăng ký</Text>
-                    </View>
-                </TouchableOpacity>
+                {this.state.isLoading ?
+                    <ActivityIndicator animating={true} size="large" color="#0000ff" /> :
+                    <TouchableOpacity style={{ marginBottom: 10, justifyContent: 'center', alignItems: 'center' }}
+                        onPress={() => { this.fetchData() }}>
+                        <View style={styles.SaveStyle}>
+                            <Text style={{ fontSize: 35, color: 'white' }}>Đăng ký</Text>
+                        </View>
+                    </TouchableOpacity>}
             </View>
         );
     }

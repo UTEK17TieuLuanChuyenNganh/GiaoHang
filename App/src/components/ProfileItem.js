@@ -35,6 +35,9 @@ class ProfileItem extends Component {
                     this.props.navigation.navigate("QLDH"); break;
                 case "Sản phẩm đã mua":
                     this.props.navigation.navigate("DSSP"); break;
+                case "Thông tin cá nhân":
+                    this.props.navigation.navigate("TTCN"); break;
+             
             }
         }
         else return;

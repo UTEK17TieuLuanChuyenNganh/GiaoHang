@@ -11,7 +11,7 @@ import QLDonhang from './QLDonhang';
 import DSSanphamdamua from './DSSanphamdamua';
 import Login from './Login';
 import ProfileScreen from './ProfileScreen';
-import TabHomever2 from './TabHomever2';
+import Profile from './Profile';
 import Payment from './Payment';
 import Register from './Register';
 import PaymentNotice from './PaymentNotice';
@@ -26,10 +26,10 @@ class HomeScreen extends Component {
                         headerShown: false
                     }}>
                     <Stack.Screen name='TabHome' component={TabHome} />
-                    <Stack.Screen name='TabHomeVer2' component={TabHomever2} />
                     <Stack.Screen name='Cart' component={Cart} />
                     <Stack.Screen name='ProductDetail' component={ProductDetail} />
                     <Stack.Screen name='NewAddress' component={NewAddress} />
+                    <Stack.Screen name='TTCN' component={Profile} />
                     <Stack.Screen name='ProfileItem' component={ProfileItem} />
                     <Stack.Screen name='ProfileScreen' component={ProfileScreen} />
                     <Stack.Screen name='QLDH' component={QLDonhang} />

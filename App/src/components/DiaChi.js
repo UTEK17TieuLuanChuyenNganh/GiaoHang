@@ -47,29 +47,56 @@ class DiaChi extends Component {
     componentWillUnmount() {
         this._isMounted = false;
     }
-    updateAddressTime(id) {        
+    updateAddressTime(id) {
         this.props.close();
         this.props.params.navigation.navigate("UpdateAddressTime", { id: id })
     }
     //Chose Address 
     addAddressToAsyncStore = async (data) => {
         try {
-            let flag = true
+            let flagExist = true
+            let flagTime = true
             await AsyncStorage.setItem(
                 'address', JSON.stringify(data)
             );
             let addressData = this.props.address.address;
             addressData.forEach(element => {
                 if (element.id == data.id) {
-                    flag = false;
+                    flagExist = false;
+                    return;
+                }
+                console.log(element)
+                if (element.ThoiGianKetThuc.split(":")[0] > data.ThoiGianBatDau.split(":")[0]) {
+                    flagTime = false;
                     return;
                 }
             });
-            if (flag == true) {
-                if (addressData.length >= 3) {
+            if (flagExist) {
+                if (flagTime) {
+                    if (addressData.length >= 3) {
+                        Alert.alert(
+                            'Chọn địa chỉ',
+                            'Bạn đã chọn 3 địa chỉ rồi!',
+                            [
+                                {
+                                    text: 'Xác nhận',
+                                },
+                            ],
+                        );
+                    }
+                    else {
+                        addressData.push(data);
+                        store.dispatch({
+                            type: 'CHOSEADDRESS',
+                            payload: addressData
+                        })
+                    }
+                }
+                else
+                {                    
                     Alert.alert(
                         'Chọn địa chỉ',
-                        'Bạn đã chọn 3 địa chỉ rồi!',
+                        'Khung giờ không phù hợp - Trùng khung giờ của địa chỉ khác',
                         [
                             {
                                 text: 'Xác nhận',
@@ -77,22 +104,15 @@ class DiaChi extends Component {
                         ],
                     );
                 }
-                else {
-                    addressData.push(data);
-                    store.dispatch({
-                        type: 'CHOSEADDRESS',
-                        payload: addressData
-                    })
-                }
             }
             else {
                 Alert.alert(
                     'Chọn địa chỉ',
                     'Bạn đã chọn địa này chỉ rồi!',
-                    [                        
+                    [
                         {
                             text: 'Xác nhận',
-                        },                        
+                        },
                     ],
                 );
             }
@@ -100,10 +120,12 @@ class DiaChi extends Component {
             console.log(error);
         }
     }
-    async choseAddress(id, TenDiaChi) {
+    async choseAddress(item) {
         let data = {
-            id: id,
-            TenDiaChi: TenDiaChi
+            id: item.id,
+            TenDiaChi: item.TenDiaChi,
+            ThoiGianBatDau: item.ThoiGianBatDau,
+            ThoiGianKetThuc: item.ThoiGianKetThuc,
         }
         await this.addAddressToAsyncStore(data)
         this.props.close();
@@ -120,7 +142,7 @@ class DiaChi extends Component {
                 },
                 {
                     text: 'Xác nhận',
-                    onPress: () => { this.choseAddress(id, TenDiaChi) },
+                    onPress: () => { this.choseAddress(id) },
                 },
                 {
                     text: 'Cập nhật',
@@ -134,7 +156,7 @@ class DiaChi extends Component {
             <View>
                 {this.state.dataSource.map((e, id) => (
                     <View key={id.toString()}>
-                        <TouchableOpacity onPress={() => { this.clickMe(e.id, e.TenDiaChi) }}>
+                        <TouchableOpacity onPress={() => { this.clickMe(e) }}>
                             <View style={styles.Adress}>
                                 <View style={styles.adddressContainer}>
                                     <Text style={styles.title}>

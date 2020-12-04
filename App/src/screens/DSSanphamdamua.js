@@ -334,9 +334,8 @@ class DSSanphamdamua extends Component {
             </ScrollView>
         );
     }
-    renderTinhTrang(tinhtrang){
-        switch(tinhtrang)
-        {
+    renderTinhTrang(tinhtrang) {
+        switch (tinhtrang) {
             case undefined:
                 return <Icon name="info-circle" size={30} color="blue" />
             case 'dagiao':
@@ -379,7 +378,13 @@ class DSSanphamdamua extends Component {
     render() {
         if (this.state.isLoading) {
             return (
-                <ActivityIndicator animating={true} size="large" color="#0000ff" />
+                <View style={styles.BackgroundScreens}>
+                    <Header title="Sản phẩm đã mua" />
+                    <View style={{ marginTop: 200, flexDirection: "column", alignItems: "center" }}>
+                        <ActivityIndicator size={70} color="#0000ff" />
+                        <Text style={{ fontSize: 20, color: "#0000ff" }}>Loading...</Text>
+                    </View>
+                </View>
             );
         }
         return (

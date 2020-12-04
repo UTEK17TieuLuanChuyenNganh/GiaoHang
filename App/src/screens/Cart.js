@@ -75,7 +75,7 @@ class Cart extends Component {
                 },
                 {
                     text: 'Xoá khỏi danh sách',
-                    onPress: () => {this.removeChosenAddress(id)},
+                    onPress: () => { this.removeChosenAddress(id) },
                 }
             ],
         );
@@ -84,7 +84,7 @@ class Cart extends Component {
         let addressData = this.props.address.address
         addressData.forEach(element => {
             if (element.id === id) {
-                addressData.splice(addressData.indexOf(element),1);
+                addressData.splice(addressData.indexOf(element), 1);
                 return;
             }
         });
@@ -179,7 +179,7 @@ class Cart extends Component {
             address: this.state.address.TenDiaChi,
             shipping: shippingCost,
             items: items
-        }        
+        }
         dataOrder = {
             NgayDatHang: Date.now(),
             TienVanChuyen: shippingCost,
@@ -189,7 +189,7 @@ class Cart extends Component {
             NguoiDungId: this.props.user.user.id,
             DiaChiId: this.state.address.id
         }
-        dataListItems = listitems;        
+        dataListItems = listitems;
         this.setState({
             dataPayment: dataPayment,
             dataOrder: dataOrder,
@@ -197,10 +197,10 @@ class Cart extends Component {
             isLoading: false
         })
     }
-    async thanhtoanImplement() {        
+    async thanhtoanImplement() {
         if (this.state.dataSource.length > 0) {
             await this.thanhtoan();
-            if (this.state.dataPayment.items) {                
+            if (this.state.dataPayment.items) {
                 this.props.navigation.navigate("PaymentNotice", { dataPayment: this.state.dataPayment, dataOrder: this.state.dataOrder, dataListItems: this.state.dataListItems });
             }
             else {
@@ -213,7 +213,7 @@ class Cart extends Component {
             if (this.state.address.TenDiaChi) {
                 Alert.alert(
                     'Thanh toán',
-                    'Xác nhận thanh toán ?',
+                    'Xác nhận đặt hàng ?',
                     [
                         {
                             text: 'Hủy',
@@ -384,7 +384,13 @@ class Cart extends Component {
     render() {
         if (this.state.isLoading) {
             return (
-                <ActivityIndicator animating={true} size="large" color="#0000ff" />
+                <View style={styles.wrapper}>
+                    <HeaderComponent title='Giỏ Hàng' />
+                    <View style={{ marginTop: 200, flexDirection: "column", alignItems: "center" }}>
+                        <ActivityIndicator size={70} color="#0000ff" />
+                        <Text style={{ fontSize: 20, color: "#0000ff" }}>Loading...</Text>
+                    </View>
+                </View>
             );
         }
         return (

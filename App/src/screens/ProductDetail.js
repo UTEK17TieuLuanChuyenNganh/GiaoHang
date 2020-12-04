@@ -64,7 +64,13 @@ class ProductDetail extends Component {
         } = styles;
         if (this.state.isLoading) {
             return (
-                <ActivityIndicator animating={true} size="large" color="#0000ff" />
+                <View style={wrapper}>
+                    <HeaderComponent title="Chi tiết sản phẩm" />
+                    <View style={{ marginTop: 200, flexDirection: "column", alignItems: "center" }}>
+                        <ActivityIndicator size={70} color="#0000ff" />
+                        <Text style={{ fontSize: 20, color: "#0000ff" }}>Loading...</Text>
+                    </View>
+                </View>
             );
         }
         return (
@@ -81,24 +87,16 @@ class ProductDetail extends Component {
                         <ScrollView style={{ flexDirection: 'row', padding: 10, height: swiperHeight }} horizontal >
                             <Image source={{ uri: `data:image/jpg;base64,${this.state.dataSource.Hinh}` }} style={styles.itemImage} />
                         </ScrollView>
+                        <Text style={[textBlack, { fontSize: 30 }]}>{this.state.dataSource.TenSanPham}</Text>
                     </View>
                     <View style={footer}>
-                        <View style={titleContainer}>
-                            <Text style={textMain}>
-                                <Text style={textBlack}>{this.state.dataSource.TenSanPham}</Text>
-                                <Text style={textHighlight}> / </Text>
-                                <Text style={textSmoke}>{this.state.dataSource.Gia} VND</Text>
-                            </Text>
-                        </View>
                         <View style={descContainer}>
-                            <Text style={descStyle}>Mô tả: {this.state.dataSource.MoTa}</Text>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 15 }}>
-                                <Text style={txtMaterial}>Loại sản phẩm: {this.state.dataSource.LoaiSanPhamId}</Text>
-                                <View style={{ flexDirection: 'row' }} >
-                                    <Text style={txtColor}>...</Text>
-                                    <View style={{ height: 15, width: 15, backgroundColor: "white", borderRadius: 15, marginLeft: 10 }} />
-                                </View>
-                            </View>
+                            <Text style={textBlack}>Mô tả: {this.state.dataSource.MoTa}</Text>
+                            <Text style={textBlack}>Kích cỡ: {this.state.dataSource.KichCo}</Text>
+                            <Text style={textBlack}>Khối lượng: {this.state.dataSource.KhoiLuong}</Text>
+                            {this.state.dataSource.KhuyenMai ?
+                                <Text style={textBlack}>Khuyến mãi: {this.state.dataSource.KhuyenMai}%</Text> :
+                                <Text style={textBlack}>Khuyến mãi: 0%</Text>}
                         </View>
                     </View>
                 </View>
@@ -164,7 +162,8 @@ const styles = StyleSheet.create({
         fontFamily: 'Avenir',
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#3F3F46'
+        color: '#3F3F46',
+        marginTop: 5
     },
     textSmoke: {
         fontFamily: 'Avenir',
@@ -188,7 +187,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10
     },
     descStyle: {
-        color: '#AFAFAF'
+        color: 'black',
+        fontSize: 20
     },
     linkStyle: {
         color: '#7D59C8'
@@ -214,5 +214,5 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: '400',
         fontFamily: 'Avenir'
-    }
+    },
 });

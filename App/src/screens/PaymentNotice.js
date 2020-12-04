@@ -121,7 +121,13 @@ class PaymentNotice extends Component {
     render() {
         if (this.state.isLoading) {
             return (
-                <ActivityIndicator animating={true} size="large" color="#0000ff" />
+                <View style={{ flex: 1, flexDirection: "column" }}>
+                    <Header title="Thông báo" />
+                    <View style={{ marginTop: 200, flexDirection: "column", alignItems: "center" }}>
+                        <ActivityIndicator size={70} color="#0000ff" />
+                        <Text style={{ fontSize: 20, color: "#0000ff" }}>Loading...</Text>
+                    </View>
+                </View>
             );
         }
         return (
