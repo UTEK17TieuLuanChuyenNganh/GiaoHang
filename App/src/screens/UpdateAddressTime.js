@@ -11,7 +11,7 @@ class UpdateAddressTime extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            id: props.route.params.id,
+            id: props.route.params.item.id,
             Ngay: "",
             ThoiGianBatDau: "",
             ThoiGianKetThuc: "",
@@ -74,7 +74,6 @@ class UpdateAddressTime extends Component {
         end = end.split(":");
 
         let hours = parseInt(start[0]) - parseInt(end[0])
-        console.log(hours)
         if (hours < 3)
             return false;
         else
@@ -86,7 +85,8 @@ class UpdateAddressTime extends Component {
         const data = {
             ThoiGianBatDau: this.state.Ngay + " " + this.state.ThoiGianBatDau + "Z",
             ThoiGianKetThuc: this.state.Ngay + " " + this.state.ThoiGianKetThuc + "Z"
-        };
+        };        
+        console.log(this.state.id)
         return fetch('https://servertlcn.herokuapp.com/diachi/' + this.state.id,
             {
                 method: 'PUT',

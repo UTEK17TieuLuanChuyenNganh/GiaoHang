@@ -47,9 +47,9 @@ class DiaChi extends Component {
     componentWillUnmount() {
         this._isMounted = false;
     }
-    updateAddressTime(id) {
+    updateAddressTime(item) {
         this.props.close();
-        this.props.params.navigation.navigate("UpdateAddressTime", { id: id })
+        this.props.params.navigation.navigate("UpdateAddressTime", { item: item })
     }
     //Chose Address 
     addAddressToAsyncStore = async (data) => {
