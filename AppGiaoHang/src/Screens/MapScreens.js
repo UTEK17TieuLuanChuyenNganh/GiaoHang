@@ -42,15 +42,27 @@ class MapScreens extends Component {
             index: 0,
             status: false,
             stt: 0,
-            beginaddr: ""
+            beginaddr: "",
+            link: 'https://www.google.com/maps/dir/',
+            linkDirect: 'https://maps.app.goo.gl/?link=https://www.google.com/maps/dir/'
         }
     }
     async demo() {
+        this.setState({
+            beginaddr: "",
+            link: 'https://www.google.com/maps/dir/',
+            linkDirect: 'https://maps.app.goo.gl/?link=https://www.google.com/maps/dir/',
+            isLoading: true,
+            status: false
+        })
         await this.fetchData()
         await this.requestLocationPermission()
+
+
     }
     fetchData() {
         if (this.props.order.order.length > 0) {
+            this.checkIndex()
             this.setState(
                 {
                     isLoading: false,
@@ -78,8 +90,9 @@ class MapScreens extends Component {
                             })
                             store.dispatch({
                                 type: 'ADDCHUOI',
-                                payload: responseJson.data.id
+                                payload: responseJson.data[0].id
                             })
+                            this.checkIndex()
                         }
                         else {
                             this.setState(
@@ -111,9 +124,9 @@ class MapScreens extends Component {
         if (this.state.status == true && !this.state.isLoading && this.props.order.order.length > 0) {
             let phoneNumber = '';
             if (Platform.OS === 'android') {
-                phoneNumber = 'tel:${' + this.props.order.order[this.props.stt.stt].reciver.sdt + '}';
+                phoneNumber = 'tel:${' + this.props.order.order[this.props.stt.stt].reciver.SDT + '}';
             } else {
-                phoneNumber = 'telprompt:${' + this.props.order.order[this.props.stt.stt].reciver.sdt + '}';
+                phoneNumber = 'telprompt:${' + this.props.order.order[this.props.stt.stt].reciver.SDT + '}';
             }
             Linking.openURL(phoneNumber);
         }
@@ -133,12 +146,12 @@ class MapScreens extends Component {
                 await navigator.geolocation.getCurrentPosition(
                     (position) => {
                         this.setState({
-                            beginaddr: position.coords.longitude.toFixed(7) + "," + position.coords.latitude.toFixed(7)
+                            beginaddr: position.coords.latitude.toFixed(7) + "," + position.coords.longitude.toFixed(7)
                         })
                         this.createLinkAddress()
                     },
                     (error) => console.log(error),
-                    { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+                    { enableHighAccuracy: false, timeout: 20000, maximumAge: 1500 }
                 );
             }
             else {
@@ -150,6 +163,7 @@ class MapScreens extends Component {
     }
     checkIndex() {
         if (this.state.status == true && !this.state.isLoading && this.props.order.order.length > 0) {
+            var count = 0
             for (var i = 0; i < this.props.order.order.length; i++) {
                 if (this.props.order.order[i].donhang.TinhTrangDon == 'dang giao') {
                     store.dispatch({
@@ -158,55 +172,71 @@ class MapScreens extends Component {
                     })
                     break;
                 }
+                else { count += 1 }
             }
+            if (count == this.props.order.order.length) {
+                store.dispatch({
+                    type: 'ADDSTT',
+                    payload: count - 1
+                })
+                this.setState({
+                    isLoading: true,
+                    status: false
+                })
+            }
+
         }
     }
     componentDidMount() {
         this._isMounted = true;
         this._subscribe = this.props.navigation.addListener('focus', () => {
             this.demo();
-            this.checkIndex()
+
         });
     }
     componentWillUnmount() {
         this._isMounted = false;
         this.props.navigation.removeListener(this._subscribe);
     }
-    addressOrder = ''
-    link = 'https://www.google.com/maps/dir'
-    linkDirect = 'https://maps.app.goo.gl/?link=https://www.google.com/maps/dir'
+
+    // link = 'https://www.google.com/maps/dir/'
+    // linkDirect = 'https://maps.app.goo.gl/?link=https://www.google.com/maps/dir/'
     link1 = `https://www.google.com/maps/dir/${adrr5}/${adrr1}/${adrr3}/${adrr2}/${adrr4}`
     link2 = `https://maps.app.goo.gl/?link=https://www.google.com/maps/dir/${adrr5}/${adrr1}/${adrr3}/${adrr2}/${adrr4},11z/data%3D!4m2!4m1!3e0!11m1!6b1?entry%3Dml&apn=com.google.android.apps.maps&amv=914018424&isi=585027354&ibi=com.google.Maps&ius=comgooglemapsurl&utm_campaign=ml_promo&ct=ml-nav-nopromo-dr-nlu&mt=8&pt=9008&efr=1`
     link3 = `https://maps.app.goo.gl/?link=https://www.google.com/maps/dir/${adrr5}/${adrr1}/${adrr3}/${adrr2}/${adrr4},11z/data%3D!4m2!4m1!3e0!11m1!6b1?entry%3Dml`
     getggmap() {
-        Linking.openURL(this.linkDirect);
+        Linking.openURL(this.state.linkDirect);
     }
     createLinkAddress() {
+        var addressOrder = ''
+        var linktemp = ''
+        var linkDirecttemp = ''
         if (this.state.status == true && !this.state.isLoading && this.props.order.order.length > 0) {
             if (this.props.order.order.length < 2) {
-                try {
-                    this.link += "/" + this.state.beginaddr + "/" + this.props.order.order[0].address.ViDo + ',' + this.props.order.order[0].address.KinhDo
-                    this.setState({
-                        isLoading: false
-                    })
-                } catch (error) {
-                    console.log(error)
-                }
+                addressOrder += this.state.beginaddr + "/" + this.props.order.order[0].address.ViDo + ',' + this.props.order.order[0].address.KinhDo + "/"
+                addressOrder = addressOrder.slice(0, addressOrder.length - 1)
+                linktemp = this.state.link + addressOrder;
+                linkDirecttemp = this.state.linkDirect + addressOrder //+ ',11z/data%3D!4m2!4m1!3e0!11m1!6b1?entry%3Dml&apn=com.google.android.apps.maps&amv=914018424&isi=585027354&ibi=com.google.Maps&ius=comgooglemapsurl&utm_campaign=ml_promo&ct=ml-nav-nopromo-dr-nlu&mt=8&pt=9008&efr=1'
+                this.setState({
+                    link: linktemp,
+                    linkDirect: linkDirecttemp,
+                    isLoading: false
+                })
+
             }
             else {
-                try {
-                    for (var i = 0; i < this.props.order.order.length; i += 1) {
-                        this.addressOrder = this.addressOrder + '/' + this.props.order.order[i].address.ViDo + ',' + this.props.order.order[i].address.KinhDo
-                    }
-
-                    this.link += this.addressOrder;
-                    this.linkDirect += this.addressOrder + ',11z/data%3D!4m2!4m1!3e0!11m1!6b1?entry%3Dml&apn=com.google.android.apps.maps&amv=914018424&isi=585027354&ibi=com.google.Maps&ius=comgooglemapsurl&utm_campaign=ml_promo&ct=ml-nav-nopromo-dr-nlu&mt=8&pt=9008&efr=1'
-                    this.setState({
-                        isLoading: false
-                    })
-                } catch (error) {
-                    console.log(error)
+                for (var i = 0; i < this.props.order.order.length; i += 1) {
+                    addressOrder = addressOrder + this.props.order.order[i].address.ViDo + ',' + this.props.order.order[i].address.KinhDo + '/'
                 }
+                addressOrder = addressOrder.slice(0, addressOrder.length - 1)
+                linktemp = this.state.link + addressOrder;
+                linkDirecttemp = this.state.linkDirect + addressOrder + ',11z/data%3D!4m2!4m1!3e0!11m1!6b1?entry%3Dml&apn=com.google.android.apps.maps&amv=914018424&isi=585027354&ibi=com.google.Maps&ius=comgooglemapsurl&utm_campaign=ml_promo&ct=ml-nav-nopromo-dr-nlu&mt=8&pt=9008&efr=1'
+                this.setState({
+                    link: linktemp,
+                    linkDirect: linkDirecttemp,
+                    isLoading: false
+                })
+
             }
         }
 
@@ -254,35 +284,75 @@ class MapScreens extends Component {
             ],
         );
     }
+    PutOrderStatus(id, str) {
+        let data = {
+            TinhTrangDon: str
+        }
+        console.log(id)
+        fetch('http://servertlcn.herokuapp.com/donhang/' + id,
+            {
+                method: 'PUT',
+                body: JSON.stringify(data),
+                headers: { 'Content-Type': 'application/json' }
+
+            })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                console.log(responseJson)
+                this.forceUpdate();
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
     async PutJson(str) {
         if (this.state.status == true) {
             let temp = { chuoidonhang: this.props.order.order }
             temp.chuoidonhang[this.props.stt.stt].donhang.TinhTrangDon = str
-
             var so = this.props.stt.stt
-            so += 1
-            if (this.props.order.order.length - so >= 2) {
-                temp.chuoidonhang[so].donhang.TinhTrangDon = 'dang giao'
-                temp.chuoidonhang[so + 1].donhang.TinhTrangDon = 'chuan bi giao'
+            console.log("so:" + so)
+            console.log("lenght:" + this.props.order.order.length)
+            if (this.props.order.order.length - so >= 3) {
+                temp.chuoidonhang[so + 1].donhang.TinhTrangDon = 'dang giao'
+                this.PutOrderStatus(temp.chuoidonhang[so].donhang.id, 'dang giao')
+                temp.chuoidonhang[so + 2].donhang.TinhTrangDon = 'chuan bi giao'
+                this.PutOrderStatus(temp.chuoidonhang[so + 1].donhang.id, 'chuan bi giao')
+            }
+            else if (this.props.order.order.length - so >= 2) {
+                temp.chuoidonhang[so + 1].donhang.TinhTrangDon = 'dang giao'
+                this.PutOrderStatus(temp.chuoidonhang[so + 1].donhang.id, 'dang giao')
             }
             else if (this.props.order.order.length - so >= 1) {
-                temp.chuoidonhang[so].donhang.TinhTrangDon = 'dang giao'
+
+            }
+            if (this.props.order.order.length <= so + 1) {
+                await store.dispatch({
+                    type: 'ADDSTT',
+                    payload: so
+                })
+                this.setState({
+                    link: 'https://www.google.com/maps/dir/',
+                    linkDirect: 'https://maps.app.goo.gl/?link=https://www.google.com/maps/dir/',
+                    status: false,
+                    isLoading: true
+                })
             }
             else {
-                so -= 1
+                await store.dispatch({
+                    type: 'ADDSTT',
+                    payload: so+1
+                })
             }
-            await store.dispatch({
-                type: 'ADDSTT',
-                payload: so
-            })
             await store.dispatch({
                 type: 'ADDORDER',
                 payload: temp.chuoidonhang
             })
+
             let a = await JSON.stringify(temp)
             let data = {
                 Chuoi: a,
-                ShipperId: this.props.user.user
+                ShipperId: this.props.user.user,
+                isShipped: false
             }
             fetch('https://servertlcn.herokuapp.com/chuoigiaohang/' + this.props.chuoiid.chuoiid,
                 {
@@ -293,11 +363,13 @@ class MapScreens extends Component {
                 })
                 .then((response) => response.json())
                 .then((responseJson) => {
+                    console.log(responseJson)
                     this.forceUpdate();
                 })
                 .catch((error) => {
                     console.log(error);
                 });
+            this.PutOrderStatus(temp.chuoidonhang[so].donhang.id, 'thanh cong')
 
         }
     }
@@ -333,7 +405,7 @@ class MapScreens extends Component {
                     <View style={{ flex: 1 }}>
                         <WebView
                             ref={ref => { }}
-                            source={{ uri: this.link }}
+                            source={{ uri: this.state.link }}
                             style={styles.Webview}
                             geolocationEnabled={true}
                         />
@@ -436,7 +508,7 @@ const styles = StyleSheet.create({
         height: 50,
     },
     buttonaccess: {
-        height: 150,
+        height: 160,
         justifyContent: "space-between",
         alignItems: "stretch",
         backgroundColor: "#F4F4F4",

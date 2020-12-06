@@ -84,6 +84,7 @@ class CheckStatus extends Component {
             .then((response) => response.json())
             .then((responseJson) => {
                 this.forceUpdate();
+                Alert.alert("Xác Nhận Thành Công")
                 store.dispatch({
                     type: 'CLEARORDER',
                 })

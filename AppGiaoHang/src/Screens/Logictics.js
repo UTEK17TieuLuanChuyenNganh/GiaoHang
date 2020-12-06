@@ -49,7 +49,7 @@ class Logictics extends Component {
                                 {
                                     isLoading: false,
                                     //dataSource: data.chuoidonhang,
-                                    soluong: responseJson.data.SoLuong
+                                    soluong: responseJson.data[0].SoLuong
                                 })
                             store.dispatch({
                                 type: 'ADDORDER',
