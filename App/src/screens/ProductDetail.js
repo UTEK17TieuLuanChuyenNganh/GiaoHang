@@ -91,6 +91,7 @@ class ProductDetail extends Component {
                     </View>
                     <View style={footer}>
                         <View style={descContainer}>
+                            <Text style={textBlack}>Giá: {this.state.dataSource.Gia} VND</Text>
                             <Text style={textBlack}>Mô tả: {this.state.dataSource.MoTa}</Text>
                             <Text style={textBlack}>Kích cỡ: {this.state.dataSource.KichCo}</Text>
                             <Text style={textBlack}>Khối lượng: {this.state.dataSource.KhoiLuong}</Text>

@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
     },
     SaveStyle: {
         height: 50,
-        width: 10,
+        width: 160,
         backgroundColor: 'blue',
         justifyContent: 'center',
         alignItems: 'center',
