@@ -22,7 +22,7 @@ class Logictics extends Component {
         }
     }
 
-    
+
     showmenu = () => {
         this.props.navigation.openDrawer();
     }
@@ -36,24 +36,31 @@ class Logictics extends Component {
                 })
         }
         else {
+            console.log(this.props.user.user)
             return fetch('https://servertlcn.herokuapp.com/chuoigiaohang/' + this.props.user.user + '/shipper',
                 { method: 'GET' })
                 .then(async (responseJson) => {
                     responseJson = await responseJson.json()
-                    if (responseJson.result != "failed") {
-                        let data = responseJson.data.Chuoi
-                        data = await JSON.parse(data)
-                        if (this._isMounted) {
+                    if (this._isMounted) {
+                        if (responseJson.data.length > 0) {
+                            let data = responseJson.data[0].Chuoi
+                            data = await JSON.parse(data)
                             this.setState(
                                 {
                                     isLoading: false,
                                     //dataSource: data.chuoidonhang,
-                                    soluong: responseJson.data.SoLuong
+                                    soluong: responseJson.data[0].SoLuong
                                 })
                             store.dispatch({
                                 type: 'ADDORDER',
                                 payload: data.chuoidonhang
                             })
+                        }
+                        else {
+                            this.setState(
+                                {
+                                    isLoading: false,
+                                })
                         }
                     }
                     else {
@@ -62,6 +69,8 @@ class Logictics extends Component {
                                 isLoading: false,
                             })
                     }
+
+
                 })
                 .catch((error) => {
                     console.log(error);
@@ -81,12 +90,12 @@ class Logictics extends Component {
             </View>
         )
     }
-    routeIcon(str){
-        switch(str){
-            case 'thanh cong': return(<Icon name="check-circle" size={30} color="green" />)
-            case 'that bai': return(<Icon name="times-circle" size={30} color="red" />)
-            case 'dang giao': return(<Icon name="truck" size={30} color="#581BB2" />)
-            case 'chuan bi giao': return(<Icon name="angle-double-right" size={30} color="blue" />)
+    routeIcon(str) {
+        switch (str) {
+            case 'thanh cong': return (<Icon name="check-circle" size={30} color="green" />)
+            case 'that bai': return (<Icon name="times-circle" size={30} color="red" />)
+            case 'dang giao': return (<Icon name="truck" size={30} color="#581BB2" />)
+            case 'chuan bi giao': return (<Icon name="angle-double-right" size={30} color="blue" />)
             default: return null
         }
     }
@@ -117,9 +126,8 @@ class Logictics extends Component {
     }
 
     render() {
-        //console.log(this.state.dataSource);
-        //day nua nay
-        if (this.state.isLoading) {
+
+        if (this.state.isLoading == true) {
             return (
                 <View style={[styles.container, styles.horizontal]}>
                     <ActivityIndicator size={70} color="red" />
@@ -128,7 +136,7 @@ class Logictics extends Component {
         }
         return (
             <View style={styles.BackgroundScreens}>
-                <Logo openDrawerclick={() => { this.showmenu() }} title="Chuỗi Đơn Hàng"/>
+                <Logo openDrawerclick={() => { this.showmenu() }} title="Chuỗi Đơn Hàng" />
                 <View style={{ flex: 1 }}>
                     <View style={styles.top}>
 
@@ -232,7 +240,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
     return {
         order: state.order,
-        user:state.user
+        user: state.user
     };
 };
 

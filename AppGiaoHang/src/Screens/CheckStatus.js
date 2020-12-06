@@ -7,12 +7,12 @@ import { connect } from 'react-redux';
 import store from '../redux/store';
 
 class CheckStatus extends Component {
-    
+
     constructor(props) {
         super(props);
         this.state = {
             order: [],
-            _isHoanTat:false
+            _isHoanTat: false
         }
     }
     showmenu = () => {
@@ -30,21 +30,29 @@ class CheckStatus extends Component {
                 color="red"
                 style={{ margin: 13 }} />)
     }
-    CheckHoanTat(){
-        if(this.props.stt.stt==this.props.order.order.length-1){
+    DaHoanTat() {
+        if (this.props.stt.stt == this.props.order.order.length - 1) {
             this.setState({
-                _isHoanTat:true
+                _isHoanTat: true
+            })
+        }
+    }
+    CheckHoanTat() {
+        if (this.props.stt.stt == this.props.order.order.length - 1) {
+            this.PutJson()
+            this.setState({
+                _isHoanTat: false
             })
             Alert.alert("Xác Nhận Thành Công")
         }
         else Alert.alert("Đảm bảo rằng bạn đã giao hết đơn")
     }
-    isHoanTat(){
-        if(this.state._isHoanTat){
-            return(<Icon name="check-circle"
-            size={30}
-            color="green"
-            style={{ margin: 13 }} />)
+    isHoanTat() {
+        if (this.state._isHoanTat) {
+            return (<Icon name="check-circle"
+                size={30}
+                color="green"
+                style={{ margin: 13 }} />)
         }
         else
             return (<Icon name="times-circle"
@@ -53,7 +61,45 @@ class CheckStatus extends Component {
                 style={{ margin: 13 }} />)
     }
     componentDidMount() {
-        this.fetchData()
+        this._isMounted = true;
+        this._subscribe = this.props.navigation.addListener('focus', () => {
+            this.fetchData()
+            this.DaHoanTat()
+        });
+    }
+    componentWillUnmount() {
+        this._isMounted = false;
+        this.props.navigation.removeListener(this._subscribe);
+    }
+    async PutJson() {
+        let data = {
+            isShipped: true
+        }
+        fetch('https://servertlcn.herokuapp.com/chuoigiaohang/' + this.props.chuoiid.chuoiid,
+            {
+                method: 'PUT',
+                body: JSON.stringify(data),
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.forceUpdate();
+                Alert.alert("Xác Nhận Thành Công")
+                store.dispatch({
+                    type: 'CLEARORDER',
+                })
+                store.dispatch({
+                    type: 'CLEARCHUOI',
+                })
+                store.dispatch({
+                    type: 'CLEARSTT',
+                })
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+
     }
     fetchData() {
         //Kiem tra cai redux o day    
@@ -123,7 +169,7 @@ class CheckStatus extends Component {
                         <TouchableOpacity style={{
                             justifyContent: 'center',
                             alignItems: 'center'
-                        }} onPress={()=>{this.CheckHoanTat()}}>
+                        }} onPress={() => { this.CheckHoanTat() }}>
                             <View style={styles.Buttonstyle}>
                                 <Text style={{ fontSize: 20, color: 'white' }}>Xác Nhận Hoàn Tắt</Text>
                                 <Icon name="angle-double-right" size={25} color="white" />
@@ -177,8 +223,9 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
     return {
         order: state.order,
-        stt:state.stt,
-        user:state.user
+        stt: state.stt,
+        user: state.user,
+        chuoiid: state.chuoiid
     };
 };
 
