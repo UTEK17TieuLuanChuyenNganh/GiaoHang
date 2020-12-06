@@ -367,10 +367,10 @@ const searchDiachiInTimeRange = async (req, res) => {
                 laMacDinh: true,
                 [Op.and]: [
                     Sequelize.literal(`(("DiaChi"."ThoiGianBatDau" BETWEEN '${timeStart}' AND '${timeEnd}') ` +
-                        `AND (DATE_PART('hour','${timerange.timeEnd}'::timestamp - "DiaChi"."ThoiGianBatDau"::timestamp) BETWEEN 1 AND 3))` +
+                        `AND (DATE_PART('hour','${timerange.timeEnd}'::timestamp - "DiaChi"."ThoiGianBatDau"::timestamp) >=1))` +
                         `OR ` +
                         `(("DiaChi"."ThoiGianKetThuc" BETWEEN '${timeStart}' AND '${timeEnd}') ` +
-                        `AND (DATE_PART('hour',"DiaChi"."ThoiGianKetThuc"::timestamp - '${timerange.timeStart}'::timestamp) BETWEEN 1 AND 3)) ` +
+                        `AND (DATE_PART('hour',"DiaChi"."ThoiGianKetThuc"::timestamp - '${timerange.timeStart}'::timestamp) >=1)) ` +
                         `OR (("DiaChi"."ThoiGianBatDau" BETWEEN '${timeStart}' AND '${timeEnd}') AND ` +
                         `((DATE_PART('hour','${timerange.timeEnd}'::timestamp - "DiaChi"."ThoiGianBatDau"::timestamp)) = (DATE_PART('hour',"DiaChi"."ThoiGianKetThuc"::timestamp - '${timerange.timeEnd}'::timestamp)))) ` +
                         `OR (("DiaChi"."ThoiGianBatDau" BETWEEN '${timeStart}' AND '${timeEnd}') AND ` +
