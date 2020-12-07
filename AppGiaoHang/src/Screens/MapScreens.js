@@ -225,6 +225,7 @@ class MapScreens extends Component {
 
             }
             else {
+                addressOrder += this.state.beginaddr + "/"
                 for (var i = 0; i < this.props.order.order.length; i += 1) {
                     addressOrder = addressOrder + this.props.order.order[i].address.ViDo + ',' + this.props.order.order[i].address.KinhDo + '/'
                 }
