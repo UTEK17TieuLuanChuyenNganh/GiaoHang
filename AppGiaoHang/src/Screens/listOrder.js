@@ -169,6 +169,7 @@ class listOrder extends Component {
                   .then((response) => response.json())
                   .then((responseJson) => {
                     console.log(responseJson)
+                    this.forceUpdate();
                     Alert.alert("Đã Đăng Ký Thành Công")
                     store.dispatch({
                       type: 'ADDORDER',

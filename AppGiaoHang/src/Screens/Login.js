@@ -32,14 +32,14 @@ class Login extends Component {
         await this.setState({
             isLoading: true
         })
-        return fetch('https://servertlcn.herokuapp.com/nguoidung/' + this.state.username + "/username",
+        return fetch('https://servertlcn.herokuapp.com/shipper/' + this.state.username + "/username",
             {
                 method: 'GET',
             })
             .then((response) => response.json())
             .then((responseJson) => {
                 if (responseJson.result != "failed") {
-                    var decryptedPassword = Base64.decode(responseJson.data.Password);
+                    var decryptedPassword = Base64.decode(responseJson.data.NguoiDung.Password);
                     if (this.state.isLoading && this.state.password.trim() == decryptedPassword) {
                         this.setData(responseJson.data)
                         this.addid(responseJson.data.id)
