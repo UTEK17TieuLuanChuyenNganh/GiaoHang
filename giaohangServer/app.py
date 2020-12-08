@@ -92,7 +92,7 @@ def checkSizeOrder(json):
     for i in range(0,cluster_number):
         soluong=0
         for j in range(0,len(json[i])):
-            soluong=getSizeSanPhamByIdDonHang(json[i][j]['DonhangId'])
+            soluong+=getSizeSanPhamByIdDonHang(json[i][j]['DonhangId'])
         if soluong>size:
             clusternumber+=1
     if(soluongdon<clusternumber): return True
@@ -182,7 +182,7 @@ def runall():
         while checkSizeOrder(j) == False:
             global cluster_number
             cluster_number+=1
-            j=runcluster()
+            j,status=runcluster()
     global finaljson
     finaljson=j
     return j
