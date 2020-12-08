@@ -10,7 +10,6 @@ class Profile extends Component {
         super(props);
         this.state = {
             isLoading: true,
-
             dataSource: [],
             user: 0
         }

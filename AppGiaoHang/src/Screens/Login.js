@@ -28,26 +28,56 @@ class Login extends Component {
         }
     }
 
-    loginclick() {
-        this.isLoading = true;
-        return fetch('https://servertlcn.herokuapp.com/shipper/'+this.state.username+'/username',
-             { method: 'GET' })
-            .then(async (response) => {
-                let data = await response.json()
-                if (data.result != "failed") {                    
-                   var decryptedPassword = Base64.decode(data.data.NguoiDung.Password);
-                    if (this.isLoading && this.state.password.trim() == decryptedPassword) {
-                        this.setData(data.data)
-                        this.addid(data.data.id)
+    async loginclick() {
+        await this.setState({
+            isLoading: true
+        })
+        return fetch('https://servertlcn.herokuapp.com/shipper/' + this.state.username + "/username",
+            {
+                method: 'GET',
+            })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                if (responseJson.result != "failed") {
+                    var decryptedPassword = Base64.decode(responseJson.data.NguoiDung.Password);
+                    if (this.state.isLoading && this.state.password.trim() == decryptedPassword) {
+                        this.setData(responseJson.data)
+                        this.addid(responseJson.data.id)
                         this.props.navigation.replace('MyDrawer');
                     }
                     else {
+                        Alert.alert(
+                            'Đăng nhập',
+                            'Mật khẩu không chính xác',
+                            [
+                                {
+                                    text: 'OK',
+                                    onPress: () => { },
+                                    style: 'cancel'
+                                },
+                            ],
+                        );
                         this.setState({
-                            err: data.result
+                            isLoading: false
                         })
                     }
-                    this.isLoading = false;
-                }        
+                }
+                else {
+                    Alert.alert(
+                        'Đăng nhập',
+                        'Không tìm thấy tài khoản',
+                        [
+                            {
+                                text: 'OK',
+                                onPress: () => { },
+                                style: 'cancel'
+                            },
+                        ],
+                    );
+                    this.setState({
+                        isLoading: false
+                    })
+                }
             })
             .catch((error) => {
                 console.log(error);
@@ -69,12 +99,12 @@ class Login extends Component {
         })
     }
     render() {
-        
+
         return (
             <View style={styles.BackgroundScreens}>
-                <View style={{ flex: 1 / 4,justifyContent: "center",alignItems: "center", }}>
-                <Image source={require('../../Image/Image/Logo2.png')}
-          style={styles.ImageLayout}/>
+                <View style={{ flex: 1 / 4, justifyContent: "center", alignItems: "center", }}>
+                    <Image source={require('../../Image/Image/Logo2.png')}
+                        style={styles.ImageLayout} />
                 </View>
                 <View style={styles.top}>
                     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -94,11 +124,14 @@ class Login extends Component {
                             style={styles.TextInputstyle}
 
                         />
-                        <TouchableOpacity onPress={() => {this.loginclick() }} >
-                            <View style={{ width: 150, height: 50, borderRadius: 100, backgroundColor: 'blue', justifyContent: 'center', alignItems: 'center' }}>
-                                <Text style={{ fontSize: 25, color: 'white' }}>Đăng Nhập</Text>
-                            </View>
-                        </TouchableOpacity>
+                        {this.state.isLoading ?
+                            <ActivityIndicator animating={true} size="large" color="#0000ff" /> :
+                            <TouchableOpacity onPress={() => { this.loginclick() }} >
+                                <View style={{ width: 150, height: 50, borderRadius: 100, backgroundColor: 'blue', justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text style={{ fontSize: 25, color: 'white' }}>Đăng Nhập</Text>
+                                </View>
+                            </TouchableOpacity>}
+
                     </View>
                 </View>
             </View>
@@ -134,7 +167,7 @@ const styles = StyleSheet.create({
     ImageLayout: {
         width: 100,
         height: 100,
-        
+
     },
 })
 export default Login;
