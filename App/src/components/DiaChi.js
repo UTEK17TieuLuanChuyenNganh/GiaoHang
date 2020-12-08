@@ -51,6 +51,60 @@ class DiaChi extends Component {
         this.props.close();
         this.props.params.navigation.navigate("UpdateAddressTime", { item: item })
     }
+    confirmDeleteAddress(item) {
+        let data = {
+            id:item.id
+        }
+        return fetch('https://servertlcn.herokuapp.com/diachi/delete',
+            {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then((response) => response.json())
+            .then((responseJson) => {this.props.close();})
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+    deleteAddressPress(item) {
+        Alert.alert(
+            'Xóa địa chỉ',
+            'Xác nhận xóa địa chỉ này ?',
+            [
+                {
+                    text: 'Hủy',
+                    onPress: () => { },
+                    style: 'cancel'
+                },
+                {
+                    text: 'Xác nhận',
+                    onPress: () => { this.confirmDeleteAddress(item) },
+                },
+            ],
+        );
+    }
+    editAddress(item){
+        Alert.alert(
+            'Điều chỉnh địa chỉ', 
+            'Chọn phương thức điều chỉnh' ,          
+            [
+                {
+                    text: 'Hủy',
+                    onPress: () => { },
+                    style: 'cancel'
+                },
+                {
+                    text: 'Cập nhật',
+                    onPress: () => { this.updateAddressTime(item) },
+                },
+                {
+                    text: 'Xóa',
+                    onPress: () => { this.deleteAddressPress(item) },
+                },
+            ],
+        );
+    }
     //Chose Address 
     addAddressToAsyncStore = async (data) => {
         try {
@@ -92,8 +146,7 @@ class DiaChi extends Component {
                         })
                     }
                 }
-                else
-                {                    
+                else {
                     Alert.alert(
                         'Chọn địa chỉ',
                         'Khung giờ không phù hợp - Trùng khung giờ của địa chỉ khác',
@@ -130,7 +183,7 @@ class DiaChi extends Component {
         await this.addAddressToAsyncStore(data)
         this.props.close();
     }
-    clickMe(id, TenDiaChi) {
+    clickMe(item) {
         Alert.alert(
             'Chọn địa chỉ',
             'Xác nhận chọn địa chỉ này ?',
@@ -141,13 +194,13 @@ class DiaChi extends Component {
                     style: 'cancel'
                 },
                 {
-                    text: 'Xác nhận',
-                    onPress: () => { this.choseAddress(id) },
+                    text: 'Chỉnh sửa',
+                    onPress: () => { this.editAddress(item) },
                 },
                 {
-                    text: 'Cập nhật',
-                    onPress: () => { this.updateAddressTime(id) },
-                }
+                    text: 'Xác nhận',
+                    onPress: () => { this.choseAddress(item) },
+                },                                           
             ],
         );
     }
