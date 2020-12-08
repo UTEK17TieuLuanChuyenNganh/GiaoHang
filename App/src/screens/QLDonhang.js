@@ -314,16 +314,34 @@ class QLDonhang extends Component {
             case null:
                 return (
                     <View style={{ flexDirection: "row" }}>
-                        <Text style={styles.detailaccount1}>Đang chờ   </Text>
-                        <Icon name="info-circle" size={30} color="blue" />
+                        <Text style={styles.detailaccount1}>Đang xử lý   </Text>
+                        <Icon name="exclamation-circle" size={30} color="orange" />
                     </View>);
-            case 'dagiao':
+            case 'thanh cong':
                 return (
                     <View style={{ flexDirection: "row" }}>
-                        <Text style={styles.detailaccount1}>Đã giao</Text>
+                        <Text style={styles.detailaccount1}>Giao thành công  </Text>
                         <Icon name="check-circle" size={30} color="green" />
                     </View>);
-        }
+            case 'that bai':
+                return (
+                    <View style={{ flexDirection: "row" }}>
+                        <Text style={styles.detailaccount1}>Giao thất bại   </Text>
+                        <Icon name="times-circle" size={30} color="red" />
+                    </View>);
+            case 'chuan bi giao':
+                return (
+                    <View style={{ flexDirection: "row" }}>
+                        <Text style={styles.detailaccount1}>Chuẩn bị giao   </Text>
+                        <Icon name="info-circle" size={30} color="blue" />
+                    </View>);
+            case 'dang giao':
+                return (
+                    <View style={{ flexDirection: "row" }}>
+                        <Text style={styles.detailaccount1}>Đang giao   </Text>
+                        <Icon name="truck" size={30} color="orange" />
+                    </View>);
+        }        
     }
     render() {
         if (this.state.isLoading) {

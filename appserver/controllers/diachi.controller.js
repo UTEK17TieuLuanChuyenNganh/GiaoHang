@@ -126,6 +126,47 @@ const updateDiaChi = async (req, res) => {
     }
 
 }
+const deleteDiaChi = async (req, res) => {
+    const { id } = req.body;    
+    try {
+        let DiaChis = await DiaChi.findAll({
+            attributes: [
+                'id',
+                'TenDiaChi',
+                'KinhDo',
+                'ViDo',
+                "ThoiGianBatDau",
+                "ThoiGianKetThuc",
+                'laMacDinh',
+                'NguoiDungId',
+                'DonhangId'
+            ],
+            where: {
+                id,
+            }
+        });
+        if (DiaChis.length > 0) {
+            DiaChis.forEach(async (DiaChi) => {
+                await DiaChi.destroy();
+            });
+            res.json({
+                result: 'ok',                
+                message: "Delete DiaChi successfully"
+            });
+        } else {
+            res.json({
+                result: 'failed',                
+                message: "Cannot find the DiaChi to delete"
+            });
+        }
+    } catch (error) {
+        res.json({
+            result: 'failed',            
+            message: `Cannot delete DiaChi. Error:${error}`
+        });
+    }
+
+}
 const getAllDiaChi = async (req, res) => {
     try {
         const DiaChis = await DiaChi.findAll({
@@ -415,5 +456,5 @@ module.exports = {
     getDiaChiByDonHangId,
     updateDiaChiByDonHangId,
     searchDiachiInTimeRange,
-
+    deleteDiaChi
 }

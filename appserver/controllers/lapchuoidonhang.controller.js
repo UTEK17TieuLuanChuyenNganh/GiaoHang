@@ -11,20 +11,7 @@ const getDonhang = async (req, res) => {
         data, timeStart, plus
     } = req.body;
     var mapData = data;
-    var resultData = [];
-    //fetchData từ server python để lấy được các cụm đơn hàng được chia theo tỉ lệ khoảng cách
-    //Hỗ trợ để tạo thành các đơn hàng chia cho shipper
-    // let settings = {
-    //     method: "GET",
-    //     // body: JSON.stringify(dataPost),
-    //     // headers: { 'Content-Type': 'application/json' },
-    // };
-    // let dataFetch = await fetch('https://giaohangapi.herokuapp.com/giaohang', settings)
-    // let dataReceive = await dataFetch.json();
-
-    // mapData = dataReceive.data //Dữ liệu trả về từ api
-    // timeStart = dataReceive.timeStart //Thời điểm bắt đầu của khung giờ xét duyệt đơn hàng
-
+    var resultData = []; 
     if (mapData.length > 0 && timeStart != "") {
 
         // Với từng cụm đơn hàng, bắt đầu các bước sau:
@@ -65,7 +52,7 @@ const getDonhang = async (req, res) => {
                     NguoiDungId: e.reciver.id
                 }
                 await createThongBao(dataThongbao);
-                await updateDonhang(e.donhang.id, e.address.id, chuoiData.data.id, e.price);
+                await updateDonhang(e.donhang, e.address.id, chuoiData.data.id, e.price);
                 await updateStatus(e.donhang.id);
             })
             const inTimePromises = await Promise.all(inTime);
@@ -94,7 +81,7 @@ const getDonhang = async (req, res) => {
                         NguoiDungId: e.reciver.id
                     }
                     await createThongBao(dataThongbao);
-                    await updateDonhang(e.donhang.id, e.address.id, chuoiDataOutTime.data.id);
+                    await updateDonhang(e.donhang, e.address.id, chuoiDataOutTime.data.id);
                     await updateStatus(e.donhang.id);
                 })
                 const outTimePromises = await Promise.all(outTime);
@@ -405,9 +392,9 @@ function updateStatus(iddonhang) {
     };
     return fetch('https://servertlcn.herokuapp.com/diachi/' + iddonhang + '/update', settings);
 }
-function updateDonhang(iddonhang, iddiachi, idchuoi, price) {
+function updateDonhang(donhang, iddiachi, idchuoi, price) {
     let dataPut = {
-        TongTien: TongTien + price,
+        TongTien: donhang.TongTien + price,
         DiaChiId: iddiachi,
         ChuoiGiaoHangId: idchuoi,
     }
@@ -416,7 +403,7 @@ function updateDonhang(iddonhang, iddiachi, idchuoi, price) {
         body: JSON.stringify(dataPut),
         headers: { 'Content-Type': 'application/json' },
     };
-    return fetch('https://servertlcn.herokuapp.com/donhang/' + iddonhang, settings);
+    return fetch('https://servertlcn.herokuapp.com/donhang/' + donhang.id, settings);
 }
 function createChuoi(data) {
     let dataPost = data;

@@ -336,11 +336,27 @@ class DSSanphamdamua extends Component {
     }
     renderTinhTrang(tinhtrang) {
         switch (tinhtrang) {
-            case undefined:
-                return <Icon name="info-circle" size={30} color="blue" />
-            case 'dagiao':
-                return <Icon name="check-circle" size={30} color="green" />
-        }
+            case null:
+                return (                    
+                        <Icon name="exclamation-circle" size={30} color="orange" />
+                    );
+            case 'thanh cong':
+                return (                    
+                        <Icon name="check-circle" size={30} color="green" />
+                    );
+            case 'that bai':
+                return (                    
+                        <Icon name="times-circle" size={30} color="red" />
+                    );
+            case 'chuan bi giao':
+                return (                    
+                        <Icon name="info-circle" size={30} color="blue" />
+                    );
+            case 'dang giao':
+                return (                    
+                        <Icon name="truck" size={30} color="orange" />
+                    );
+        }        
     }
     renderListSanPham(element) {
         return (
@@ -365,10 +381,10 @@ class DSSanphamdamua extends Component {
                         </View>
                         <View style={{ flex: 1 / 3, flexDirection: "column" }}>
                             <Image source={{ uri: `data:image/jpg;base64,${e.SanPham.Hinh}` }} style={styles.itemImage} />
-                            <View style={{ flexDirection: "row" }}>
+                            {/* <View style={{ flexDirection: "row" }}>
                                 <Text style={styles.detailaccount1} >Tình trạng: </Text>
                                 {this.renderTinhTrang(e.TinhTrangDon)}
-                            </View>
+                            </View> */}
                         </View>
                     </View>
                 ))}
@@ -406,10 +422,7 @@ class DSSanphamdamua extends Component {
                         <Pagination pageAmount={this.state.pageAmount}
                             setCurrentPage={(pageIndex) => { this.setCurrentPage(pageIndex) }} />
                     </View>
-                </View>
-                {/* <Icon name="times-circle" size={30} color="red" />
-                <Icon name="truck" size={30} color="#581BB2" />
-                <Icon name="angle-double-right" size={30} color="blue" /> */}
+                </View>                
             </View>
         );
     }
