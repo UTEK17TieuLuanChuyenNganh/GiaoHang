@@ -1,121 +1,14 @@
 'use strict';
-
-module.exports = {
-    up: (queryInterface, Sequelize) => {
-        let data = [
-            {
-                "NgayDatHang": "2020-12-02T09:39:43.020Z",
-                "TienVanChuyen": "100",
-                "TongTien": "39100",
-                "TinhTrangDon": null,
-                "NguoiDungId": 2,
-                "BuuCucId": null,
-                "ChuoiGiaoHangId": null,
-                "DiaChiId": 4,
-                "GhiChu": "",
-                "DanhGia": "",
-                "daThanhToan": null                
-            },
-            {
-                "NgayDatHang": "2020-12-03T07:19:40.819Z",
-                "TienVanChuyen": "100",
-                "TongTien": "5000100",
-                "TinhTrangDon": null,
-                "NguoiDungId": 1,
-                "BuuCucId": null,
-                "ChuoiGiaoHangId": null,
-                "DiaChiId": 3,
-                "GhiChu": "",
-                "DanhGia": "",
-                "daThanhToan": null                
-            },
-            {
-                "NgayDatHang": "2020-12-03T07:22:51.203Z",
-                "TienVanChuyen": "100",
-                "TongTien": "76100",
-                "TinhTrangDon": null,
-                "NguoiDungId": 1,
-                "BuuCucId": null,
-                "ChuoiGiaoHangId": null,
-                "DiaChiId": 6,
-                "GhiChu": "",
-                "DanhGia": "",
-                "daThanhToan": null                
-            },
-            {
-                "NgayDatHang": "2020-12-03T07:33:33.799Z",
-                "TienVanChuyen": "100",
-                "TongTien": "51100",
-                "TinhTrangDon": null,
-                "NguoiDungId": 4,
-                "BuuCucId": null,
-                "ChuoiGiaoHangId": null,
-                "DiaChiId": 8,
-                "GhiChu": "",
-                "DanhGia": "",
-                "daThanhToan": null              
-            },
-            {
-                "NgayDatHang": "2020-12-03T07:36:53.836Z",
-                "TienVanChuyen": "100",
-                "TongTien": "1000100",
-                "TinhTrangDon": null,
-                "NguoiDungId": 5,
-                "BuuCucId": null,
-                "ChuoiGiaoHangId": null,
-                "DiaChiId": 9,
-                "GhiChu": "",
-                "DanhGia": "",
-                "daThanhToan": null
-            },
-            {
-                "NgayDatHang": "2020-12-03T07:40:40.525Z",
-                "TienVanChuyen": "100",
-                "TongTien": "4000100",
-                "TinhTrangDon": null,
-                "NguoiDungId": 6,
-                "BuuCucId": null,
-                "ChuoiGiaoHangId": null,
-                "DiaChiId": 10,
-                "GhiChu": "",
-                "DanhGia": "",
-                "daThanhToan": null
-            },
-            {
-                "NgayDatHang": "2020-12-03T07:47:43.840Z",
-                "TienVanChuyen": "100",
-                "TongTien": "51100",
-                "TinhTrangDon": null,
-                "NguoiDungId": 7,
-                "BuuCucId": null,
-                "ChuoiGiaoHangId": null,
-                "DiaChiId": 13,
-                "GhiChu": "",
-                "DanhGia": "",
-                "daThanhToan": null
-            },
-            {
-                "NgayDatHang": "2020-12-03T07:53:13.757Z",
-                "TienVanChuyen": "100",
-                "TongTien": "1000100",
-                "TinhTrangDon": null,
-                "NguoiDungId": 8,
-                "BuuCucId": null,
-                "ChuoiGiaoHangId": null,
-                "DiaChiId": 14,
-                "GhiChu": "",
-                "DanhGia": "",
-                "daThanhToan": null
-            }];
-        data.map(item => {
-            item.createdAt = Sequelize.literal('NOW()');
-            item.updatedAt = Sequelize.literal('NOW()');
-            return item;
-        });
-        return queryInterface.bulkInsert('DonHangs', data, {});
-    },
-
-    down: (queryInterface, Sequelize) => {
-        return queryInterface.bulkInsert('DonHangs', data, {});
-    }
+   module.exports = {
+up: (queryInterface, Sequelize) => {
+let data =[{'NgayDatHang': '2020-12-06T07:50:34.397Z', 'TienVanChuyen': '100', 'TongTien': '6000100', 'TinhTrangDon': null, 'NguoiDungId': 29, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 50, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-06T07:48:02.191Z', 'TienVanChuyen': '100', 'TongTien': '1000100', 'TinhTrangDon': null, 'NguoiDungId': 28, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 49, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-06T07:45:10.197Z', 'TienVanChuyen': '100', 'TongTien': '16040100', 'TinhTrangDon': null, 'NguoiDungId': 26, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 48, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-06T07:42:35.206Z', 'TienVanChuyen': '100', 'TongTien': '57100', 'TinhTrangDon': null, 'NguoiDungId': 26, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 46, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-06T07:36:43.449Z', 'TienVanChuyen': '100', 'TongTien': '36100', 'TinhTrangDon': null, 'NguoiDungId': 25, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 44, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-06T07:33:23.119Z', 'TienVanChuyen': '100', 'TongTien': '17100', 'TinhTrangDon': null, 'NguoiDungId': 24, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 42, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-06T07:30:24.226Z', 'TienVanChuyen': '100', 'TongTien': '19036100', 'TinhTrangDon': null, 'NguoiDungId': 23, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 40, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-06T07:26:05.447Z', 'TienVanChuyen': '100', 'TongTien': '17000100', 'TinhTrangDon': null, 'NguoiDungId': 22, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 38, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-06T07:23:29.135Z', 'TienVanChuyen': '100', 'TongTien': '4062100', 'TinhTrangDon': null, 'NguoiDungId': 21, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 37, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-06T07:19:49.415Z', 'TienVanChuyen': '100', 'TongTien': '17000100', 'TinhTrangDon': null, 'NguoiDungId': 20, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 36, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-06T07:07:34.468Z', 'TienVanChuyen': '100', 'TongTien': '2000100', 'TinhTrangDon': null, 'NguoiDungId': 19, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 34, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-06T06:59:46.277Z', 'TienVanChuyen': '100', 'TongTien': '82100', 'TinhTrangDon': null, 'NguoiDungId': 18, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 32, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-06T06:53:31.857Z', 'TienVanChuyen': '100', 'TongTien': '16000100', 'TinhTrangDon': null, 'NguoiDungId': 17, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 30, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-06T06:50:21.236Z', 'TienVanChuyen': '100', 'TongTien': '5000100', 'TinhTrangDon': null, 'NguoiDungId': 16, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 29, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-06T06:46:38.109Z', 'TienVanChuyen': '100', 'TongTien': '93100', 'TinhTrangDon': null, 'NguoiDungId': 15, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 27, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-06T06:41:27.077Z', 'TienVanChuyen': '100', 'TongTien': '127100', 'TinhTrangDon': null, 'NguoiDungId': 14, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 25, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-06T06:36:52.415Z', 'TienVanChuyen': '100', 'TongTien': '5000100', 'TinhTrangDon': null, 'NguoiDungId': 13, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 24, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-06T06:32:13.167Z', 'TienVanChuyen': '100', 'TongTien': '51100', 'TinhTrangDon': null, 'NguoiDungId': 12, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 22, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-06T06:25:28.988Z', 'TienVanChuyen': '100', 'TongTien': '1000100', 'TinhTrangDon': null, 'NguoiDungId': 11, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 19, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-06T06:21:14.332Z', 'TienVanChuyen': '100', 'TongTien': '76100', 'TinhTrangDon': null, 'NguoiDungId': 10, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 17, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-03T07:53:13.757Z', 'TienVanChuyen': '100', 'TongTien': '1000100', 'TinhTrangDon': null, 'NguoiDungId': 8, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 14, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-03T07:47:43.840Z', 'TienVanChuyen': '100', 'TongTien': '51100', 'TinhTrangDon': null, 'NguoiDungId': 7, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 13, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-03T07:40:40.525Z', 'TienVanChuyen': '100', 'TongTien': '4000100', 'TinhTrangDon': null, 'NguoiDungId': 6, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 10, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-03T07:36:53.836Z', 'TienVanChuyen': '100', 'TongTien': '1000100', 'TinhTrangDon': null, 'NguoiDungId': 5, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 9, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-03T07:33:33.799Z', 'TienVanChuyen': '100', 'TongTien': '51100', 'TinhTrangDon': null, 'NguoiDungId': 4, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 8, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-03T07:22:51.203Z', 'TienVanChuyen': '100', 'TongTien': '76100', 'TinhTrangDon': null, 'NguoiDungId': 1, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 6, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-03T07:19:40.819Z', 'TienVanChuyen': '100', 'TongTien': '5000100', 'TinhTrangDon': null, 'NguoiDungId': 1, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 3, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}, {'NgayDatHang': '2020-12-02T09:39:43.020Z', 'TienVanChuyen': '100', 'TongTien': '39100', 'TinhTrangDon': null, 'NguoiDungId': 2, 'BuuCucId': null, 'ChuoiGiaoHangId': null, 'DiaChiId': 4, 'GhiChu': '', 'DanhGia': '', 'daThanhToan': null}];
+data.map(item => {item.createdAt = Sequelize.literal('NOW()');
+item.updatedAt = Sequelize.literal('NOW()');
+   return item;
+});
+return queryInterface.bulkInsert('DonHangs', data, {});
+},
+down: (queryInterface, Sequelize) => {
+ return queryInterface.bulkInsert('DonHangs', data, {});
+   }
 };
