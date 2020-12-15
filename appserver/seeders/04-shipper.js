@@ -1,7 +1,9 @@
 'use strict';
    module.exports = {
 up: (queryInterface, Sequelize) => {
-let data =[{'CMND': '281195972', 'STK': '1231231231231', 'Diem': '10', 'PhuongTienVanChuyen': 'Xe Máy Blade', 'NguoiDungId': 3}, {'CMND': '281195973', 'STK': '1231231231231', 'Diem': '10', 'PhuongTienVanChuyen': 'Xe Máy AirBlade', 'NguoiDungId': 9}];
+let data =[
+   {'CMND': '281195972', 'STK': '1231231231231', 'Diem': '10', 'PhuongTienVanChuyen': 'Xe Máy Blade', 'NguoiDungId': 3}, 
+   {'CMND': '281195973', 'STK': '1231231231231', 'Diem': '10', 'PhuongTienVanChuyen': 'Xe Máy AirBlade', 'NguoiDungId': 9}];
 data.map(item => {item.createdAt = Sequelize.literal('NOW()');
 item.updatedAt = Sequelize.literal('NOW()');
    return item;
