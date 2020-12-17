@@ -1,82 +1,14 @@
 'use strict';
-
-module.exports = {
-    up: (queryInterface, Sequelize) => {
-        let data = [
-            {
-                "SoLuong": 1,
-                "DonHangId": 1,
-                "SanPhamId": 2
-            },
-            {
-                "SoLuong": 1,
-                "DonHangId": 1,
-                "SanPhamId": 6
-            },
-            {
-                "SoLuong": 1,
-                "DonHangId": 2,
-                "SanPhamId": 10
-            },
-            {
-                "SoLuong": 1,
-                "DonHangId": 2,
-                "SanPhamId": 9
-            },
-            {
-                "SoLuong": 1,
-                "DonHangId": 3,
-                "SanPhamId": 3
-            },
-            {
-                "SoLuong": 1,
-                "DonHangId": 3,
-                "SanPhamId": 4
-            },
-            {
-                "SoLuong": 1,
-                "DonHangId": 4,
-                "SanPhamId": 5
-            },
-            {
-                "SoLuong": 1,
-                "DonHangId": 4,
-                "SanPhamId": 6
-            },
-            {
-                "SoLuong": 1,
-                "DonHangId": 5,
-                "SanPhamId": 10
-            },
-            {
-                "SoLuong": 1,
-                "DonHangId": 6,
-                "SanPhamId": 9
-            },
-            {
-                "SoLuong": 1,
-                "DonHangId": 7,
-                "SanPhamId": 5
-            },
-            {
-                "SoLuong": 1,
-                "DonHangId": 7,
-                "SanPhamId": 6
-            },
-            {
-                "SoLuong": 1,
-                "DonHangId": 8,
-                "SanPhamId": 10
-            }];
-        data.map(item => {
-            item.createdAt = Sequelize.literal('NOW()');
-            item.updatedAt = Sequelize.literal('NOW()');
-            return item;
-        });
-        return queryInterface.bulkInsert('DSSanPhams', data, {});
-    },
-
-    down: (queryInterface, Sequelize) => {
-        return queryInterface.bulkInsert('DSSanPhams', data, {});
-    }
+   module.exports = {
+up: (queryInterface, Sequelize) => {
+let data =[{'SoLuong': 1, 'DonHangId': 1, 'SanPhamId': 2}, {'SoLuong': 1, 'DonHangId': 1, 'SanPhamId': 6}, {'SoLuong': 1, 'DonHangId': 2, 'SanPhamId': 10}, {'SoLuong': 1, 'DonHangId': 2, 'SanPhamId': 9}, {'SoLuong': 1, 'DonHangId': 3, 'SanPhamId': 3}, {'SoLuong': 1, 'DonHangId': 3, 'SanPhamId': 4}, {'SoLuong': 1, 'DonHangId': 4, 'SanPhamId': 5}, {'SoLuong': 1, 'DonHangId': 4, 'SanPhamId': 6}, {'SoLuong': 1, 'DonHangId': 5, 'SanPhamId': 10}, {'SoLuong': 1, 'DonHangId': 6, 'SanPhamId': 9}, {'SoLuong': 1, 'DonHangId': 7, 'SanPhamId': 5}, {'SoLuong': 1, 'DonHangId': 7, 'SanPhamId': 6}, {'SoLuong': 1, 'DonHangId': 8, 'SanPhamId': 10}, {'SoLuong': 1, 'DonHangId': 9, 'SanPhamId': 3}, {'SoLuong': 1, 'DonHangId': 9, 'SanPhamId': 4}, {'SoLuong': 1, 'DonHangId': 10, 'SanPhamId': 10}, {'SoLuong': 1, 'DonHangId': 11, 'SanPhamId': 5}, {'SoLuong': 1, 'DonHangId': 11, 'SanPhamId': 6}, {'SoLuong': 1, 'DonHangId': 12, 'SanPhamId': 11}, {'SoLuong': 1, 'DonHangId': 12, 'SanPhamId': 9}, {'SoLuong': 1, 'DonHangId': 13, 'SanPhamId': 3}, {'SoLuong': 1, 'DonHangId': 13, 'SanPhamId': 4}, {'SoLuong': 1, 'DonHangId': 13, 'SanPhamId': 5}, {'SoLuong': 1, 'DonHangId': 13, 'SanPhamId': 6}, {'SoLuong': 1, 'DonHangId': 14, 'SanPhamId': 2}, {'SoLuong': 1, 'DonHangId': 14, 'SanPhamId': 3}, {'SoLuong': 1, 'DonHangId': 14, 'SanPhamId': 4}, {'SoLuong': 1, 'DonHangId': 15, 'SanPhamId': 11}, {'SoLuong': 1, 'DonHangId': 15, 'SanPhamId': 9}, {'SoLuong': 1, 'DonHangId': 16, 'SanPhamId': 8}, {'SoLuong': 1, 'DonHangId': 17, 'SanPhamId': 1}, {'SoLuong': 1, 'DonHangId': 17, 'SanPhamId': 3}, {'SoLuong': 1, 'DonHangId': 17, 'SanPhamId': 5}, {'SoLuong': 1, 'DonHangId': 18, 'SanPhamId': 10}, {'SoLuong': 1, 'DonHangId': 18, 'SanPhamId': 11}, {'SoLuong': 1, 'DonHangId': 19, 'SanPhamId': 11}, {'SoLuong': 1, 'DonHangId': 19, 'SanPhamId': 8}, {'SoLuong': 1, 'DonHangId': 20, 'SanPhamId': 4}, {'SoLuong': 1, 'DonHangId': 20, 'SanPhamId': 6}, {'SoLuong': 1, 'DonHangId': 20, 'SanPhamId': 9}, {'SoLuong': 1, 'DonHangId': 21, 'SanPhamId': 10}, {'SoLuong': 1, 'DonHangId': 21, 'SanPhamId': 8}, {'SoLuong': 1, 'DonHangId': 22, 'SanPhamId': 12}, {'SoLuong': 1, 'DonHangId': 22, 'SanPhamId': 3}, {'SoLuong': 1, 'DonHangId': 23, 'SanPhamId': 1}, {'SoLuong': 1, 'DonHangId': 24, 'SanPhamId': 3}, {'SoLuong': 1, 'DonHangId': 25, 'SanPhamId': 2}, {'SoLuong': 1, 'DonHangId': 25, 'SanPhamId': 4}, {'SoLuong': 1, 'DonHangId': 26, 'SanPhamId': 4}, {'SoLuong': 1, 'DonHangId': 26, 'SanPhamId': 8}, {'SoLuong': 1, 'DonHangId': 27, 'SanPhamId': 11}, {'SoLuong': 1, 'DonHangId': 28, 'SanPhamId': 10}, {'SoLuong': 1, 'DonHangId': 28, 'SanPhamId': 11}, {'SoLuong': 1, 'DonHangId': 28, 'SanPhamId': 9}];
+data.map(item => {item.createdAt = Sequelize.literal('NOW()');
+item.updatedAt = Sequelize.literal('NOW()');
+   return item;
+});
+return queryInterface.bulkInsert('DSSanPhams', data, {});
+},
+down: (queryInterface, Sequelize) => {
+ return queryInterface.bulkInsert('DSSanPhams', data, {});
+   }
 };
