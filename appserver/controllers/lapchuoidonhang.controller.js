@@ -21,17 +21,15 @@ const getDonhang = async (req, res) => {
             //let dataRender = dijkstra(matrixData, timeStart)
 
             //Sử dụng thuật toán NNA để sắp xếp các đơn hàng theo khoảng cách và thời gian 
-            let test = getroute(matrixData, timeStart)
+            let test = getroute(matrixData, timeStart);
             resultData.push(test)
         })
-        const results = await Promise.all(promises)
-
+        const results = await Promise.all(promises)        
         //Cập nhật là biến check địa chỉ và địa chỉ được chọn cho đơn hàng
         const promises2 = resultData.map(async (e) => {
 
             let dataInTime = e.dataInTime
             let dataOutTime = e.dataOutTime
-
             let dataPostChuoiInTime = {
                 Chuoi: JSON.stringify({ chuoidonhang: dataInTime }),
                 SoLuong: dataInTime.length,
@@ -44,7 +42,7 @@ const getDonhang = async (req, res) => {
 
             //Tao thong bao
             //Tao chuoi intime
-            const inTime = dataInTime.map(async (e) => {
+            const inTime = dataInTime.map(async (e) => {   
                 let dataThongbao = {
                     NoiDung: 'Đơn hàng ' + e.donhang.id + ' sẽ được giao đến địa chỉ: ' +
                         e.address.TenDiaChi + ' vào khung giờ (' + e.address.TimeRange + ')',
@@ -68,12 +66,12 @@ const getDonhang = async (req, res) => {
             const outTimeCheckPromises = await Promise.all(outTimeCheck);
             if (dataOutTime.length > 0) {
                 let dataPostChuoiOutTime = {
-                    Chuoi: JSON.stringify({ chuoidonhang: dataPostChuoiOutTime }),
+                    Chuoi: JSON.stringify({ chuoidonhang: dataOutTime }),
                     SoLuong: dataOutTime.length
                 }
                 let chuoiDataOutTime = await createChuoi(dataPostChuoiOutTime);
-                chuoiDataOutTime = await chuoiData.json();
-                const outTime = dataInTime.map(async (e) => {
+                chuoiDataOutTime = await chuoiDataOutTime.json();
+                const outTime = dataOutTime.map(async (e) => {
                     let dataThongbao = {
                         NoiDung: 'Đơn hàng ' + e.donhang.id + ' sẽ được giao đến địa chỉ: ' +
                             e.address.TenDiaChi + ' vào khung giờ (' + e.address.TimeRange + ')',
@@ -81,7 +79,7 @@ const getDonhang = async (req, res) => {
                         NguoiDungId: e.reciver.id
                     }
                     await createThongBao(dataThongbao);
-                    await updateDonhang(e.donhang, e.address.id, chuoiDataOutTime.data.id);
+                    await updateDonhang(e.donhang, e.address.id, chuoiDataOutTime.data.id,e.price);
                     await updateStatus(e.donhang.id);
                 })
                 const outTimePromises = await Promise.all(outTime);
@@ -114,7 +112,7 @@ async function getDistance(listCoord) {
         "travelMode": "driving"
     }
     listCoord.map(e => {
-        let coord = { "latitude": e.KinhDo, "longitude": e.ViDo }
+        let coord = { "latitude": e.ViDo, "longitude": e.KinhDo }
         listCoordRequest.origins.push(coord)
         listCoordRequest.destinations.push(coord)
     })
@@ -148,7 +146,7 @@ async function getDistance(listCoord) {
                     dataperRow['iddiachi' + listCoord[e.destinationIndex].id] = temp;
                 }
             }
-        }
+        }   
         checkrow++;
         let dataDonhang = await getDataDonhang(i.DonhangId);
         matrixData['iddiachi' + i.id] = {
@@ -174,7 +172,7 @@ async function getDistance(listCoord) {
                 ViDo: i.ViDo,
                 TimeRange: timeStart + ' - ' + timeEnd
             }
-        };
+        };        
     }
     return matrixData
 
@@ -213,7 +211,7 @@ function addTimes(start, duration) {
     return totalH + ":" + totalM;
 }
 //Kiểm tra thời gian có nằm trong khung giờ hay không
-function checkTime(time, timeRange) {
+function checkTime(time, timeRange) {    
     var y = new Date('01/01/2001 ' + time).getTime();
 
     var a = new Date('01/01/2001 ' + timeRange.start).getTime();
@@ -276,8 +274,7 @@ function dijkstra(graph, timeStart, destination) {
     }
     return data;
 }
-function getroute(graph, timeStart) {
-
+function getroute(graph, timeStart) {    
     //Xác định điểm khởi đầu và khởi tạo
     var s = Object.keys(graph)[0];
     var solutions = {};
@@ -297,8 +294,9 @@ function getroute(graph, timeStart) {
     //Tạo vòng lặp duyệt mảng trọng số
     while (true) {
 
-        //Lấy ra dữ liệu trọng số của điểm hiện tại từ ma trận trọng số
+        //Lấy ra dữ liệu trọng số của điểm hiện tại từ ma trận trọng số        
         let adj = graph[currentPoint].route;
+        //console.log(currentPoint,adj)
         //Khởi tạo biến kiểm tra khoảng cách ( tìm min )
         let distCheck = Infinity
         //Duyệt từng khoảng cách so với cái điểm còn lại tìm khoảng cách ngắn nhất
@@ -316,12 +314,13 @@ function getroute(graph, timeStart) {
 
             //Kiểm tra nếu thời điểm đến điểm tiếp theo nằm trong khung giờ đã đưa ra
             //Nếu không nằm trong khung giờ đã đưa ra thì duyệt điểm tiếp theo
+            //console.log(subE,checkTime(ndur, graph[subE].timeRange),ndist,distCheck)            
             if (!checkTime(ndur, graph[subE].timeRange)) {
                 continue;
             }
 
             //Kiểm tra khoảng cách ngắn nhất trong tất cả các điểm 
-            //Chọn làm điểm tiếp theo
+            //Chọn làm điểm tiếp theo            
             if (ndist < distCheck) {
                 distCheck = ndist;
                 currentPoint = subE;
@@ -340,7 +339,7 @@ function getroute(graph, timeStart) {
         solutions[currentPoint].ord = graph[currentPoint].donhang;
         solutions[currentPoint].reciver = graph[currentPoint].reciver;
         solutions[currentPoint].address = graph[currentPoint].address;
-        lastDur = currentDur;
+        lastDur = currentDur;              
     }
 
     //Những điểm không thỏa điều kiện về thời gian và chưa được sắp xếp
@@ -360,7 +359,7 @@ function getroute(graph, timeStart) {
         else {
             continue
         }
-    }
+    }    
     //Format lại data để response
     let data = [];
     for (var n in solutions) {
@@ -372,7 +371,7 @@ function getroute(graph, timeStart) {
             reciver: solutions[n].reciver,
             address: solutions[n].address,
         }
-        data.push(temp);
+        data.push(temp);        
     }
     let result = {
         dataInTime: data,
@@ -394,7 +393,7 @@ function updateStatus(iddonhang) {
 }
 function updateDonhang(donhang, iddiachi, idchuoi, price) {
     let dataPut = {
-        TongTien: donhang.TongTien + price,
+        TongTien: Number(donhang.TongTien) +Number(price),
         DiaChiId: iddiachi,
         ChuoiGiaoHangId: idchuoi,
     }
@@ -460,6 +459,7 @@ async function createThongBao(data) {
     };
     return fetch('https://servertlcn.herokuapp.com/thongbao', settings);
 }
+
 module.exports = {
     getDistance,
     getDonhang,
