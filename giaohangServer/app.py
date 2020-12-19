@@ -175,18 +175,28 @@ def getlapchuoidonhang(j):
     data=r.json()
     return data['result']
 
+def Motnhanh():
+    b='{"data": []}'
+    b=json.loads(b)
+    alldata=getalldata()
+    b=b['data']
+    b.append(alldata['data'])
+    return b
 def runall():
-    j,status=runcluster()
-    if(status==0): return j
+    b=Motnhanh()
+    if(checkSizeOrder(b) == True):
+        return b
     else:
-        while checkSizeOrder(j) == False:
-            global cluster_number
-            cluster_number+=1
-            j,status=runcluster()
-    global finaljson
-    finaljson=j
-    return j
-
+        j,status=runcluster()
+        if(status==0): return j
+        else:
+            while checkSizeOrder(j) == False:
+                global cluster_number
+                cluster_number+=1
+                j,status=runcluster()
+        global finaljson
+        finaljson=j
+        return j
 #timestartdefault=datetime.strptime("11/03/2020"+" 8:00",'%m/%d/%Y %H:%M')
     
   
