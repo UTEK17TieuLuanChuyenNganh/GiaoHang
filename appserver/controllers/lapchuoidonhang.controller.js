@@ -11,7 +11,7 @@ const getDonhang = async (req, res) => {
         data, timeStart, plus
     } = req.body;
     var mapData = data;
-    var resultData = []; 
+    var resultData = [];
     if (mapData.length > 0 && timeStart != "") {
 
         // Với từng cụm đơn hàng, bắt đầu các bước sau:
@@ -24,7 +24,7 @@ const getDonhang = async (req, res) => {
             let test = getroute(matrixData, timeStart);
             resultData.push(test)
         })
-        const results = await Promise.all(promises)        
+        const results = await Promise.all(promises)
         //Cập nhật là biến check địa chỉ và địa chỉ được chọn cho đơn hàng
         const promises2 = resultData.map(async (e) => {
 
@@ -42,7 +42,7 @@ const getDonhang = async (req, res) => {
 
             //Tao thong bao
             //Tao chuoi intime
-            const inTime = dataInTime.map(async (e) => {   
+            const inTime = dataInTime.map(async (e) => {
                 let dataThongbao = {
                     NoiDung: 'Đơn hàng ' + e.donhang.id + ' sẽ được giao đến địa chỉ: ' +
                         e.address.TenDiaChi + ' vào khung giờ (' + e.address.TimeRange + ')',
@@ -79,7 +79,7 @@ const getDonhang = async (req, res) => {
                         NguoiDungId: e.reciver.id
                     }
                     await createThongBao(dataThongbao);
-                    await updateDonhang(e.donhang, e.address.id, chuoiDataOutTime.data.id,e.price);
+                    await updateDonhang(e.donhang, e.address.id, chuoiDataOutTime.data.id, e.price);
                     await updateStatus(e.donhang.id);
                 })
                 const outTimePromises = await Promise.all(outTime);
@@ -146,7 +146,7 @@ async function getDistance(listCoord) {
                     dataperRow['iddiachi' + listCoord[e.destinationIndex].id] = temp;
                 }
             }
-        }   
+        }
         checkrow++;
         let dataDonhang = await getDataDonhang(i.DonhangId);
         matrixData['iddiachi' + i.id] = {
@@ -172,11 +172,12 @@ async function getDistance(listCoord) {
                 ViDo: i.ViDo,
                 TimeRange: timeStart + ' - ' + timeEnd
             }
-        };        
+        };
     }
     return matrixData
 
 };
+
 function timediff(start, end) {
     start = start.split(":");
     end = end.split(":");
@@ -211,7 +212,7 @@ function addTimes(start, duration) {
     return totalH + ":" + totalM;
 }
 //Kiểm tra thời gian có nằm trong khung giờ hay không
-function checkTime(time, timeRange) {    
+function checkTime(time, timeRange) {
     var y = new Date('01/01/2001 ' + time).getTime();
 
     var a = new Date('01/01/2001 ' + timeRange.start).getTime();
@@ -274,7 +275,7 @@ function dijkstra(graph, timeStart, destination) {
     }
     return data;
 }
-function getroute(graph, timeStart) {    
+function getroute(graph, timeStart) {
     //Xác định điểm khởi đầu và khởi tạo
     var s = Object.keys(graph)[0];
     var solutions = {};
@@ -339,7 +340,7 @@ function getroute(graph, timeStart) {
         solutions[currentPoint].ord = graph[currentPoint].donhang;
         solutions[currentPoint].reciver = graph[currentPoint].reciver;
         solutions[currentPoint].address = graph[currentPoint].address;
-        lastDur = currentDur;              
+        lastDur = currentDur;
     }
 
     //Những điểm không thỏa điều kiện về thời gian và chưa được sắp xếp
@@ -359,7 +360,7 @@ function getroute(graph, timeStart) {
         else {
             continue
         }
-    }    
+    }
     //Format lại data để response
     let data = [];
     for (var n in solutions) {
@@ -371,7 +372,7 @@ function getroute(graph, timeStart) {
             reciver: solutions[n].reciver,
             address: solutions[n].address,
         }
-        data.push(temp);        
+        data.push(temp);
     }
     let result = {
         dataInTime: data,
@@ -394,7 +395,7 @@ function updateStatus(iddonhang) {
 function updateDonhang(donhang, iddiachi, idchuoi, price) {
     let dataPut = {
         TienVanChuyen: price,
-        TongTien: Number(donhang.TongTien) +Number(price),
+        TongTien: Number(donhang.TongTien) + Number(price),
         DiaChiId: iddiachi,
         ChuoiGiaoHangId: idchuoi,
     }
@@ -434,11 +435,10 @@ async function checkOthersAddress(iddonhang, iddiachi) {
     var time2;
     var flag = false;
     if (dataFetch.data.length > 1) {
+        result = dataFetch.data.filter(r => r.id == iddiachi)
+        date1 = new Date(result[0].ThoiGianKetThuc).getDate()
+        time1 = result[0].ThoiGianKetThuc.split("T")[1].replace("Z", "").substr(0, 5);
         for (var e in dataFetch.data) {
-            if (dataFetch.data[e].id == iddiachi) {
-                date1 = new Date(dataFetch.data[e].ThoiGianKetThuc).getDate()
-                time1 = dataFetch.data[e].ThoiGianKetThuc.split("T")[1].replace("Z", "").substr(0, 5);
-            }
             date2 = new Date(dataFetch.data[e].ThoiGianBatDau).getDate()
             time2 = dataFetch.data[e].ThoiGianBatDau.split("T")[1].replace("Z", "").substr(0, 5);
             if (date2 - date1 > 0) {
