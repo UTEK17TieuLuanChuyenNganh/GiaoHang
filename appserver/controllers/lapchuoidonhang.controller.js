@@ -393,6 +393,7 @@ function updateStatus(iddonhang) {
 }
 function updateDonhang(donhang, iddiachi, idchuoi, price) {
     let dataPut = {
+        TienVanChuyen: price,
         TongTien: Number(donhang.TongTien) +Number(price),
         DiaChiId: iddiachi,
         ChuoiGiaoHangId: idchuoi,
