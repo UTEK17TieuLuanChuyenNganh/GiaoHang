@@ -179,6 +179,8 @@ def Motnhanh():
     b='{"data": []}'
     b=json.loads(b)
     alldata=getalldata()
+    global soluongdon
+    soluongdon=len(alldata['data'])
     b=b['data']
     b.append(alldata['data'])
     return b
